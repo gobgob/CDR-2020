@@ -57,8 +57,6 @@ public class Communication implements Closeable
 		String connexion = config.getString(ConfigInfoSenpai.COMM_MEDIUM);
 		if(connexion.compareToIgnoreCase("ethernet") == 0)
 			medium = new Ethernet(log);
-		else if(connexion.compareToIgnoreCase("serie") == 0)
-			medium = new Serie(log);
 		else
 			assert false;
 		

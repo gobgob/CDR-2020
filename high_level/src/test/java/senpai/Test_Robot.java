@@ -28,7 +28,6 @@ import senpai.capteurs.CapteursProcess;
 import senpai.comm.CommProtocol.Id;
 import senpai.robot.Robot;
 import senpai.robot.RobotColor;
-import senpai.robot.Speed;
 import senpai.scripts.ScriptManager;
 import senpai.table.Cube;
 import senpai.table.Table;
@@ -55,7 +54,6 @@ public class Test_Robot extends JUnit_Test
 	private CapteursProcess cp;
 //	private Cinematique c = null;
 //	private boolean simuleSerie;
-	private Speed v;
 //	private double last;
 	
 
@@ -116,8 +114,6 @@ public class Test_Robot extends JUnit_Test
 		table = container.getService(Table.class);
 //		simuleSerie = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
 		data.startStream(Id.ODO_AND_SENSORS);
-		v = Speed.TEST;
-		log.write("Vitesse du robot : " + v.translationalSpeed * 1000, Subject.STATUS);
 	}
 
 }

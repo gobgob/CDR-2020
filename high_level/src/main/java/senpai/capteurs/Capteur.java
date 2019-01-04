@@ -41,7 +41,6 @@ public abstract class Capteur implements Printable
 	protected final double orientationRelative;
 	public final double angleCone; // angle du cône (en radians)
 	private final int portee;
-	protected XY centreRotationGrue;
 	protected double orientationRelativeRotate;
 	protected XY_RW positionRelativeRotate;
 	public TypeCapteur type;
@@ -57,8 +56,6 @@ public abstract class Capteur implements Printable
 		this.angleCone = type.angleCone;
 		this.portee = type.portee;
 		this.sureleve = sureleve;
-
-		centreRotationGrue = new XY(config.getInt(ConfigInfoSenpai.CENTRE_ROTATION_GRUE_X), config.getInt(ConfigInfoSenpai.CENTRE_ROTATION_GRUE_Y));
 	}
 
 	/**

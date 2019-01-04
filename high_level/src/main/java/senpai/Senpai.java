@@ -42,7 +42,6 @@ import senpai.comm.CommProtocol.Id;
 import senpai.obstacles.ObstaclesDynamiques;
 import senpai.obstacles.ObstaclesFixes;
 import senpai.robot.Robot;
-import senpai.robot.Speed;
 import senpai.threads.ThreadName;
 import senpai.threads.ThreadWarmUp;
 import senpai.utils.ConfigInfoSenpai;
@@ -242,10 +241,6 @@ public class Senpai
 		
 		debug = DebugTool.getDebugTool(new HashMap<ConfigInfo, Object>(), new XY(0,1000), positionRobot.getPosition(), Severity.INFO, configfile, profiles);
 		injector.addService(GraphicDisplay.class, debug.getGraphicDisplay());
-		
-		Speed.TEST.translationalSpeed = config.getDouble(ConfigInfoSenpai.VITESSE_ROBOT_TEST) / 1000.;
-		Speed.REPLANIF.translationalSpeed = config.getDouble(ConfigInfoSenpai.VITESSE_ROBOT_REPLANIF) / 1000.;
-		Speed.STANDARD.translationalSpeed = config.getDouble(ConfigInfoSenpai.VITESSE_ROBOT_STANDARD) / 1000.;
 
 		/**
 		 * Affiche la version du programme (dernier commit et sa branche)

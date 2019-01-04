@@ -50,12 +50,7 @@ public enum CapteursRobot
 
 	ToF_ARRIERE_GAUCHE(CapteurImmobile.class, new XY(-164, 80), -Math.PI, TypeCapteur.ToF_COURT, 206),
 
-	ToF_ARRIERE_DROITE(CapteurImmobile.class, new XY(-164, -80), -Math.PI, TypeCapteur.ToF_COURT, 206),
-	
-	TOURELLE_GAUCHE(CapteurMobile.class, new XY(40,52), 0, TypeCapteur.ToF_LONG, 200),
-
-	TOURELLE_DROITE(CapteurMobile.class, new XY(40,-52), 0, TypeCapteur.ToF_LONG, 200);
-
+	ToF_ARRIERE_DROITE(CapteurImmobile.class, new XY(-164, -80), -Math.PI, TypeCapteur.ToF_COURT, 206);
 	
 	public final Class<? extends Capteur> classe;
 	public final XY pos;

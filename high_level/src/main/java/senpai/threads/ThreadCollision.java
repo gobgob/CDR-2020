@@ -25,7 +25,7 @@ import pfg.kraken.robot.ItineraryPoint;
  *
  */
 
-public final class ThreadCollisionDegrade extends Thread
+public final class ThreadCollision extends Thread
 {
 	protected Log log;
 	private ObstaclesDynamiques dynObs;
@@ -35,7 +35,7 @@ public final class ThreadCollisionDegrade extends Thread
 	private RectangularObstacle[] memory;
 
 
-	public ThreadCollisionDegrade(Log log, ObstaclesDynamiques dynObs, Robot robot, OutgoingOrderBuffer out, RectangularObstacle vehicleTemplate)
+	public ThreadCollision(Log log, ObstaclesDynamiques dynObs, Robot robot, OutgoingOrderBuffer out, RectangularObstacle vehicleTemplate)
 	{
 		this.dynObs = dynObs;
 		this.log = log;
@@ -53,13 +53,6 @@ public final class ThreadCollisionDegrade extends Thread
 		Thread.currentThread().setName(getClass().getSimpleName());
 		try
 		{
-/*			synchronized(robot)
-			{
-				while(!robot.isDegrade())
-					robot.wait();
-			}
-			log.write("Activation du mode dégradé : gestion des collisions démarré.", Subject.STATUS);
-	*/		
 			List<ItineraryPoint> currentPath;
 			while(true)
 			{
@@ -67,8 +60,6 @@ public final class ThreadCollisionDegrade extends Thread
 				{
 					while(!robot.needCollisionCheck())
 						robot.wait();
-					
-//					log.write("Démarrage check collision.", Subject.STATUS);
 
 					currentPath = robot.getPath();
 				}				

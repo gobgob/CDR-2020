@@ -48,11 +48,6 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	/**
 	 * Infos sur le robot
 	 */
-//	CENTRE_ROTATION_TOURELLE_X(40), // par rapport au centre de rotation de la tourelle !
-//	CENTRE_ROTATION_TOURELLE_Y(52),
-	
-	CENTRE_ROTATION_GRUE_X(-50), // position de la grue dans le repère du robot
-	CENTRE_ROTATION_GRUE_Y(0),
 	
 	DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE(167), // distance entre le centre du robot
 											// et le bord arrière du robot
@@ -65,13 +60,6 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	MARGE_PATHFINDING(20), // marge sur la dimension du robot
 //	DILATATION_OBSTACLE_ROBOT(30), // la dilatation du robot dans l'A*. S'ajoute
 									// à gauche et à droite
-
-	/**
-	 * Paramètres des scripts
-	 */
-	VITESSE_ROBOT_TEST(300), // vitesse de test en mm/s
-	VITESSE_ROBOT_STANDARD(500), // vitesse standard en mm/s
-	VITESSE_ROBOT_REPLANIF(200), // vitesse en replanification en mm/s
 
 	/**
 	 * Paramètres du pathfinding
@@ -91,12 +79,6 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	
 	ETH_LL_PORT_NUMBER(80), // port socket LL
 	ETH_LL_HOSTNAME_SERVER("172.16.0.2"), // adresse ip du LL. Un hostname fonctionne aussi
-
-	/**
-	 * Paramètres bas niveau des capteurs
-	 */
-//	SENSORS_SEND_PERIOD(40), // période d'envoi des infos des capteurs (ms)
-//	SENSORS_PRESCALER(1), // sur combien de trames a-t-on les infos des capteurs
 
 	/**
 	 * Paramètres du traitement des capteurs

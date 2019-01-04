@@ -537,64 +537,6 @@ public class Robot extends RobotState
 	{
 		return obstacle.isProcheObstacle(positionVue, distance);
 	}
-	
-	XY_RW objTourelle = new XY_RW();
-	XY tourelleGauche = CapteursRobot.TOURELLE_GAUCHE.pos;
-	XY tourelleDroite = CapteursRobot.TOURELLE_DROITE.pos;
-
-	public void updateTourelles()
-	{
-		double angleDefautGauche, angleDefautDroite;
-		if(cinematique.enMarcheAvant)
-		{
-			angleDefautGauche = angleMin;
-			angleDefautDroite = -angleMin;
-		}
-		else
-		{
-			angleDefautGauche = angleMax;
-			angleDefautDroite = -angleMax;
-		}
-		
-		if(isInScript)
-			envoieAnglesTourelles(Math.PI / 2, -Math.PI / 2);
-			
-		else if(path == null)
-			envoieAnglesTourelles(angleDefautGauche, angleDefautDroite);
-
-		else
-		{
-			int pointVise = Math.min(currentIndexTrajectory + anticipationTourelle, path.size() - 1);
-			ItineraryPoint ip = path.get(pointVise);
-			objTourelle.setX(ip.x);
-			objTourelle.setY(ip.y);
-			double angleGauche = objTourelle.minus(tourelleGauche).minus(cinematique.getPosition()).getArgument() - cinematique.orientationReelle;
-			angleGauche = XYO.angleDifference(angleGauche, 0);
-			if(angleGauche > angleMin && angleGauche < angleMax)
-				envoieAnglesTourelles(angleGauche, angleDefautDroite);
-			else
-			{
-				objTourelle.setX(ip.x);
-				objTourelle.setY(ip.y);
-				double angleDroite = objTourelle.minus(tourelleDroite).minus(cinematique.getPosition()).getArgument() - cinematique.orientationReelle;
-				angleDroite = XYO.angleDifference(angleDroite, 0);
-				if(angleDroite < -angleMin && angleDroite > -angleMax)
-					envoieAnglesTourelles(angleDefautGauche, angleDroite);
-				else
-					envoieAnglesTourelles(angleDefautGauche, angleDefautDroite);
-			}
-		}
-	}
-	
-	private void envoieAnglesTourelles(double angleTourelleGauche, double angleTourelleDroite)
-	{
-		if(Math.abs(angleTourelleGauche - angleTourelleGaucheOld) > 0.1 || Math.abs(angleTourelleDroite - angleTourelleDroiteOld) > 0.1)
-		{
-			angleTourelleGaucheOld = angleTourelleGauche;
-			angleTourelleDroiteOld = angleTourelleDroite;
-			out.setTourellesAngles(angleTourelleGauche, angleTourelleDroite);
-		}
-	}
 
 	public void setCurrentTrajectoryIndex(Cinematique current, int indexTrajectory)
 	{	
