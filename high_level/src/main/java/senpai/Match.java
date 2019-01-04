@@ -1,7 +1,5 @@
 package senpai;
 
-import java.util.PriorityQueue;
-
 import pfg.config.Config;
 import pfg.kraken.exceptions.PathfindingException;
 import pfg.kraken.utils.XYO;
@@ -9,19 +7,15 @@ import pfg.log.Log;
 import senpai.Senpai.ErrorCode;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.CommProtocol;
-import senpai.comm.CommProtocol.LLCote;
 import senpai.comm.DataTicket;
 import senpai.comm.Ticket;
-import senpai.exceptions.ActionneurException;
 import senpai.exceptions.ScriptException;
 import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
 import senpai.robot.RobotColor;
 import senpai.scripts.Script;
 import senpai.scripts.ScriptManager;
-import senpai.scripts.ScriptPriseCube;
 import senpai.scripts.ScriptRecalageInitial;
-import senpai.table.CubeColor;
 import senpai.table.Table;
 import senpai.threads.comm.ThreadCommProcess;
 import senpai.utils.ConfigInfoSenpai;
@@ -62,14 +56,7 @@ public class Match
 	{
 		ErrorCode error = ErrorCode.NO_ERROR;
 		try {
-			CubeColor[] pattern = null;
-			if(args.length == 4)
-			{
-				pattern = CubeColor.parsePattern(args);
-				if(pattern != null)
-					System.out.println("Pattern lu : "+pattern[0]+" "+pattern[1]+" "+pattern[2]);
-			}
-			new Match().exec(pattern, args[0]);
+			new Match().exec(args[0]);
 		}
 		catch(Exception e)
 		{
@@ -90,7 +77,7 @@ public class Match
 		}
 	}
 	
-	public void exec(CubeColor[] pattern, String configFile) throws InterruptedException
+	public void exec(String configFile) throws InterruptedException
 	{
 		String configfile = configFile;
 		
@@ -102,8 +89,6 @@ public class Match
 		table = senpai.getService(Table.class);
 		scripts = senpai.getService(ScriptManager.class);
 		log = senpai.getService(Log.class);
-		if(pattern != null)
-			scripts.setPattern(pattern);
 		
 		RobotColor couleur;
 
@@ -171,200 +156,12 @@ public class Match
 		table.updateCote(couleur.symmetry);
 		scripts.setCouleur(couleur);
 
-		try {
-			if(couleur.symmetry)
-				robot.rangeBras(LLCote.PAR_LA_GAUCHE);
-			else
-				robot.rangeBras(LLCote.PAR_LA_DROITE);
-		} catch (ActionneurException e1) {
-			log.write("Erreur lors de l'initialisation du bras : "+e1, Subject.STATUS);
-		}
+//		try {
+			// INIT actionneurs
+//		} catch (ActionneurException e1) {
+//			log.write("Erreur lors de l'initialisation du bras : "+e1, Subject.STATUS);
+//		}
 
-		
-		// dépose golden (si y'a)
-		// domotique
-		// abeille
-		// retenter domotique
-		// prise
-		// dépose
-		// retenter abeille
-		// retenter domotique
-		// prise
-		// dépose
-		// retenter abeille
-		// retenter domotique
-		// etc.
-
-		PriorityQueue<ScriptPriseCube> allPrise;
-		boolean retry;
-		
-		/*
-		 * Dépose de golden cube
-		 */
-
-		/*
-		 * Le golden cube va près de la zone de départ
-		 */
-		if(robot.canDropCube())
-		{
-			try {
-				doScript(scripts.getDeposeScript(), 5);
-			} catch (PathfindingException | UnableToMoveException | ScriptException e) {
-				log.write("Erreur : "+e, Subject.SCRIPT);
-			}
-		}
-
-		/*
-		 * Domotique
-		 */
-		
-		for(int i = 0; i < 3; i++)
-		{
-			try {
-				doScript(scripts.getScriptDomotique(), 5);
-				robot.printTemps();
-			} catch (PathfindingException | UnableToMoveException | ScriptException e) {
-				log.write("Erreur : "+e, Subject.SCRIPT);
-			}
-		}
-
-		/*
-		 * Abeille
-		 */
-
-		for(int i = 0; i < 3; i++)
-		{
-			try {
-				doScript(scripts.getScriptAbeille(), 5);
-				robot.printTemps();
-			} catch (PathfindingException | UnableToMoveException | ScriptException e) {
-				log.write("Erreur : "+e, Subject.SCRIPT);
-			}
-		}
-		
-		/*
-		 * Domotique
-		 */
-
-		try {
-			doScript(scripts.getScriptDomotique(), 5);
-			robot.printTemps();
-		} catch (PathfindingException | UnableToMoveException | ScriptException e) {
-			log.write("Erreur : "+e, Subject.SCRIPT);
-		}
-
-		boolean allError;
-		while(true)
-		{		
-			allError = true;
-			
-			/*
-			 * Prise de cube
-			 */
-			allPrise = scripts.getFirstPatternColor();
-			retry = true;
-			while(retry && !allPrise.isEmpty())
-			{
-				retry = false;
-				try {
-					doScript(allPrise.poll(), 5, false);
-					robot.printTemps();
-					allError = false;
-				} catch (PathfindingException | UnableToMoveException | ScriptException e) {
-					log.write("Erreur : "+e+", on tente le script suivant", Subject.SCRIPT);
-					retry = true;
-				}
-			}
-	
-			allPrise = scripts.getSecondPatternColor();
-			retry = true;
-			while(retry && !allPrise.isEmpty())
-			{
-				retry = false;
-				try {
-					doScript(allPrise.poll(), 5, false);
-					robot.printTemps();
-					allError = false;
-				} catch (PathfindingException | UnableToMoveException | ScriptException e) {
-					log.write("Erreur : "+e+", on tente le script suivant", Subject.SCRIPT);				
-					retry = true;
-				}
-			}
-			
-			/*
-			 * Recalage
-			 */
-
-			try {
-				doScript(scripts.getScriptRecalage(), 5, false);
-				robot.printTemps();
-				allError = false;
-			} catch (PathfindingException | UnableToMoveException | ScriptException e) {
-				log.write("Erreur : "+e, Subject.SCRIPT);
-			}
-
-			/*
-			 * Dépose de cube
-			 */
-			
-			for(int i = 0; i < 2; i++)
-			{
-				try {
-					doScript(scripts.getDeposeScript(), 5);
-					robot.printTemps();
-					allError = false;
-				} catch (PathfindingException | UnableToMoveException | ScriptException e) {
-					log.write("Erreur : "+e, Subject.SCRIPT);
-				}			
-			}
-			
-			/*
-			 * Abeille
-			 */
-
-			for(int i = 0; i < 2; i++)
-			{
-				try {
-					doScript(scripts.getScriptAbeille(), 5);
-					robot.printTemps();
-					allError = false;
-				} catch (PathfindingException | UnableToMoveException | ScriptException e) {
-					log.write("Erreur : "+e, Subject.SCRIPT);
-				}
-			}
-
-			/*
-			 * Domotique
-			 */
-
-			try {
-				doScript(scripts.getScriptDomotique(), 5);
-				robot.printTemps();
-				allError = false;
-			} catch (PathfindingException | UnableToMoveException | ScriptException e) {
-				log.write("Erreur : "+e, Subject.SCRIPT);
-			}
-			
-			if(robot.isAllDone())
-			{
-				log.write("Le robot a tout fini et va se ranger.", Subject.SCRIPT);
-				break;
-			}
-			
-			if(allError)
-			{
-				log.write("On ne peut ni déposer, ni prendre, ni faire l'abeille, ni poser le panneau domotique !", Severity.WARNING, Subject.SCRIPT);
-				Thread.sleep(1000);
-			}
-		}		
-
-		try {
-			doScript(scripts.getScriptRecalage(), 15, false);
-			robot.printTemps();
-			allError = false;
-		} catch (PathfindingException | UnableToMoveException | ScriptException e) {
-			log.write("Erreur : "+e, Subject.SCRIPT);
-		}
 
 	}
 	

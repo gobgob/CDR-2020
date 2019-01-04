@@ -30,11 +30,7 @@ import senpai.robot.Robot;
 import senpai.robot.RobotColor;
 import senpai.robot.Speed;
 import senpai.scripts.ScriptManager;
-import senpai.scripts.ScriptPriseCube;
-import senpai.table.Croix;
 import senpai.table.Cube;
-import senpai.table.CubeColor;
-import senpai.table.CubeFace;
 import senpai.table.Table;
 import senpai.utils.Subject;
 
@@ -61,45 +57,6 @@ public class Test_Robot extends JUnit_Test
 //	private boolean simuleSerie;
 	private Speed v;
 //	private double last;
-
-	@Test
-	public void test_cube() throws Exception
-	{
-		for(Croix croix : Croix.values())
-			for(CubeColor couleur : CubeColor.values())
-				if(couleur != CubeColor.GOLDEN)
-					for(CubeFace face : CubeFace.values())
-					{
-						new ScriptPriseCube(log, robot, table, cp, null, croix, couleur, face, true,false);
-						new ScriptPriseCube(log, robot, table, cp, null, croix, couleur, face, false,false);
-					}
-	}
-	
-	@Test
-	public void test_cube3() throws Exception
-	{
-		table.setDone(Cube.CROIX_CENTRE_GAUCHE_CUBE_BAS);
-		System.out.println(scripts.getAllPossible(CubeColor.JAUNE, null, true));
-	}
-
-	@Test
-	public void test_cube2() throws Exception
-	{
-		scripts.setCouleur(RobotColor.ORANGE);
-		table.updateCote(RobotColor.ORANGE.symmetry);
-		scripts.getAllPossible(false);
-		table.setDone(Cube.CROIX_CENTRE_DROITE_CUBE_DROITE);
-		scripts.getAllPossible(false);
-	}
-	
-	@Test
-	public void test_cube4() throws Exception
-	{
-		robot.setCinematique(new Cinematique(new XYO(0, 1500, -Math.PI / 2)));
-		scripts.setCouleur(RobotColor.ORANGE);
-		table.updateCote(RobotColor.ORANGE.symmetry);
-		System.out.println(scripts.getAllPossible(false));
-	}
 	
 
 	/**

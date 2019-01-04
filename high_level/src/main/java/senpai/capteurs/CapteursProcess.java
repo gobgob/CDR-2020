@@ -60,7 +60,6 @@ public class CapteursProcess
 
 //	private long dateLastMesureCorrection = -1;
 //	private final long peremptionCorrection;
-	private final int distanceAuMurMinimumTourelle = 250;
 //	private final boolean enableDynamicCorrection;
 	private volatile boolean ongoingStaticCorrection;
 //	private boolean scan = false;
@@ -71,7 +70,6 @@ public class CapteursProcess
 	private Robot robot;
 	private volatile boolean needLast = false;
 	private volatile Integer[] last;
-	private final int margeIgnoreTourelle;
 	private final boolean ignoreTropProche;
 	private RectangularObstacle departD, departG;
 	private RectangularObstacle deposeD, deposeG;
@@ -88,7 +86,6 @@ public class CapteursProcess
 		distanceApproximation = config.getInt(ConfigInfoSenpai.DISTANCE_MAX_ENTRE_MESURE_ET_OBJET);
 		distanceBordure = config.getInt(ConfigInfoSenpai.DISTANCE_MAX_BORDURE);
 		nbCapteurs = CapteursRobot.values().length;
-		margeIgnoreTourelle = config.getInt(ConfigInfoSenpai.MARGE_IGNORE_TOURELLE);
 		ignoreTropProche = config.getBoolean(ConfigInfoSenpai.IGNORE_TROP_PROCHE);
 		last = new Integer[nbCapteurs];
 		
@@ -189,13 +186,6 @@ public class CapteursProcess
 				c.isThereObstacle = false;
 				continue;
 			}
-			
-			RectangularObstacle obsPile = table.getObstaclePile();
-			if(obsPile != null && obsPile.squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
-			{
-				c.isThereObstacle = false;
-				continue;
-			}
 
 			if(departG.isInObstacle(positionVue) || departD.isInObstacle(positionVue))
 			{
@@ -212,13 +202,6 @@ public class CapteursProcess
 			}
 
 			boolean stop = false;
-			
-			if(c.isTourelle && robot.isProcheRobot(positionVue, margeIgnoreTourelle))
-			{
-				log.write("Une tourelle voit quelque chose dans le robot", Subject.CAPTEURS);
-				c.isThereObstacle = false;
-				continue;
-			}
 			
 			/**
 			 * Si ce qu'on voit est un obstacle de table, on l'ignore
@@ -237,16 +220,6 @@ public class CapteursProcess
 				c.isThereObstacle = false;
 				continue;
 			}
-			
-			if(c.isTourelle)
-				if(positionVue.getY() > (2000 - distanceAuMurMinimumTourelle)
-					|| 	positionVue.getY() < distanceAuMurMinimumTourelle
-					|| positionVue.getX() > (1500 - distanceAuMurMinimumTourelle)
-					|| positionVue.getX() < (-1500 + distanceAuMurMinimumTourelle))
-				{
-					c.isThereObstacle = false;
-					continue;					
-				}
 
 			for(Cube o : Cube.values())
 				if(!table.isDone(o) && o.isVisible(capteurs[i].sureleve) && o.obstacle.squaredDistance(positionVue) < distanceApproximation * distanceApproximation)

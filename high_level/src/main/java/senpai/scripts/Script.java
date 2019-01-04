@@ -67,12 +67,11 @@ public abstract class Script
 		catch(ScriptException | UnableToMoveException | ActionneurException e)
 		{
 			log.write("Erreur lors de l'exécution du script " + this + " : " + e, Severity.CRITICAL, Subject.SCRIPT);
-			try {
-				// lâche tout (s'il y a) et rentre le bras
-				robot.rangeBras(LLCote.AU_PLUS_VITE);
+/*			try {
+				// range actionneurs
 			} catch (ActionneurException e1) {
 				log.write("Erreur lors de l'exécution du script " + this + " : " + e, Severity.CRITICAL, Subject.SCRIPT);
-			}
+			}*/
 			throw new ScriptException(e.getMessage());
 		}
 		finally

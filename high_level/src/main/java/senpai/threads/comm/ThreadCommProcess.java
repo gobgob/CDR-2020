@@ -54,7 +54,6 @@ public class ThreadCommProcess extends Thread
 //	private DynamicPath chemin;
 
 	public volatile boolean capteursOn = false;
-	private boolean enableTourelle;
 	private long dernierAffichagePosition = System.currentTimeMillis();
 
 	public ThreadCommProcess(Log log, Config config, IncomingOrderBuffer serie, SensorsDataBuffer buffer, Robot robot, Senpai container/*, DynamicPath chemin*/)
@@ -64,7 +63,6 @@ public class ThreadCommProcess extends Thread
 		this.serie = serie;
 		this.buffer = buffer;
 		this.robot = robot;
-		enableTourelle = config.getBoolean(ConfigInfoSenpai.ENABLE_TOURELLE);
 
 		memory = new SensorsData[100];
 		for(int i = 0; i < memory.length; i++)
@@ -129,10 +127,9 @@ public class ThreadCommProcess extends Thread
 					
 					for(CapteursRobot c : CapteursRobot.values())
 					{
-						if(enableTourelle || !c.isTourelle)
-							sd.mesures[c.ordinal()] = data.getInt();
+						sd.mesures[c.ordinal()] = data.getInt();
 						int m = sd.mesures[c.ordinal()];
-						if(capteursOn && m != CommProtocol.EtatCapteur.TROP_LOIN.ordinal() && (!c.isTourelle || m != CommProtocol.EtatCapteur.CAPTEUR_HS_BRULE_NOYE.ordinal()))
+						if(capteursOn && m != CommProtocol.EtatCapteur.TROP_LOIN.ordinal())
 							log.write("Capteur " + c.name() + " : " + (m < CommProtocol.EtatCapteur.values().length ? CommProtocol.EtatCapteur.values()[m] : m), Subject.CAPTEURS);
 					}
 					double angleTourelleGauche = data.getFloat();

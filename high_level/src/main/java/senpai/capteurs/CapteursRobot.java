@@ -62,7 +62,6 @@ public enum CapteursRobot
 	public final double angle;
 	public final TypeCapteur type;
 	public final boolean sureleve;
-	public final boolean isTourelle;
 	public RectangularObstacle current;
 	public volatile boolean isThereObstacle = false;
 	public static final int profondeur = 200;
@@ -71,8 +70,7 @@ public enum CapteursRobot
 	private <S extends Capteur> CapteursRobot(Class<S> classe, XY pos, double angle, TypeCapteur type, int largeur)
 	{
 		current = new RectangularObstacle(new XY(0,0), profondeur, largeur, 0);
-		isTourelle = name().startsWith("TOURELLE_"); // les tourelles sont surélevées
-		sureleve = isTourelle;
+		sureleve = false;
 		this.classe = classe;
 		this.pos = pos;
 		this.angle = angle;

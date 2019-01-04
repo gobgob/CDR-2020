@@ -32,12 +32,6 @@ public class DemoPerimetre
 	{
 		String configfile = "demo-perimetre.conf";
 		
-		if(args.length == 0)
-		{
-			System.out.println("Paramètres possible : droite, gauche");
-			return;
-		}
-
 		Senpai senpai = new Senpai();
 		ErrorCode error = ErrorCode.NO_ERROR;
 		try
@@ -46,31 +40,14 @@ public class DemoPerimetre
 			senpai.initialize(configfile, "default");
 			Robot robot = senpai.getService(Robot.class);
 			
-			double cote;
-			if(args[0].equals("droite"))
-				cote = -1;
-			else if(args[0].equals("gauche"))
-				cote = 1;
-			else
-			{
-				System.out.println("Paramètres possible : droite, gauche");
-				return;
-			}
 			robot.updateScore(42);
-			robot.execute(Id.ARM_GO_TO, cote * 80. * Math.PI / 180., 0., 4.974, 25.);
-			robot.execute(Id.ARM_GO_TO, cote * 80. * Math.PI / 180., 0., 4.974 - Math.PI / 2, 25.);
+			// TODO bouge
 			while(true)
 				Thread.sleep(Integer.MAX_VALUE);
 		}
 		catch(Exception e)
 		{
 			Robot robot = senpai.getExistingService(Robot.class);
-			if(robot != null)
-				try {
-					robot.rangeBras(LLCote.AU_PLUS_VITE);
-				} catch (InterruptedException | ActionneurException e1) {
-					e1.printStackTrace();
-				}
 			error = ErrorCode.EXCEPTION;
 			error.setException(e);
 		}

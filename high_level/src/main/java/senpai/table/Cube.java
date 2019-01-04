@@ -27,87 +27,15 @@ import pfg.kraken.utils.XY;
 
 public enum Cube
 {
-	// l'ordre est important (cf. formule pour retrouver le cube à partir de la croix et de la couleur)
-	CROIX_HAUT_GAUCHE_CUBE_DROITE(Croix.CROIX_HAUT_GAUCHE, CubeColor.ORANGE),
-	CROIX_HAUT_GAUCHE_CUBE_HAUT(Croix.CROIX_HAUT_GAUCHE, CubeColor.NOIR),
-	CROIX_HAUT_GAUCHE_CUBE_GAUCHE(Croix.CROIX_HAUT_GAUCHE, CubeColor.VERT),
-	CROIX_HAUT_GAUCHE_CUBE_BAS(Croix.CROIX_HAUT_GAUCHE, CubeColor.BLEU),
-	CROIX_HAUT_GAUCHE_CUBE_CENTRE(Croix.CROIX_HAUT_GAUCHE, CubeColor.JAUNE),
+	EXAMPLE();
 
-	CROIX_CENTRE_GAUCHE_CUBE_DROITE(Croix.CROIX_CENTRE_GAUCHE, CubeColor.ORANGE),
-	CROIX_CENTRE_GAUCHE_CUBE_HAUT(Croix.CROIX_CENTRE_GAUCHE, CubeColor.NOIR),
-	CROIX_CENTRE_GAUCHE_CUBE_GAUCHE(Croix.CROIX_CENTRE_GAUCHE, CubeColor.VERT),
-	CROIX_CENTRE_GAUCHE_CUBE_BAS(Croix.CROIX_CENTRE_GAUCHE, CubeColor.BLEU),
-	CROIX_CENTRE_GAUCHE_CUBE_CENTRE(Croix.CROIX_CENTRE_GAUCHE, CubeColor.JAUNE),
-
-	CROIX_TOUT_GAUCHE_CUBE_DROITE(Croix.CROIX_TOUT_GAUCHE, CubeColor.ORANGE),
-	CROIX_TOUT_GAUCHE_CUBE_HAUT(Croix.CROIX_TOUT_GAUCHE, CubeColor.NOIR),
-	CROIX_TOUT_GAUCHE_CUBE_GAUCHE(Croix.CROIX_TOUT_GAUCHE, CubeColor.VERT),
-	CROIX_TOUT_GAUCHE_CUBE_BAS(Croix.CROIX_TOUT_GAUCHE, CubeColor.BLEU),
-	CROIX_TOUT_GAUCHE_CUBE_CENTRE(Croix.CROIX_TOUT_GAUCHE, CubeColor.JAUNE),
+	public final Obstacle obstacle = null, obstacleGrossi = null;
+	public final XY position = null;
 	
-	
-	CROIX_HAUT_DROITE_CUBE_DROITE(Croix.CROIX_HAUT_DROITE, CubeColor.VERT),
-	CROIX_HAUT_DROITE_CUBE_HAUT(Croix.CROIX_HAUT_DROITE, CubeColor.NOIR),
-	CROIX_HAUT_DROITE_CUBE_GAUCHE(Croix.CROIX_HAUT_DROITE, CubeColor.ORANGE),
-	CROIX_HAUT_DROITE_CUBE_BAS(Croix.CROIX_HAUT_DROITE, CubeColor.BLEU),
-	CROIX_HAUT_DROITE_CUBE_CENTRE(Croix.CROIX_HAUT_DROITE, CubeColor.JAUNE),
-
-	CROIX_CENTRE_DROITE_CUBE_DROITE(Croix.CROIX_CENTRE_DROITE, CubeColor.VERT),
-	CROIX_CENTRE_DROITE_CUBE_HAUT(Croix.CROIX_CENTRE_DROITE, CubeColor.NOIR),
-	CROIX_CENTRE_DROITE_CUBE_GAUCHE(Croix.CROIX_CENTRE_DROITE, CubeColor.ORANGE),
-	CROIX_CENTRE_DROITE_CUBE_BAS(Croix.CROIX_CENTRE_DROITE, CubeColor.BLEU),
-	CROIX_CENTRE_DROITE_CUBE_CENTRE(Croix.CROIX_CENTRE_DROITE, CubeColor.JAUNE),
-
-	CROIX_TOUT_DROITE_CUBE_DROITE(Croix.CROIX_TOUT_DROITE, CubeColor.VERT),
-	CROIX_TOUT_DROITE_CUBE_HAUT(Croix.CROIX_TOUT_DROITE, CubeColor.NOIR),
-	CROIX_TOUT_DROITE_CUBE_GAUCHE(Croix.CROIX_TOUT_DROITE, CubeColor.ORANGE),
-	CROIX_TOUT_DROITE_CUBE_BAS(Croix.CROIX_TOUT_DROITE, CubeColor.BLEU),
-	CROIX_TOUT_DROITE_CUBE_CENTRE(Croix.CROIX_TOUT_DROITE, CubeColor.JAUNE),
-
-	GOLDEN_CUBE_1(CubeColor.GOLDEN),
-	GOLDEN_CUBE_2(CubeColor.GOLDEN);
-
-	public final Obstacle obstacle, obstacleGrossi;
-	public final Croix croix;
-	public final CubePlace place;
-	public final CubeColor couleur;
-	public final XY position;
-	
-	private Cube(CubeColor couleur)
-	{
-		this.couleur = couleur;
-		obstacle = null;
-		obstacleGrossi = null;
-		croix = null;
-		place = null;
-		position = null;
-	}
-	
-	private Cube(Croix croix, CubeColor couleur)
-	{
-		this.croix = croix;
-		this.place = couleur.getPlace(croix.center.getX() > 0);
-		this.couleur = couleur;
-		position = new XY(croix.center.getX() + place.deltaX, croix.center.getY() + place.deltaY);
-		obstacle = new RectangularObstacle(position, 58, 58);
-		obstacleGrossi = new RectangularObstacle(position, 58+30, 58+30);
-	}
-
 	public boolean isVisible(boolean sureleve)
 	{
 		// les capteurs bas les voient, les hauts non
 		return !sureleve;
-	}
-	
-	public static Cube getCube(Croix croix, CubeColor couleur)
-	{
-		return values()[5 * croix.ordinal() + couleur.getPlace(croix).ordinal()];
-	}
-	
-	public static Cube getCube(Croix croix, CubePlace place)
-	{
-		return values()[5 * croix.ordinal() + place.ordinal()];
 	}
 
 }

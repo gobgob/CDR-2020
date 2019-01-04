@@ -46,7 +46,6 @@ import senpai.comm.CommProtocol.LLCote;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.UnableToMoveException;
 import senpai.table.Cube;
-import senpai.table.CubeColor;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Severity;
 import senpai.utils.Subject;
@@ -70,9 +69,6 @@ public class Robot extends RobotState
 	
 	private boolean isInScript = false;
 	
-	private Cube cubeTop = null;
-	private Cube cubeInside = null;
-	private List<Cube> piles = new ArrayList<Cube>();
 	protected volatile boolean symetrie;
 	protected Log log;
 	private double defaultSpeed;
@@ -99,7 +95,6 @@ public class Robot extends RobotState
 	private boolean abeilleDone = true;
 	private int score;
 	private boolean disableCubes;
-	private CubeColor[] pattern1 = null, pattern2 = null;
 	
 	public Robot(Log log, OutgoingOrderBuffer out, Config config, GraphicDisplay buffer, Kraken kraken, /*DynamicPath dpath,*/ KnownPathManager known, RectangularObstacle obstacle)
 	{
@@ -111,9 +106,6 @@ public class Robot extends RobotState
 		this.obstacle = obstacle;
 
 		jumperOK = config.getBoolean(ConfigInfoSenpai.DISABLE_JUMPER);
-		angleMin = config.getInt(ConfigInfoSenpai.ANGLE_MIN_TOURELLE) * Math.PI / 180;
-		angleMax = config.getInt(ConfigInfoSenpai.ANGLE_MAX_TOURELLE) * Math.PI / 180;
-		anticipationTourelle = (int) Math.round(config.getInt(ConfigInfoSenpai.ANTICIPATION_TOURELLE) / 20.);
 		defaultSpeed = config.getDouble(ConfigInfoSenpai.DEFAULT_MAX_SPEED);
 		// On ajoute une fois pour toute l'image du robot
 		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ROBOT_AND_SENSORS))
@@ -130,36 +122,13 @@ public class Robot extends RobotState
 				config.getDouble(ConfigInfoSenpai.INITIAL_O)));
 		cinematique.enMarcheAvant = true;
 
-		int nbGolden = config.getInt(ConfigInfoSenpai.NB_GOLDEN_LOADED);
-		
-		if(nbGolden >= 1)
-			cubeInside = Cube.GOLDEN_CUBE_1;
-		if(nbGolden >= 2)
-			cubeTop = Cube.GOLDEN_CUBE_2;
-		
-		disableCubes = config.getBoolean(ConfigInfoSenpai.DISABLE_CUBES);
+	
 		simuleLL = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
 		score = 0;
-		if(config.getBoolean(ConfigInfoSenpai.DOMOTIQUE_THERE))
-		{
-			score += 5;
-			if(config.getBoolean(ConfigInfoSenpai.CAN_DO_DOMOTIQUE))
-				domotiqueDone = false;
-		}
-		if(config.getBoolean(ConfigInfoSenpai.ABEILLE_THERE))
-		{
-			score += 5;
-			if(config.getBoolean(ConfigInfoSenpai.CAN_DO_ABEILLE))
-				abeilleDone = false;
-		}
 		updateScore();
 		out.setCurvature(0);
 	}
-	
-	public int getHauteurPile()
-	{
-		return piles.size();
-	}
+
 	
 	public void setEnMarcheAvance(boolean enMarcheAvant)
 	{
@@ -323,147 +292,6 @@ public class Robot extends RobotState
 					throw e;
 			}
 		} while(retry);
-	}
-
-	public void poseCubes(double angle) throws InterruptedException, ActionneurException
-	{
-		int etage = piles.size();
-		Cube s = null;
-		
-		if(cubeTop != null)
-		{
-			s = cubeTop;
-			cubeTop = null;
-		}
-		else if(cubeInside != null)
-		{
-			execute(Id.ARM_TAKE_FROM_STORAGE);
-			s = cubeInside;
-			cubeInside = null;
-		}
-		
-		if(s != null)
-		{
-			try {
-				if(etage == 0) // étage 0 : pas de scan
-					execute(Id.ARM_PUT_ON_PILE, angle, etage);
-				else
-					execute(Id.ARM_PUT_ON_PILE_S, angle, etage);
-				piles.add(s);
-				updateScore();
-			}
-			catch(ActionneurException e)
-			{
-				int code = e.code;
-				if((code & CommProtocol.ActionneurMask.NO_DETECTION.masque) != 0) // pas de cube dans la pince en fait
-					poseCubes(angle);
-				else if((code & CommProtocol.ActionneurMask.CUBE_MISSED.masque) != 0)
-					if(!piles.isEmpty())
-					{
-						// un cube sur deux tombe dans la zone
-						// le cube à la base ne tombe pas, mais celui dans le robot (et pas encore dans la pile) tombe
-						score += piles.size() / 2;
-						Cube first = piles.get(0);
-						piles.clear();
-						piles.add(first);
-						updateScore();
-					}
-				else
-					throw e;
-			}
-		}
-	}
-	
-	private int getScorePile()
-	{
-		List<Cube> l = piles;
-		// score de hauteur
-		int score = l.size() * (l.size() + 1) / 2;
-		// score de pattern
-		if(isTherePattern(l, pattern1) || isTherePattern(l, pattern2))
-			score += 30;
-		return score;
-	}
-	
-	private boolean isTherePattern(List<Cube> l, CubeColor[] pattern)
-	{
-		if(pattern != null)
-			for(int i = 0; i <= l.size() - 3; i++)
-			{
-				int nbGolden = 0;
-				boolean ok = true;
-				for(int j = 0; j < 3; j++)
-				{
-					CubeColor c = l.get(i+j).couleur;
-					if(c == CubeColor.GOLDEN)
-					{
-						nbGolden++;
-						// il y a deux GOLDEN, c'est foutu
-						if(nbGolden == 2)
-						{
-							System.out.println("Non : deux golden");
-							ok = false;
-							break;
-						}
-					}
-					// mauvaise couleur
-					else if(c != pattern[j])
-					{
-						System.out.println("Non : "+c+" neq "+pattern[j]);
-						ok = false;
-						break;
-					}
-				}
-				if(ok)
-					return true;
-			}
-		return false;
-	}
-	
-	public boolean canDropCube()
-	{
-		return cubeInside != null;
-	}
-	
-	public boolean canTakeCube()
-	{
-		return cubeTop == null;
-	}
-	
-	public boolean isThereCubeInside()
-	{
-		return cubeInside != null;
-	}
-
-	public boolean isThereCubeTop()
-	{
-		return cubeTop != null;
-	}
-
-	private void setCubeInside(Cube c)
-	{
-		assert cubeInside == null;
-		cubeInside = c;
-	}
-
-	private void setCubeTop(Cube c)
-	{
-		assert cubeTop == null;
-		cubeTop = c;
-	}
-	
-	public void storeCube(Cube c) throws InterruptedException, ActionneurException
-	{
-		if(cubeInside == null)
-		{
-			execute(Id.ARM_STORE_CUBE_INSIDE);
-			setCubeInside(c);
-		}
-		else
-		{
-			execute(Id.ARM_STORE_CUBE_TOP, LLCote.AU_PLUS_VITE);
-			setCubeTop(c);
-		}
 	}
 
 	public void updateColorAndSendPosition(RobotColor c, boolean byLL) throws InterruptedException
@@ -779,24 +607,13 @@ public class Robot extends RobotState
 	public void updateScore()
 	{
 		updateScore(0);
+		
 	}
 	
 	public void updateScore(int increment)
 	{
 		score += increment;
-		out.setScore(score + getScorePile());
-	}
-	
-	public void setDomotiqueDone()
-	{
-		domotiqueDone = true;
-		updateScore(25);
-	}
-	
-	public void setAbeilleDone()
-	{
-		abeilleDone = true;
-		updateScore(50);
+		out.setScore(score);
 	}
 	
 	public void beginScript()
@@ -836,39 +653,5 @@ public class Robot extends RobotState
 				cinematique.getPosition().getY() + position.getY(),
 				cinematique.orientationReelle + orientation, cinematique.courbureReelle);
 		out.correctPosition(position, orientation);
-	}
-
-	public void rangeBras(LLCote cote) throws InterruptedException, ActionneurException
-	{
-		if(cubeInside == null)
-			execute(Id.ARM_GO_HOME, cote);
-		else
-			execute(Id.ARM_STORE_CUBE_TOP, cote);
-	}
-
-	public boolean isDomotiqueDone()
-	{
-		return domotiqueDone;
-	}
-
-	public boolean isAbeilleDone()
-	{
-		return abeilleDone;
-	}
-
-	public void setPattern(CubeColor[] pattern)
-	{
-		this.pattern1 = pattern;
-		this.pattern2 = new CubeColor[]{pattern[2], pattern[1], pattern[0]};
-	}
-
-	public boolean isPileFull()
-	{
-		return piles.size() == 3 || disableCubes;
-	}
-
-	public boolean isAllDone()
-	{
-		return isPileFull() && domotiqueDone && abeilleDone;
 	}
 }

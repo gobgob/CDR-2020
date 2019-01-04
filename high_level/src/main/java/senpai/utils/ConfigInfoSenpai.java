@@ -32,23 +32,9 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	DISABLE_JUMPER(false),
 	
 	/**
-	 * Tourelles
+	 * Capteurs
 	 */
-	ANGLE_MIN_TOURELLE(10), // en degré
-	ANGLE_MAX_TOURELLE(160),
-	ANTICIPATION_TOURELLE(300), // distance où vise la tourelle sur la trajectoire, en mm	
-	MARGE_IGNORE_TOURELLE(100), // distance en mm autour du robot où sont ignorés les obstacles vus par les tourelles
-	ENABLE_TOURELLE(true),
 	IGNORE_TROP_PROCHE(true),
-	
-	CAN_DO_DOMOTIQUE(true),
-	CAN_DO_ABEILLE(true),
-	DOMOTIQUE_THERE(true),
-	ABEILLE_THERE(true),
-	NB_GOLDEN_LOADED(1),
-	DISABLE_CUBES(false),
-	INTERRUPTEUR_REHAUSSE(true),
-	
 	
 	/**
 	 * Position initiale du robot
@@ -57,11 +43,6 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	INITIAL_Y(1700),
 	INITIAL_O(-Math.PI/2),
 
-	PILE_1_X(1050),
-	PILE_1_Y(1850),
-	PILE_1_O(-Math.PI/4),
-	PILE_1_COTE_DROIT(true),
-	
 	DEFAULT_MAX_SPEED(0.8),
 	
 	/**

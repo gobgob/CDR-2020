@@ -28,7 +28,6 @@ import senpai.threads.comm.ThreadCommProcess;
 public enum ThreadName
 {
 	CAPTEURS(ThreadCapteurs.class),
-	TOURELLE(ThreadTourelles.class),
 	COLLISION_DEGRADE(ThreadCollisionDegrade.class),
 	SERIAL_INPUT_ORDRE(ThreadCommProcess.class),
 	SERIAL_INPUT_TRAME(ThreadCommListener.class),
