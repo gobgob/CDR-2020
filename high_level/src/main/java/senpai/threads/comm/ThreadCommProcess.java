@@ -15,7 +15,6 @@
 package senpai.threads.comm;
 
 import java.nio.ByteBuffer;
-import pfg.config.Config;
 import pfg.log.Log;
 import pfg.kraken.robot.Cinematique;
 import senpai.Senpai;
@@ -30,7 +29,6 @@ import senpai.comm.CommProtocol.Id;
 import senpai.comm.CommProtocol.LLStatus;
 import senpai.robot.Robot;
 import senpai.robot.RobotColor;
-import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Severity;
 import senpai.utils.Subject;
 
@@ -56,7 +54,7 @@ public class ThreadCommProcess extends Thread
 	public volatile boolean capteursOn = false;
 	private long dernierAffichagePosition = System.currentTimeMillis();
 
-	public ThreadCommProcess(Log log, Config config, IncomingOrderBuffer serie, SensorsDataBuffer buffer, Robot robot, Senpai container/*, DynamicPath chemin*/)
+	public ThreadCommProcess(Log log, IncomingOrderBuffer serie, SensorsDataBuffer buffer, Robot robot, Senpai container/*, DynamicPath chemin*/)
 	{
 		this.container = container;
 		this.log = log;

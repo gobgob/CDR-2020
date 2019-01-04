@@ -16,14 +16,12 @@ package senpai.capteurs;
 
 import java.awt.Graphics;
 
-import pfg.config.Config;
 import pfg.graphic.GraphicPanel;
 import pfg.graphic.printable.Printable;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XY_RW;
 import senpai.robot.Robot;
-import senpai.utils.ConfigInfoSenpai;
 
 /**
  * Un capteur de proximité du robot
@@ -46,7 +44,7 @@ public abstract class Capteur implements Printable
 	public TypeCapteur type;
 	private Cinematique cinemRobot;
 
-	public Capteur(Robot robot, Config config, XY positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
+	public Capteur(Robot robot, XY positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
 	{
 		cinemRobot = robot.getCinematique();
 		this.type = type;

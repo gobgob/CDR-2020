@@ -100,7 +100,7 @@ public class CapteursProcess
 				@SuppressWarnings("unchecked")
 				// On utilise le seul constructeur
 				Constructor<? extends Capteur> constructor = (Constructor<? extends Capteur>) c.classe.getConstructors()[0];
-				capteurs[i] = constructor.newInstance(robot, config, c.pos, c.angle, c.type, c.sureleve);
+				capteurs[i] = constructor.newInstance(robot, c.pos, c.angle, c.type, c.sureleve);
 			}
 			catch(InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
 			{
