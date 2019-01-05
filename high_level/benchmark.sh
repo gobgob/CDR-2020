@@ -1,1 +1,1 @@
-java -Xmx1G -Xms1G -cp target/eurobotruck.jar senpai.Benchmark $@
+java -Xmx1G -Xms1G -cp target/chariot-hl.jar senpai.Benchmark $@

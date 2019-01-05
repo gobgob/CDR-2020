@@ -21,17 +21,12 @@ import java.lang.reflect.Method;
 import org.junit.Before;
 import org.junit.Test;
 
-import pfg.kraken.robot.Cinematique;
-import pfg.kraken.utils.XYO;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.capteurs.CapteursProcess;
 import senpai.comm.CommProtocol.Id;
 import senpai.robot.Robot;
-import senpai.robot.RobotColor;
 import senpai.scripts.ScriptManager;
-import senpai.table.Cube;
 import senpai.table.Table;
-import senpai.utils.Subject;
 
 /**
  * Tests unitaires des trajectoires et des actionneurs
@@ -43,15 +38,11 @@ import senpai.utils.Subject;
 public class Test_Robot extends JUnit_Test
 {
 
-	private Robot robot;
-	private Table table;
 //	private AStarCourbe astar;
 //	private CheminPathfinding chemin;
 //	private RealGameState state;
 //	private PathCache pathcache;
 	private OutgoingOrderBuffer data;
-	private ScriptManager scripts;
-	private CapteursProcess cp;
 //	private Cinematique c = null;
 //	private boolean simuleSerie;
 //	private double last;
@@ -104,14 +95,14 @@ public class Test_Robot extends JUnit_Test
 //		assert !config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
 
 //		state = container.getService(RealGameState.class);
-		robot = container.getService(Robot.class);
+		container.getService(Robot.class);
 //		chemin = container.getService(CheminPathfinding.class);
 //		astar = container.getService(AStarCourbe.class);
 //		pathcache = container.getService(PathCache.class);
 		data = container.getService(OutgoingOrderBuffer.class);
-		scripts = container.getService(ScriptManager.class);
-		cp = container.getService(CapteursProcess.class);
-		table = container.getService(Table.class);
+		container.getService(ScriptManager.class);
+		container.getService(CapteursProcess.class);
+		container.getService(Table.class);
 //		simuleSerie = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
 		data.startStream(Id.ODO_AND_SENSORS);
 	}

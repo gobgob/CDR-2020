@@ -188,33 +188,15 @@ public class ThreadCommProcess extends Thread
 				 * ACTIONNEURS
 				 */				
 
-				else if(paquet.origine == Id.ARM_TAKE_CUBE || paquet.origine == Id.ARM_TAKE_CUBE_S)
-				{
-					int code = data.getInt();
-					// seul CUBE_MISSED est un cas d'erreur
-					if((code & CommProtocol.ActionneurMask.CUBE_MISSED.masque) == 0)
-						paquet.origine.ticket.set(CommProtocol.State.OK);
-					else
-						paquet.origine.ticket.set(CommProtocol.State.KO, code);
-				}				
-
 				else if(paquet.origine.name().startsWith("ARM_"))
 				{
+					// Exemple
 					int code = data.getInt();
 					if(code == 0)
 						paquet.origine.ticket.set(CommProtocol.State.OK);
 					else
 						paquet.origine.ticket.set(CommProtocol.State.KO, code);
 				}				
-				
-				else if(paquet.origine == Id.GET_ARM_POSITION)
-				{
-					double angleH = data.getFloat();
-					double angleV = data.getFloat();
-					double angleTete = data.getFloat();
-					double posPlier = data.getFloat();
-					paquet.origine.ticket.set(CommProtocol.State.OK, new double[]{angleH, angleV, angleTete, posPlier});
-				}
 
 				/**
 				 * Fin du match, on coupe la série et on arrête ce thread
@@ -236,18 +218,9 @@ public class ThreadCommProcess extends Thread
 				{
 					int code = data.getInt();
 					if(code == 0)
-					{
-//						if(!robot.isDegrade())
-//							chemin.endContinuousSearch();
 						paquet.origine.ticket.set(CommProtocol.State.OK);
-					}
 					else
-					{
-//						if(!robot.isDegrade())
-//							chemin.endContinuousSearchWithException(new NotFastEnoughException("Follow trajectory terminé avec une erreur : "+CommProtocol.TrajEndMask.describe(code)));
-//						log.write(CommProtocol.TrajEndMask.describe(code), Subject.TRAJECTORY);
 						paquet.origine.ticket.set(CommProtocol.State.KO, CommProtocol.TrajEndMask.describe(code));
-					}
 				}
 				
 				else

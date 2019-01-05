@@ -1,1 +1,1 @@
-java -cp target/eurobotruck.jar senpai.ConstructTrajectory XYO $@
+java -cp target/chariot-hl.jar senpai.ConstructTrajectory XYO $@

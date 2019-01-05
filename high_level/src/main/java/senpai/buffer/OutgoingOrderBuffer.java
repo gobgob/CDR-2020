@@ -26,7 +26,6 @@ import senpai.comm.Order;
 import senpai.comm.Ticket;
 import senpai.comm.CommProtocol.Channel;
 import senpai.comm.CommProtocol.Id;
-import senpai.comm.CommProtocol.LLCote;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Severity;
 import senpai.utils.Subject;
@@ -36,7 +35,6 @@ import pfg.graphic.GraphicDisplay;
 import pfg.graphic.printable.Plottable;
 import pfg.kraken.robot.ItineraryPoint;
 import pfg.kraken.utils.XY;
-import pfg.kraken.utils.XY_RW;
 
 /**
  * Classe qui contient les ordres à envoyer à la série
@@ -114,8 +112,6 @@ public class OutgoingOrderBuffer implements Plottable
 		return Id.STOP.ticket;
 	}
 
-	XY_RW tmp = new XY_RW();
-
 	/**
 	 * Corrige la position du bas niveau
 	 */
@@ -171,139 +167,6 @@ public class OutgoingOrderBuffer implements Plottable
 		data.order(ByteOrder.LITTLE_ENDIAN);
 		data.putFloat((float)curvature);
 		addToBuffer(new Order(data, Id.SET_CURVATURE));
-	}
-
-	
-	public void setTourellesAngles(double angleTourelleGauche, double angleTourelleDroite)
-	{
-//		log.write("Angles tourelles : "+angleTourelleGauche+" "+angleTourelleDroite, Subject.STATUS);
-		ByteBuffer data = ByteBuffer.allocate(8);
-		data.order(ByteOrder.LITTLE_ENDIAN);
-		data.putFloat((float) angleTourelleGauche);
-		data.putFloat((float) angleTourelleDroite);
-		addToBuffer(new Order(data, Id.SET_SENSORS_ANGLE));
-	}
-	
-	public Ticket getArmPosition()
-	{
-		addToBuffer(new Order(Id.GET_ARM_POSITION));
-		return Id.GET_ARM_POSITION.ticket;
-	}
-	
-	public Ticket armGoHome(LLCote coteDroit)
-	{
-		ByteBuffer data = ByteBuffer.allocate(4);
-		data.order(ByteOrder.LITTLE_ENDIAN);
-		data.putFloat(coteDroit.code);
-		addToBuffer(new Order(data, Id.ARM_GO_HOME));
-		return Id.ARM_GO_HOME.ticket;
-	}
-	
-	public Ticket armTakeFromHuman(LLCote coteDroit)
-	{
-		ByteBuffer data = ByteBuffer.allocate(4);
-		data.order(ByteOrder.LITTLE_ENDIAN);
-		data.putFloat(coteDroit.code);
-		addToBuffer(new Order(data, Id.ARM_TAKE_FROM_HUMAN));
-		return Id.ARM_TAKE_FROM_HUMAN.ticket;
-	}	
-	public Ticket armPushButton(Double angleV, LLCote coteDroit)
-	{
-		ByteBuffer data = ByteBuffer.allocate(8);
-		data.order(ByteOrder.LITTLE_ENDIAN);
-		data.putFloat(new Float(angleV));		
-		data.putInt(coteDroit.code);
-		addToBuffer(new Order(data, Id.ARM_PUSH_BUTTON));
-		return Id.ARM_PUSH_BUTTON.ticket;
-	}
-	
-	public Ticket armTakeCubeS(Double angle)
-	{
-		ByteBuffer data = ByteBuffer.allocate(4);
-		data.order(ByteOrder.LITTLE_ENDIAN);
-		data.putFloat(new Float(angle));
-		addToBuffer(new Order(data, Id.ARM_TAKE_CUBE_S));
-		return Id.ARM_TAKE_CUBE_S.ticket;
-	}
-
-	public Ticket armTakeCube(Double angle)
-	{
-		ByteBuffer data = ByteBuffer.allocate(4);
-		data.order(ByteOrder.LITTLE_ENDIAN);
-		data.putFloat(new Float(angle));
-		addToBuffer(new Order(data, Id.ARM_TAKE_CUBE));
-		return Id.ARM_TAKE_CUBE.ticket;
-	}
-	
-	public Ticket armPushBee(Double angle)
-	{
-		ByteBuffer data = ByteBuffer.allocate(4);
-		data.order(ByteOrder.LITTLE_ENDIAN);
-		data.putFloat(new Float(angle));
-		addToBuffer(new Order(data, Id.ARM_PUSH_BEE));
-		return Id.ARM_PUSH_BEE.ticket;
-	}
-	
-	public Ticket armStoreCubeInside()
-	{
-		addToBuffer(new Order(Id.ARM_STORE_CUBE_INSIDE));
-		return Id.ARM_STORE_CUBE_INSIDE.ticket;
-	}
-	
-	public Ticket armStoreCubeTop(LLCote coteDroit)
-	{
-		ByteBuffer data = ByteBuffer.allocate(4);
-		data.order(ByteOrder.LITTLE_ENDIAN);
-		data.putFloat(coteDroit.code);
-		addToBuffer(new Order(data, Id.ARM_STORE_CUBE_TOP));
-		return Id.ARM_STORE_CUBE_TOP.ticket;
-	}
-	
-	public Ticket armTakeFromStorage()
-	{
-		ByteBuffer data = ByteBuffer.allocate(4);
-		data.order(ByteOrder.LITTLE_ENDIAN);
-		data.putFloat(LLCote.AU_PLUS_VITE.code);
-		addToBuffer(new Order(data, Id.ARM_TAKE_FROM_STORAGE));
-		return Id.ARM_TAKE_FROM_STORAGE.ticket;
-	}
-	
-	public Ticket armPutOnPileS(Double angle, Integer etage)
-	{
-		ByteBuffer data = ByteBuffer.allocate(8);
-		data.order(ByteOrder.LITTLE_ENDIAN);
-		data.putFloat(new Float(angle));
-		data.putInt(etage);
-		addToBuffer(new Order(data, Id.ARM_PUT_ON_PILE_S));
-		return Id.ARM_PUT_ON_PILE_S.ticket;
-	}
-	
-	public Ticket armPutOnPile(Double angle, Integer etage)
-	{
-		ByteBuffer data = ByteBuffer.allocate(8);
-		data.order(ByteOrder.LITTLE_ENDIAN);
-		data.putFloat(new Float(angle));
-		data.putInt(etage);
-		addToBuffer(new Order(data, Id.ARM_PUT_ON_PILE));
-		return Id.ARM_PUT_ON_PILE.ticket;
-	}
-
-	public Ticket armGoTo(Double angleH, Double angleV, Double angleTete, Double posPlier)
-	{
-		ByteBuffer data = ByteBuffer.allocate(16);
-		data.order(ByteOrder.LITTLE_ENDIAN);
-		data.putFloat(new Float(angleH));
-		data.putFloat(new Float(angleV));
-		data.putFloat(new Float(angleTete));
-		data.putFloat(new Float(posPlier));
-		addToBuffer(new Order(data, Id.ARM_GO_TO));
-		return Id.ARM_GO_TO.ticket;
-	}
-
-	public Ticket armStop()
-	{
-		addToBuffer(new Order(Id.STOP_ARM));
-		return Id.STOP_ARM.ticket;
 	}
 
 	public void setScore(int score)

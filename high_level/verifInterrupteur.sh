@@ -1,1 +1,1 @@
-java -cp target/eurobotruck.jar senpai.VerifInterrupteur $@
+java -cp target/chariot-hl.jar senpai.VerifInterrupteur $@

@@ -57,18 +57,6 @@ public class Test_Communication extends JUnit_Test
 		Thread.sleep(3000);
 	}
 	
-	@Test
-	public void test_deco() throws Exception
-	{
-		while(true)
-//		for(int i = 0; i < 2; i++)
-		{
-			data.ping().attendStatus();
-			System.out.println("Ping !");
-			Thread.sleep(3000);
-		}
-	}
-
 	/**
 	 * Un test d'ordre long
 	 * 

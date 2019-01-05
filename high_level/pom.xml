@@ -88,7 +88,7 @@
             <version>3.1.0</version>
             <configuration>
                 <appendAssemblyId>false</appendAssemblyId>
-                <finalName>eurobotruck</finalName>
+                <finalName>chariot-hl</finalName>
                 <descriptorRefs>
                     <descriptorRef>jar-with-dependencies</descriptorRef>
                 </descriptorRefs>

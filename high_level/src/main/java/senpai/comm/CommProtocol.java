@@ -58,37 +58,13 @@ public class CommProtocol
 		// Canaux de données (0x00 à 0x1F)
 		ODO_AND_SENSORS(0x00),
 		
-		// Canaux de debug humain
-/*		INFO(0x01),
-		ERROR(0x02),
-		TRACE(0x03),
-		SPY_ORDER(0x04),
-		DIRECTION(0x05),
-		AIM_TRAJECTORY(0x06),
-		PID_SPEED(0x07),
-		PID_TRANS(0x08),
-		PID_TRAJECTORY(0x09),
-		BLOCKING_MGR(0x0A),
-		STOPPING_MGR(0x0B),*/
-		
+
 		// Ordres longs (0x20 à 0x7F)
 		FOLLOW_TRAJECTORY(0x20),
 		STOP(0x21, -20),
 		WAIT_FOR_JUMPER(0x22),
 		START_MATCH_CHRONO(0x23),
-		ARM_GO_HOME(0x24, "armGoHome"),
-		ARM_TAKE_CUBE_S(0x25, "armTakeCubeS"),
-		ARM_TAKE_CUBE(0x26, "armTakeCube"),
-		ARM_STORE_CUBE_INSIDE(0x27, "armStoreCubeInside"),
-		ARM_STORE_CUBE_TOP(0x28, "armStoreCubeTop"),
-		ARM_TAKE_FROM_STORAGE(0x29, "armTakeFromStorage"),
-		ARM_PUT_ON_PILE_S(0x2A, "armPutOnPileS"),
-		ARM_PUT_ON_PILE(0x2B, "armPutOnPile"),
-		ARM_GO_TO(0x2C, "armGoTo"),
-		STOP_ARM(0x2D, "armStop"),
-		ARM_PUSH_BUTTON(0x2E, "armPushButton"),
-		ARM_PUSH_BEE(0x2F, "armPushBee"),
-		ARM_TAKE_FROM_HUMAN(0x30, "armTakeFromHuman"),		
+//		ARM_GO_HOME(0x24, "armGoHome"),
 				
 		// Ordres immédiats (0x80 à 0xFF)
 		PING(0x80, true),
@@ -98,9 +74,7 @@ public class CommProtocol
 		ADD_POINTS(0x84, true, -10),
 		EDIT_POINTS(0x85, true, -10),
 		DESTROY_POINTS(0x86, true, -10),
-		SET_SENSORS_ANGLE(0x87, false),
 		SET_SCORE(0x88, false),
-		GET_ARM_POSITION(0x89, true),
 		GET_BATTERY(0x94, true),
 		SET_CURVATURE(0x9B, false);
 		

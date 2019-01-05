@@ -1,1 +1,1 @@
-java -cp target/eurobotruck.jar senpai.DemoPerimetre $@
+java -cp target/chariot-hl.jar senpai.DemoPerimetre $@

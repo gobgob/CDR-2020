@@ -323,13 +323,7 @@ public class Senpai
 		log.displayOverriddenConfigValues();
 		
 		startAllThreads();
-		
-		if(config.getBoolean(ConfigInfoSenpai.SAVE_VIDEO))
-			debug.startSaveVideo();
-
-		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_EXTERNAL))
-			debug.startPrintServer();
-
+	
 		simuleComm = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM); 
 		if(!simuleComm)
 		{

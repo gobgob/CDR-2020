@@ -31,10 +31,6 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	CHECK_LATENCY(false), // estime la latence de la communication
 	DISABLE_JUMPER(false),
 	
-	/**
-	 * Capteurs
-	 */
-	IGNORE_TROP_PROCHE(true),
 	
 	/**
 	 * Position initiale du robot
@@ -49,6 +45,9 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	 * Infos sur le robot
 	 */
 	
+	// par "non-déployé", comprendre "forme du robot en mouvement"
+	// utilisé par le pathfinding
+	
 	DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE(167), // distance entre le centre du robot
 											// et le bord arrière du robot
 											// non-déployé
@@ -57,25 +56,19 @@ public enum ConfigInfoSenpai implements ConfigInfo
 												// robot non-déployé
 	LARGEUR_NON_DEPLOYE(182), // distance entre le bord gauche et le bord droit
 								// du robot non-déployé
-	MARGE_PATHFINDING(20), // marge sur la dimension du robot
-//	DILATATION_OBSTACLE_ROBOT(30), // la dilatation du robot dans l'A*. S'ajoute
-									// à gauche et à droite
+	MARGE_PATHFINDING(20), // marge latérale sur la dimension du robot
 
 	/**
 	 * Paramètres du pathfinding
 	 */
 	ALLOW_PRECOMPUTED_PATH(false), // autorise-t-on l'utilisation de chemins
-									// précalculés
-//	SAVE_FOUND_PATH(true), // sauvegarde tous les trajets calculés en match
+									// précalculés. Si le robot fonctionne bien sans, autant désactiver
+	ENABLE_KNOWN_PATHS(false), // active les chemins enregistrés ?
 
 	/**
 	 * Paramètres de la comm
 	 */
-	SIMULE_COMM(false), // la comm doit-elle être simulée (utile pour debug du HL)
 	COMM_MEDIUM("Ethernet"),
-
-	SERIAL_BAUDRATE(115200), // le baudrate de la liaison série
-	SERIAL_LOCAL_PORT("/dev/ttyS0"), // le port de la liaison série
 	
 	ETH_LL_PORT_NUMBER(80), // port socket LL
 	ETH_LL_HOSTNAME_SERVER("172.16.0.2"), // adresse ip du LL. Un hostname fonctionne aussi
@@ -87,12 +80,6 @@ public enum ConfigInfoSenpai implements ConfigInfo
 											// autorise-t-on entre un objet et
 											// sa détection
 	DISTANCE_MAX_BORDURE(150), // distance max où on peut voir un objet près du bord
-	IMPRECISION_MAX_POSITION(50.), // quelle imprecision maximale sur la
-									// position du robot peut-on attendre (en
-									// mm)
-	IMPRECISION_MAX_ORIENTATION(0.1), // quelle imprecision maximale sur l'angle
-										// du robot peut-on attendre (en
-										// radians)
 	TAILLE_BUFFER_RECALAGE(50), // combien de mesures sont nécessaires pour
 								// obtenir une correction de recalage
 	PEREMPTION_CORRECTION(100), // temps maximal entre deux mesures de
@@ -100,8 +87,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	ENABLE_DYNAMIC_CORRECTION(false), // la correction de position et d'orientation
 								// est-elle activée ?
 	WARM_UP_DURATION(5000), // durée du warm-up
-
-	ENABLE_KNOWN_PATHS(false), // active les chemins enregistrés ?
+	
 	/**
 	 * Log
 	 */
@@ -115,8 +101,12 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	PRINT_WARNING(true),
 	PRINT_CRITICAL(true),
 	
-	NO_OBSTACLES(false),
-	
+	/**
+	 * Debug
+	 */
+	NO_OBSTACLES(false), // désactive tous les obstacles. Utile pour debug
+	SIMULE_COMM(false), // la comm doit-elle être simulée (utile pour debug du HL)
+
 	/**
 	 * Interface graphique
 	 */
@@ -140,11 +130,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	GRAPHIC_SEEN_OBSTACLES(false), // affiche les obstacles vus
 	GRAPHIC_ROBOT_AND_SENSORS(false), // affiche le robot et ses capteurs
 	GRAPHIC_TRACE_ROBOT(false), // affiche la trace du robot
-	GRAPHIC_EXTERNAL(false), // l'affichage doit-il être déporté par le serveur
-							// d'affichage ?
 	GRAPHIC_PATH(false), // affiche le chemin en cours
-	SAVE_VIDEO(false), // sauvegarde d'une "vidéo" pour visionner les
-								// images plus tard
 	GRAPHIC_COMM_CHART(false), // active les graphes de debug de la communication
 	GRAPHIC_CAPTEURS_CHART(false); // active les graphes de debug des capteurs
 

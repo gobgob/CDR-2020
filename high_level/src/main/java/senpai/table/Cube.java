@@ -15,7 +15,6 @@
 package senpai.table;
 
 import pfg.kraken.obstacles.Obstacle;
-import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.utils.XY;
 
 /**
@@ -29,7 +28,7 @@ public enum Cube
 {
 	EXAMPLE();
 
-	public final Obstacle obstacle = null, obstacleGrossi = null;
+	public final Obstacle obstacle = null;// pour vérifier les collisions
 	public final XY position = null;
 	
 	public boolean isVisible(boolean sureleve)

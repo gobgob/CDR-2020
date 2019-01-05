@@ -44,7 +44,7 @@ import senpai.utils.Subject;
 
 public class Match
 {
-	private static Senpai senpai = new Senpai();
+	private static Senpai senpai;
 	private OutgoingOrderBuffer ll;
 	private Robot robot;
 	private Table table;
@@ -56,7 +56,12 @@ public class Match
 	{
 		ErrorCode error = ErrorCode.NO_ERROR;
 		try {
-			new Match().exec(args[0]);
+			if(args.length == 1)
+				new Match().exec(args[0]);
+			else
+			{
+				throw new Exception("Paramètre obligatoire : nom du fichier de configuration");
+			}
 		}
 		catch(Exception e)
 		{
@@ -68,7 +73,8 @@ public class Match
 		{
 			try
 			{
-				senpai.destructor(error);
+				if(senpai != null)
+					senpai.destructor(error);
 			}
 			catch(InterruptedException e)
 			{
