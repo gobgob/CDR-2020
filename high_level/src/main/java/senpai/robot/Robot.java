@@ -45,7 +45,7 @@ import senpai.comm.CommProtocol.Id;
 import senpai.comm.CommProtocol.LLCote;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.UnableToMoveException;
-import senpai.table.Cube;
+import senpai.table.Atome;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Severity;
 import senpai.utils.Subject;

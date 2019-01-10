@@ -18,7 +18,7 @@ import senpai.comm.CommProtocol;
 import senpai.obstacles.ObstaclesDynamiques;
 import senpai.obstacles.ObstaclesFixes;
 import senpai.robot.Robot;
-import senpai.table.Cube;
+import senpai.table.Atome;
 import senpai.table.Table;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Severity;
@@ -143,7 +143,7 @@ public class CapteursProcess
 		/**
 		 * On update la table avec notre position
 		 */
-		for(Cube g : Cube.values())
+		for(Atome g : Atome.values())
 			if(!table.isDone(g) && g.obstacle.isColliding(obstacleRobot))
 			{
 				log.write("Élément shooté", Subject.CAPTEURS);
@@ -200,7 +200,7 @@ public class CapteursProcess
 			 * Si ce qu'on voit est un obstacle de table, on l'ignore
 			 */
 			for(ObstaclesFixes o : ObstaclesFixes.values())
-				if(o.isVisible(capteurs[i].sureleve) && o.obstacle.squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
+				if(o.visible && o.obstacle.squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
 				{
 //					log.write("Obstacle de table vu : " + o, Subject.CAPTEURS);
 //						data.etats[i] = TraitementEtat.DANS_OBSTACLE_FIXE;
@@ -214,13 +214,13 @@ public class CapteursProcess
 				continue;
 			}
 
-			for(Cube o : Cube.values())
-				if(!table.isDone(o) && o.isVisible(capteurs[i].sureleve) && o.obstacle.squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
+/*			for(Atome o : Atome.values())
+				if(!table.isDone(o) && o.visible && o.obstacle.squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
 				{
 					log.write("Élément de jeu vu : " + o, Subject.CAPTEURS);
 					stop = true;
 					break;
-				}
+				}*/
 
 			if(stop)
 			{

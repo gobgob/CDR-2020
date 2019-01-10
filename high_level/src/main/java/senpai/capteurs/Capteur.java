@@ -34,7 +34,6 @@ public abstract class Capteur implements Printable
 {
 	private static final long serialVersionUID = 1L;
 	
-	public boolean sureleve;
 	protected final XY positionRelative;
 	protected final double orientationRelative;
 	public final double angleCone; // angle du cône (en radians)
@@ -44,7 +43,7 @@ public abstract class Capteur implements Printable
 	public TypeCapteur type;
 	private Cinematique cinemRobot;
 
-	public Capteur(Robot robot, XY positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
+	public Capteur(Robot robot, XY positionRelative, double orientationRelative, TypeCapteur type)
 	{
 		cinemRobot = robot.getCinematique();
 		this.type = type;
@@ -53,7 +52,6 @@ public abstract class Capteur implements Printable
 		positionRelativeRotate = new XY_RW();
 		this.angleCone = type.angleCone;
 		this.portee = type.portee;
-		this.sureleve = sureleve;
 	}
 
 	/**

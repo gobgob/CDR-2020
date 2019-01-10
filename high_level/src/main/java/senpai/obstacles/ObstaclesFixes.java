@@ -31,39 +31,27 @@ import pfg.kraken.utils.XY;
 public enum ObstaclesFixes
 {
 	// bords
-	BORD_BAS(new RectangularObstacle(new XY(0, 0), 3000, 5), true, false),
-	BORD_GAUCHE(new RectangularObstacle(new XY(-1500, 1000), 5, 2000), true, false),
-	BORD_DROITE(new RectangularObstacle(new XY(1500, 1000), 5, 2000), true, false),
-	BORD_HAUT(new RectangularObstacle(new XY(0, 2000), 3000, 5), true, false),
+	BORD_BAS(new RectangularObstacle(new XY(0, 0), 3000, 5), true),
+	BORD_GAUCHE(new RectangularObstacle(new XY(-1500, 1000), 5, 2000), true),
+	BORD_DROITE(new RectangularObstacle(new XY(1500, 1000), 5, 2000), true),
+	BORD_HAUT(new RectangularObstacle(new XY(0, 2000), 3000, 5), true),
 
-	ZONE_CHAOS_GAUCHE(new CircularObstacle(new XY(-500, 950), 150), false, false),
-	ZONE_CHAOS_DROITE(new CircularObstacle(new XY(500, 950), 150), false, false),
+	ZONE_CHAOS_GAUCHE(new CircularObstacle(new XY(-500, 950), 150), false),
+	ZONE_CHAOS_DROITE(new CircularObstacle(new XY(500, 950), 150), false),
 
-	DISTRIBUTEUR_GAUCHE(new RectangularObstacle(new XY(-661, 428), 780, 60), true, false),
-	DISTRIBUTEUR_DROITE(new RectangularObstacle(new XY(661, 428), 780, 60), true, false),
+	DISTRIBUTEUR_GAUCHE(new RectangularObstacle(new XY(-661, 428), 780, 60), true),
+	DISTRIBUTEUR_DROITE(new RectangularObstacle(new XY(661, 428), 780, 60), true),
 	
-	BALANCES(new RectangularObstacle(new XY(0, 200), 544, 400), true, false),
-	TASSEAU_CENTRAL(new RectangularObstacle(new XY(0, 500), 40, 200), true, false);
+	BALANCES(new RectangularObstacle(new XY(0, 200), 544, 400), true),
+	TASSEAU_CENTRAL(new RectangularObstacle(new XY(0, 500), 40, 200), true);
 	
 	public final Obstacle obstacle;
-	private final boolean[] visible = new boolean[2];
+	public final boolean visible;
 
-	private ObstaclesFixes(Obstacle obstacle, boolean visibleBas, boolean visibleHaut)
+	private ObstaclesFixes(Obstacle obstacle, boolean visible)
 	{
 		this.obstacle = obstacle;
-		visible[0] = visibleBas;
-		visible[1] = visibleHaut;
-	}
-	
-	/**
-	 * Cet obstacle est-il visible pour un capteur surélevé ou non ?
-	 * 
-	 * @param sureleve
-	 * @return
-	 */
-	public boolean isVisible(boolean sureleve)
-	{
-		return visible[sureleve ? 1 : 0];
+		this.visible = visible;
 	}
 
 }

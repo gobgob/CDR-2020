@@ -24,17 +24,11 @@ import pfg.kraken.utils.XY;
  *
  */
 
-public enum Cube
+public enum Atome
 {
 	EXAMPLE();
 
 	public final Obstacle obstacle = null;// pour vérifier les collisions
 	public final XY position = null;
-	
-	public boolean isVisible(boolean sureleve)
-	{
-		// les capteurs bas les voient, les hauts non
-		return !sureleve;
-	}
 
 }

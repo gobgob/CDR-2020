@@ -29,9 +29,9 @@ public class CapteurImmobile extends Capteur
 {
 	private static final long serialVersionUID = 1L;
 
-	public CapteurImmobile(Robot robot, XY positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
+	public CapteurImmobile(Robot robot, XY positionRelative, double orientationRelative, TypeCapteur type)
 	{
-		super(robot, positionRelative, orientationRelative, type, sureleve);
+		super(robot, positionRelative, orientationRelative, type);
 		orientationRelativeRotate = orientationRelative;
 		positionRelativeRotate = positionRelative.clone();
 	}

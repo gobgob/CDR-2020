@@ -22,7 +22,7 @@ import senpai.capteurs.CapteursProcess;
 import senpai.obstacles.ObstaclesDynamiques;
 import senpai.robot.Robot;
 import senpai.robot.RobotColor;
-import senpai.table.Cube;
+import senpai.table.Atome;
 import senpai.table.Table;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Subject;

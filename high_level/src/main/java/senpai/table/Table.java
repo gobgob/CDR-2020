@@ -46,7 +46,7 @@ public class Table implements Printable
 	// Dépendances
 	protected transient Log log;
 
-	private HashMap<Cube, Boolean> etat = new HashMap<Cube, Boolean>();
+	private HashMap<Atome, Boolean> etat = new HashMap<Atome, Boolean>();
 	private List<Obstacle> currentObstacles = new ArrayList<Obstacle>();
 	
 	public Table(Log log, Config config, GraphicDisplay buffer)
@@ -54,7 +54,7 @@ public class Table implements Printable
 		this.log = log;
 		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ENABLE))
 			buffer.addPrintable(this, Color.BLACK, Layer.BACKGROUND.layer);
-		for(Cube n : Cube.values())
+		for(Atome n : Atome.values())
 			etat.put(n, false);
 	}
 
@@ -81,7 +81,7 @@ public class Table implements Printable
 	 * 
 	 * @param id
 	 */
-	public void setDone(Cube id)
+	public void setDone(Atome id)
 	{
 		log.write("Cube absent de la table : "+id, Subject.TABLE);
 		etat.put(id, true);
@@ -92,7 +92,7 @@ public class Table implements Printable
 	 * 
 	 * @param id
 	 */
-	public boolean isDone(Cube id)
+	public boolean isDone(Atome id)
 	{
 		return etat.get(id);
 	}
