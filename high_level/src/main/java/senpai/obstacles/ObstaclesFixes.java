@@ -39,6 +39,9 @@ public enum ObstaclesFixes
 	ZONE_CHAOS_GAUCHE(new CircularObstacle(new XY(-500, 950), 150), false),
 	ZONE_CHAOS_DROITE(new CircularObstacle(new XY(500, 950), 150), false),
 
+	ACCELERATEUR(new RectangularObstacle(new XY(0, 1980), 2000, 40), true),
+	
+	
 	DISTRIBUTEUR_GAUCHE(new RectangularObstacle(new XY(-661, 428), 780, 60), true),
 	DISTRIBUTEUR_DROITE(new RectangularObstacle(new XY(661, 428), 780, 60), true),
 	
