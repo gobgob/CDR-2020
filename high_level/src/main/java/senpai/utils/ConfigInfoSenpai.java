@@ -47,7 +47,6 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	
 	// par "non-déployé", comprendre "forme du robot en mouvement"
 	// utilisé par le pathfinding
-	
 	DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE(278), // distance entre le centre du robot
 											// et le bord arrière du robot
 											// non-déployé
@@ -57,6 +56,11 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	LARGEUR_NON_DEPLOYE(105), // distance entre le bord gauche et le bord droit
 								// du robot non-déployé
 	MARGE_PATHFINDING(20), // marge latérale sur la dimension du robot
+
+	/**
+	 * Paramètre de comportement / de scripts
+	 */
+	TAILLE_CARGO_MAX(3),
 
 	/**
 	 * Paramètres du pathfinding

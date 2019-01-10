@@ -82,6 +82,8 @@ public class Robot extends RobotState
 	private int currentIndexTrajectory = 0;
 	private List<TypeAtome> cargo = new ArrayList<TypeAtome>();
 	private int score;
+	private int nbAtomesDansBalance = 0;
+	private int tailleCargoMax;
 	
 	public Robot(Log log, OutgoingOrderBuffer out, Config config, GraphicDisplay buffer, Kraken kraken, /*DynamicPath dpath,*/ KnownPathManager known, RectangularObstacle obstacle)
 	{
@@ -94,12 +96,14 @@ public class Robot extends RobotState
 
 		jumperOK = config.getBoolean(ConfigInfoSenpai.DISABLE_JUMPER);
 		defaultSpeed = config.getDouble(ConfigInfoSenpai.DEFAULT_MAX_SPEED);
+		
 		// On ajoute une fois pour toute l'image du robot
 		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ROBOT_AND_SENSORS))
 		{
 			printable = new RobotPrintable(config);
 			buffer.addPrintable(printable, Color.BLACK, Layer.MIDDLE.layer);
 		}
+		tailleCargoMax = config.getInt(ConfigInfoSenpai.TAILLE_CARGO_MAX);
 		
 //		enableLoadPath = config.getBoolean(ConfigInfoSenpai.ENABLE_KNOWN_PATHS);
 		printTrace = config.getBoolean(ConfigInfoSenpai.GRAPHIC_TRACE_ROBOT);
@@ -109,7 +113,6 @@ public class Robot extends RobotState
 				config.getDouble(ConfigInfoSenpai.INITIAL_O)));
 		cinematique.enMarcheAvant = true;
 
-	
 		simuleLL = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
 		score = 0;
 		updateScore();
