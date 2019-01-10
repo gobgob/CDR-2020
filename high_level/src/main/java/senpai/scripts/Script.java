@@ -18,7 +18,6 @@ package senpai.scripts;
 import pfg.kraken.utils.XYO;
 import pfg.log.Log;
 import senpai.capteurs.CapteursProcess;
-import senpai.comm.CommProtocol.LLCote;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.ScriptException;
 import senpai.exceptions.UnableToMoveException;
@@ -58,7 +57,6 @@ public abstract class Script
 	public void execute() throws ScriptException, InterruptedException
 	{
 		log.write("Début de l'exécution de "+this, Subject.SCRIPT);
-		robot.beginScript();
 		try
 		{
 			run();
@@ -76,7 +74,6 @@ public abstract class Script
 		}
 		finally
 		{
-			robot.endScript();
 		}
 	}
 

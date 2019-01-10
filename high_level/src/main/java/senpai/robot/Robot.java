@@ -37,15 +37,12 @@ import pfg.kraken.utils.XYO;
 import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
 import senpai.buffer.OutgoingOrderBuffer;
-import senpai.capteurs.CapteursRobot;
 import senpai.comm.CommProtocol;
 import senpai.comm.DataTicket;
 import senpai.comm.Ticket;
-import senpai.comm.CommProtocol.Id;
-import senpai.comm.CommProtocol.LLCote;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.UnableToMoveException;
-import senpai.table.Atome;
+import senpai.table.TypeAtome;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Severity;
 import senpai.utils.Subject;
@@ -64,20 +61,14 @@ public class Robot extends RobotState
 		READY_TO_GO, // une trajectoire a été envoyée
 		STOPPING, // une commande de stop a été envoyée
 		MOVING; // le robot se déplace
-//		SCRIPT; // le robot est en plein script
 	}
-	
-	private boolean isInScript = false;
 	
 	protected volatile boolean symetrie;
 	protected Log log;
 	private double defaultSpeed;
 	protected Kraken kraken;
-//	private volatile boolean modeDegrade = false;
 	private RectangularObstacle obstacle;
-	private double angleMin, angleMax;
 	private List<ItineraryPoint> path = null;
-	private double angleTourelleGaucheOld = Double.MAX_VALUE, angleTourelleDroiteOld = Double.MAX_VALUE;
 	private long dateDebutMatch, dateFinMatch = Long.MAX_VALUE;
 	
 	private boolean jumperOK = false;
@@ -86,15 +77,11 @@ public class Robot extends RobotState
 	private final boolean printTrace;
 	private OutgoingOrderBuffer out;
 	private GraphicDisplay buffer;
-//	private KnownPathManager known;
 	private RobotPrintable printable = null;
 	private volatile boolean cinematiqueInitialised = false;
-//	private boolean enableLoadPath;
-	private int currentIndexTrajectory = 0, anticipationTourelle;
-	private boolean domotiqueDone = true;
-	private boolean abeilleDone = true;
+	private int currentIndexTrajectory = 0;
+	private List<TypeAtome> cargo = new ArrayList<TypeAtome>();
 	private int score;
-	private boolean disableCubes;
 	
 	public Robot(Log log, OutgoingOrderBuffer out, Config config, GraphicDisplay buffer, Kraken kraken, /*DynamicPath dpath,*/ KnownPathManager known, RectangularObstacle obstacle)
 	{
@@ -556,16 +543,6 @@ public class Robot extends RobotState
 	{
 		score += increment;
 		out.setScore(score);
-	}
-	
-	public void beginScript()
-	{
-		isInScript = true;
-	}
-	
-	public void endScript()
-	{
-		isInScript = false;
 	}
 
 	public int getIndexTrajectory()
