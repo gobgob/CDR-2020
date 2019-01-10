@@ -16,6 +16,7 @@ package senpai.obstacles;
 
 import pfg.kraken.obstacles.Obstacle;
 import pfg.kraken.obstacles.RectangularObstacle;
+import pfg.kraken.obstacles.CircularObstacle;
 import pfg.kraken.utils.XY;
 
 /**
@@ -35,19 +36,14 @@ public enum ObstaclesFixes
 	BORD_DROITE(new RectangularObstacle(new XY(1500, 1000), 5, 2000), true, false),
 	BORD_HAUT(new RectangularObstacle(new XY(0, 2000), 3000, 5), true, false),
 
-	BAC_EPURATION(new RectangularObstacle(new XY(0, 250 / 2), 1200, 250), true, false),
+	ZONE_CHAOS_GAUCHE(new CircularObstacle(new XY(-500, 950), 150), false, false),
+	ZONE_CHAOS_DROITE(new CircularObstacle(new XY(500, 950), 150), false, false),
 
-	DISTRIBUTEUR_MONOCOLOR_DROIT(new RectangularObstacle(new XY(1450, 2000-840), 100, 55), false, true),
-	DISTRIBUTEUR_MONOCOLOR_GAUCHE(new RectangularObstacle(new XY(-1450, 2000-840), 100, 55), false, true),
+	DISTRIBUTEUR_GAUCHE(new RectangularObstacle(new XY(-661, 428), 780, 60), true, false),
+	DISTRIBUTEUR_DROITE(new RectangularObstacle(new XY(661, 428), 780, 60), true, false),
 	
-	DISTRIBUTEUR_BICOLOR_GAUCHE(new RectangularObstacle(new XY(-890, 50), 55, 100), false, true),
-	DISTRIBUTEUR_BICOLOR_DROIT(new RectangularObstacle(new XY(890, 50), 55, 100), false, true),
-
-//	ZONE_DEPART_GAUCHE(new RectangularObstacle(new XY(1300, 1675), 400, 650), false, false),
-//	ZONE_DEPART_DROITE(new RectangularObstacle(new XY(-1300, 1675), 400, 650), false, false),
-
-	ZONE_CONSTRUCTION_GAUCHE(new RectangularObstacle(new XY(1100-560/2, 2000-180/2), 560, 180), false, false),
-	ZONE_CONSTRUCTION_DROITE(new RectangularObstacle(new XY(-1100+560/2, 2000-180/2), 560, 180), false, false);
+	BALANCES(new RectangularObstacle(new XY(0, 200), 544, 400), true, false),
+	TASSEAU_CENTRAL(new RectangularObstacle(new XY(0, 500), 40, 200), true, false);
 	
 	public final Obstacle obstacle;
 	private final boolean[] visible = new boolean[2];
