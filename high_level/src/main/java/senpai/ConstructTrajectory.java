@@ -19,6 +19,7 @@ import pfg.log.Log;
 import senpai.obstacles.ObstaclesFixes;
 import senpai.robot.KnownPathManager;
 import senpai.robot.SavedPath;
+import senpai.threads.ThreadWarmUp;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Severity;
 import senpai.utils.Subject;
@@ -46,7 +47,7 @@ import senpai.utils.Subject;
 public class ConstructTrajectory
 {
 
-	public static void main(String[] args)
+	public static void main(String[] args) throws NumberFormatException, InterruptedException
 	{
 		if(args.length < 7 || args.length > 9)
 		{
@@ -88,14 +89,20 @@ public class ConstructTrajectory
 		for(ObstaclesFixes obs : ObstaclesFixes.values())
 			obsList.add(obs.obstacle);
 		
-		Config config = new Config(ConfigInfoSenpai.values(), false); // valeur par défaut seulement
+		Config config = new Config(ConfigInfoSenpai.values(), false, configfile, "default", "graphic");
 		int demieLargeurNonDeploye = config.getInt(ConfigInfoSenpai.LARGEUR_NON_DEPLOYE) / 2;
 		int demieLongueurArriere = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
 		int demieLongueurAvant = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
-
 		Log log = new Log(Severity.INFO, configfile, "default");
-		
+
 		RectangularObstacle robotTemplate = new RectangularObstacle(demieLongueurAvant, demieLongueurArriere, demieLargeurNonDeploye, demieLargeurNonDeploye);
+		if(config.getInt(ConfigInfoSenpai.WARM_UP_DURATION) > 0)
+		{
+			ThreadWarmUp warmUp = new ThreadWarmUp(log, new Kraken(robotTemplate, obsList, new XY(-1500, 0), new XY(1500, 2000), "warmup.conf", "default"), config);
+			warmUp.start();
+			Thread.sleep(config.getInt(ConfigInfoSenpai.WARM_UP_DURATION) + 500);
+		}
+		
 		Kraken kraken = new Kraken(robotTemplate, obsList, new XY(-1500,0), new XY(1500, 2000), configfile, "default", "graphic");
 		
 		GraphicDisplay display = kraken.getGraphicDisplay();
