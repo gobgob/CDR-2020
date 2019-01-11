@@ -60,7 +60,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	/**
 	 * Paramètre de comportement / de scripts
 	 */
-	TAILLE_CARGO_MAX(3),
+	TAILLE_CARGO_MAX(5),
 
 	/**
 	 * Paramètres du pathfinding
