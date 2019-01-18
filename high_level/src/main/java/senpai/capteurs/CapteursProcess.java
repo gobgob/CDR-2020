@@ -23,8 +23,6 @@ import senpai.table.Table;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Severity;
 import senpai.utils.Subject;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import pfg.config.Config;
 import pfg.graphic.GraphicDisplay;
@@ -93,17 +91,8 @@ public class CapteursProcess
 
 		for(int i = 0; i < nbCapteurs; i++)
 		{
-			try {
-				CapteursRobot c = CapteursRobot.values()[i];
-				@SuppressWarnings("unchecked")
-				// On utilise le seul constructeur
-				Constructor<? extends Capteur> constructor = (Constructor<? extends Capteur>) c.classe.getConstructors()[0];
-				capteurs[i] = constructor.newInstance(robot, c.pos, c.angle, c.type, c.sureleve);
-			}
-			catch(InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
-			{
-				assert false : e;
-			}
+			CapteursRobot c = CapteursRobot.values()[i];
+			capteurs[i] = new Capteur(robot, c.pos, c.angle, c.type);
 		}
 
 		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ROBOT_AND_SENSORS))
@@ -163,7 +152,7 @@ public class CapteursProcess
 			if(mesure == CommProtocol.EtatCapteur.TROP_PROCHE.ordinal() || (mesure >= CommProtocol.EtatCapteur.values().length && mesure < 30))
 				mesure = 30;
 
-			XY positionVue = getPositionVue(capteurs[i], mesure, data.cinematique, data.angleTourelleGauche, data.angleTourelleDroite, data.angleGrue);
+			XY positionVue = getPositionVue(capteurs[i], mesure, data.cinematique);
 			if(positionVue == null)
 			{
 				c.isThereObstacle = false;
@@ -433,10 +422,8 @@ public class CapteursProcess
 	 * @param cinematique
 	 * @return
 	 */
-	private XY_RW getPositionVue(Capteur c, int mesure, Cinematique cinematique, double angleRoueGauche, double angleRoueDroite, double angleGrue)
+	private XY_RW getPositionVue(Capteur c, int mesure, Cinematique cinematique)
 	{
-		c.computePosOrientationRelative(cinematique, angleRoueGauche, angleRoueDroite, angleGrue);
-
 		/**
 		 * Si le capteur voit trop proche ou trop loin, on ne peut pas lui faire
 		 * confiance
@@ -571,11 +558,11 @@ public class CapteursProcess
 				c.valc1.clear();
 				c.valc2.clear();
 
-				XY_RW pointVu1 = getPositionVue(capteurs[c.c1.ordinal()], mesure1, cinem, 0, 0, 0);
+				XY_RW pointVu1 = getPositionVue(capteurs[c.c1.ordinal()], mesure1, cinem);
 				if(pointVu1 == null)
 					continue;
 		
-				XY_RW pointVu2 = getPositionVue(capteurs[c.c2.ordinal()], mesure2, cinem, 0, 0, 0);
+				XY_RW pointVu2 = getPositionVue(capteurs[c.c2.ordinal()], mesure2, cinem);
 				if(pointVu2 == null)
 					continue;
 		

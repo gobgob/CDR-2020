@@ -25,14 +25,15 @@ import java.util.List;
 
 public enum CapteursCorrection {
 
-	GAUCHE(CapteursRobot.ToF_LATERAL_AVANT_GAUCHE,
+	; // TODO
+/*	GAUCHE(CapteursRobot.ToF_LATERAL_AVANT_GAUCHE,
 			CapteursRobot.ToF_LATERAL_ARRIERE_GAUCHE, CapteursRobot.ToF_LATERAL_ARRIERE_GAUCHE.pos.getY()),
 	DROITE(CapteursRobot.ToF_LATERAL_AVANT_DROIT,
 			CapteursRobot.ToF_LATERAL_ARRIERE_DROIT, -CapteursRobot.ToF_LATERAL_ARRIERE_DROIT.pos.getY()),
 	ARRIERE(CapteursRobot.ToF_ARRIERE_DROITE,
 			CapteursRobot.ToF_ARRIERE_GAUCHE, -CapteursRobot.ToF_ARRIERE_DROITE.pos.getX()),
 	AVANT(CapteursRobot.ToF_AVANT,
-			CapteursRobot.ToF_AVANT, CapteursRobot.ToF_AVANT.pos.getX());
+			CapteursRobot.ToF_AVANT, CapteursRobot.ToF_AVANT.pos.getX());*/
 	
 	public final CapteursRobot c1, c2;
 	public volatile boolean enable = false;

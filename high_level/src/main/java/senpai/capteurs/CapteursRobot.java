@@ -27,32 +27,21 @@ import pfg.kraken.utils.XY;
 
 public enum CapteursRobot
 {
-	// Doc : [1] ToF LP Avant ; [2] IR Avant Gauche ; [3] ToF LP Arrière ; [4]
-	// IR Avant Droit ; [5] ToF Avant Gauche ; [6] ToF Flan Avant Gauche ; [7]
-	// ToF Flan Arrière Gauche ; [8] ToF Arrière Gauche ; [9] ToF Arrière Droit
-	// ; [10] ToF Flan Arrière Droit ; [11] ToF Flan Avant Droit ; [12]
-	// ToF Avant Droit
-
+	// TODO: l'ordre doit être cohérent avec la doc
+	// TODO: largeur
 	
-	ToF_AVANT(CapteurImmobile.class, new XY(243, 0), 0, TypeCapteur.ToF_COURT, 166),
-	
-	ToF_COIN_AVANT_GAUCHE(CapteurImmobile.class, new XY(243, 80), Math.PI / 4, TypeCapteur.ToF_COURT, 166),
+	ToF_AVANT_GAUCHE(new XY(58, 99), 0, TypeCapteur.ToF_COURT, 166),
 
-	ToF_COIN_AVANT_DROIT(CapteurImmobile.class, new XY(243, -80), -Math.PI / 4, TypeCapteur.ToF_COURT, 166),
+	ToF_AVANT_DROIT(new XY(58, -99), 0, TypeCapteur.ToF_COURT, 166),
 
-	ToF_LATERAL_AVANT_GAUCHE(CapteurImmobile.class, new XY(139, 88), Math.PI / 2, TypeCapteur.ToF_COURT, 206),
+	ToF_COIN_ARRIERE_GAUCHE(new XY(-204, 97), 145. * Math.PI / 180., TypeCapteur.ToF_COURT, 206),
 
-	ToF_LATERAL_AVANT_DROIT(CapteurImmobile.class, new XY(139, -88), -Math.PI / 2, TypeCapteur.ToF_COURT, 206),
+	ToF_COIN_ARRIERE_DROIT(new XY(-204, -97), -145. * Math.PI / 180., TypeCapteur.ToF_COURT, 206),
 
-	ToF_LATERAL_ARRIERE_GAUCHE(CapteurImmobile.class, new XY(-139, 88), Math.PI / 2, TypeCapteur.ToF_COURT, 206),
+	ToF_ARRIERE_GAUCHE(new XY(-229, 71), -Math.PI, TypeCapteur.ToF_COURT, 206),
 
-	ToF_LATERAL_ARRIERE_DROIT(CapteurImmobile.class, new XY(-139, -88), -Math.PI / 2, TypeCapteur.ToF_COURT, 206),
+	ToF_ARRIERE_DROITE(new XY(-229, -71), -Math.PI, TypeCapteur.ToF_COURT, 206);
 
-	ToF_ARRIERE_GAUCHE(CapteurImmobile.class, new XY(-164, 80), -Math.PI, TypeCapteur.ToF_COURT, 206),
-
-	ToF_ARRIERE_DROITE(CapteurImmobile.class, new XY(-164, -80), -Math.PI, TypeCapteur.ToF_COURT, 206);
-	
-	public final Class<? extends Capteur> classe;
 	public final XY pos;
 	public final double angle;
 	public final TypeCapteur type;
@@ -62,11 +51,10 @@ public enum CapteursRobot
 	public static final int profondeur = 200;
 	public final static CapteursRobot[] values = values();
 
-	private <S extends Capteur> CapteursRobot(Class<S> classe, XY pos, double angle, TypeCapteur type, int largeur)
+	private <S extends Capteur> CapteursRobot(XY pos, double angle, TypeCapteur type, int largeur)
 	{
 		current = new RectangularObstacle(new XY(0,0), profondeur, largeur, 0);
 		sureleve = false;
-		this.classe = classe;
 		this.pos = pos;
 		this.angle = angle;
 		this.type = type;

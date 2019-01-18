@@ -41,7 +41,7 @@ public class ScriptRecalage extends Script
 	{
 		super(log, robot, table, cp);
 		this.dureeRecalage = dureeRecalage;
-		if(symetrie)
+/*		if(symetrie)
 		{
 			capteurs[0] = CapteursCorrection.DROITE;
 			capteurs[1] = CapteursCorrection.ARRIERE;
@@ -51,7 +51,7 @@ public class ScriptRecalage extends Script
 		{
 			capteurs[0] = CapteursCorrection.GAUCHE;
 			capteurs[1] = CapteursCorrection.ARRIERE;
-		}
+		}*/
 			
 	}
 

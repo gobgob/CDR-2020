@@ -104,7 +104,7 @@ public class Match
 
 		if(config.getBoolean(ConfigInfoSenpai.DISABLE_JUMPER))
 		{
-			couleur = RobotColor.ORANGE;
+			couleur = RobotColor.VIOLET;
 			robot.setDateDebutMatch();
 		}
 		else
@@ -143,9 +143,9 @@ public class Match
 			log.write("Je suis orienté vers la "+(orientation < 0 ? "droite" : "gauche")+" de "+Math.abs(orientation)+"°", Subject.STATUS);
 
 			if(robot.getCinematique().getPosition().getX() > 0)
-				couleurRecalage = RobotColor.ORANGE;
+				couleurRecalage = RobotColor.VIOLET;
 			else
-				couleurRecalage = RobotColor.VERT;
+				couleurRecalage = RobotColor.JAUNE;
 			if(couleur != couleurRecalage)
 			{
 				log.write("Conflit de couleur ! LL : "+couleur+", recalage : "+couleurRecalage, Severity.CRITICAL, Subject.STATUS);

@@ -28,41 +28,14 @@ public enum RobotColor
 	 * Ces noms sont utilisés pour les tests uniquement. Sinon, on utilise le
 	 * boolean symmetry
 	 */
-	ORANGE(false), // côté droite de la table
-	VERT(true); // côté gauche de la table
+	VIOLET(false), // côté droite de la table
+	JAUNE(true); // côté gauche de la table
 
 	public final boolean symmetry;
 
 	private RobotColor(boolean symmetry)
 	{
 		this.symmetry = symmetry;
-	}
-
-	/**
-	 * Convertit une chaîne de caractère en enum
-	 * 
-	 * @param chaine
-	 * @return
-	 */
-	public static RobotColor parse(String chaine)
-	{
-		if(chaine.compareToIgnoreCase(ORANGE.name()) == 0)
-			return ORANGE;
-		return VERT;
-	}
-
-	/**
-	 * Récupère la couleur pour laquelle il n'y a pas de symétrie.
-	 * Utilisé pour les tests sans avoir à hardcoder la couleur.
-	 * 
-	 * @return
-	 */
-	public static RobotColor getCouleurSansSymetrie()
-	{
-		for(RobotColor r : RobotColor.values())
-			if(!r.symmetry)
-				return r;
-		return null;
 	}
 
 	public static String getCouleur(boolean symetrie)

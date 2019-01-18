@@ -19,7 +19,7 @@ import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.robot.ItineraryPoint;
 
 /**
- * Thread qui s'occupe de la détection de collisions
+ * Thread qui s'occupe de la détection de collisions lors des déplacements
  * 
  * @author pf
  *

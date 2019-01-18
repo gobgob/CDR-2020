@@ -30,7 +30,7 @@ import senpai.robot.Robot;
  *
  */
 
-public abstract class Capteur implements Printable
+public class Capteur implements Printable
 {
 	private static final long serialVersionUID = 1L;
 	
@@ -52,22 +52,15 @@ public abstract class Capteur implements Printable
 		positionRelativeRotate = new XY_RW();
 		this.angleCone = type.angleCone;
 		this.portee = type.portee;
-	}
+		orientationRelativeRotate = orientationRelative;
+		positionRelativeRotate = positionRelative.clone();
 
-	/**
-	 * Orientation donnée par le bas niveau
-	 * 
-	 * @param c
-	 * @param angleRoueGauche
-	 * @param angleRoueDroite
-	 */
-	public abstract void computePosOrientationRelative(Cinematique c, double angleRoueGauche, double angleRoueDroite, double angleGrue);
+	}
 
 	@Override
 	public void print(Graphics g, GraphicPanel f)
 	{
 		double orientation = cinemRobot.orientationReelle;
-		computePosOrientationRelative(cinemRobot, 0, 0, 0); // TODO demander les angles actuels
 		XY_RW p1 = positionRelativeRotate.clone();
 		p1.rotate(orientation);
 		p1.plus(cinemRobot.getPosition());
@@ -101,4 +94,5 @@ public abstract class Capteur implements Printable
 	{
 		cinemRobot = c.clone();
 	}
+
 }

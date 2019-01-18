@@ -40,7 +40,7 @@ public class ScriptRecalageInitial extends Script
 	{
 		super(log, robot, table, cp);
 		this.dureeRecalage = dureeRecalage;
-		capteurs = new CapteursCorrection[] {CapteursCorrection.DROITE, CapteursCorrection.GAUCHE, CapteursCorrection.ARRIERE};
+//		capteurs = new CapteursCorrection[] {CapteursCorrection.DROITE, CapteursCorrection.GAUCHE, CapteursCorrection.ARRIERE};
 	}
 
 	@Override

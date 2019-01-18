@@ -98,9 +98,9 @@ public class ThreadCommProcess extends Thread
 				{
 					byte code = data.get();
 					if(code == LLStatus.COULEUR_VERT.codeInt)
-						paquet.origine.ticket.set(LLStatus.COULEUR_VERT.etat, RobotColor.VERT);
+						paquet.origine.ticket.set(LLStatus.COULEUR_VERT.etat, RobotColor.JAUNE);
 					else if(code == LLStatus.COULEUR_ORANGE.codeInt)
-						paquet.origine.ticket.set(LLStatus.COULEUR_ORANGE.etat, RobotColor.ORANGE);
+						paquet.origine.ticket.set(LLStatus.COULEUR_ORANGE.etat, RobotColor.VIOLET);
 					else
 						paquet.origine.ticket.set(LLStatus.COULEUR_ROBOT_INCONNU.etat);
 				}
@@ -130,9 +130,6 @@ public class ThreadCommProcess extends Thread
 						if(capteursOn && m != CommProtocol.EtatCapteur.TROP_LOIN.ordinal())
 							log.write("Capteur " + c.name() + " : " + (m < CommProtocol.EtatCapteur.values().length ? CommProtocol.EtatCapteur.values()[m] : m), Subject.CAPTEURS);
 					}
-					double angleTourelleGauche = data.getFloat();
-					double angleTourelleDroite = data.getFloat();
-					double angleGrue = data.getFloat();
 					
 					current.enMarcheAvant = enMarcheAvant;
 					current.updateReel(xRobot, yRobot, orientationRobot, courbure);
@@ -146,9 +143,6 @@ public class ThreadCommProcess extends Thread
 
 					if(capteursOn)
 					{
-						sd.angleGrue = angleGrue;
-						sd.angleTourelleDroite = angleTourelleDroite;
-						sd.angleTourelleGauche = angleTourelleGauche;
 						sd.cinematique = current;
 						buffer.add(sd);
 					}
