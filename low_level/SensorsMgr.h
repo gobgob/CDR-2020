@@ -2,8 +2,8 @@
 #define _SENSORS_MGR_h
 
 #include <Printable.h>
-#include "ToF_shortRange.h"
-#include "config.h"
+#include <ToF_sensor.h>
+#include "Config.h"
 
 #define STD_MIN_RANGE   18
 #define STD_MAX_RANGE   200
@@ -15,15 +15,15 @@ class SensorsMgr : public Printable
 public:
     SensorsMgr()
     {
-        ToF_shortRange tofAVG("AVG", 42, PIN_EN_TOF_AVG, STD_MIN_RANGE, STD_MAX_RANGE);
-        ToF_shortRange tofAV("AV", 43, PIN_EN_TOF_AV, STD_MIN_RANGE, STD_MAX_RANGE);
-        ToF_shortRange tofAVD("AVD", 44, PIN_EN_TOF_AVD, STD_MIN_RANGE, STD_MAX_RANGE);
-        ToF_shortRange tofFlanAVG("FlanAVG", 45, PIN_EN_TOF_FLAN_AVG, STD_MIN_RANGE, STD_MAX_RANGE);
-        ToF_shortRange tofFlanAVD("FlanAVD", 46, PIN_EN_TOF_FLAN_AVD, STD_MIN_RANGE, STD_MAX_RANGE);
-        ToF_shortRange tofFlanARG("FlanARG", 47, PIN_EN_TOF_FLAN_ARG, STD_MIN_RANGE, STD_MAX_RANGE);
-        ToF_shortRange tofFlanARD("FlanARD", 48, PIN_EN_TOF_FLAN_ARD, STD_MIN_RANGE, STD_MAX_RANGE);
-        ToF_shortRange tofARG("ARG", 49, PIN_EN_TOF_ARG, STD_MIN_RANGE, STD_MAX_RANGE);
-        ToF_shortRange tofARD("ARD", 50, PIN_EN_TOF_ARD, STD_MIN_RANGE, STD_MAX_RANGE);
+        ToF_shortRange tofAVG(42, PIN_EN_TOF_AVG, STD_MIN_RANGE, STD_MAX_RANGE, "AVG", &Serial);
+        ToF_shortRange tofAV(43, PIN_EN_TOF_AV, STD_MIN_RANGE, STD_MAX_RANGE, "AV", &Serial);
+        ToF_shortRange tofAVD(44, PIN_EN_TOF_AVD, STD_MIN_RANGE, STD_MAX_RANGE, "AVD", &Serial);
+        ToF_shortRange tofFlanAVG(45, PIN_EN_TOF_FLAN_AVG, STD_MIN_RANGE, STD_MAX_RANGE, "FlanAVG", &Serial);
+        ToF_shortRange tofFlanAVD(46, PIN_EN_TOF_FLAN_AVD, STD_MIN_RANGE, STD_MAX_RANGE, "FlanAVD", &Serial);
+        ToF_shortRange tofFlanARG(47, PIN_EN_TOF_FLAN_ARG, STD_MIN_RANGE, STD_MAX_RANGE, "FlanARG", &Serial);
+        ToF_shortRange tofFlanARD(48, PIN_EN_TOF_FLAN_ARD, STD_MIN_RANGE, STD_MAX_RANGE, "FlanARD", &Serial);
+        ToF_shortRange tofARG(49, PIN_EN_TOF_ARG, STD_MIN_RANGE, STD_MAX_RANGE, "ARG", &Serial);
+        ToF_shortRange tofARD(50, PIN_EN_TOF_ARD, STD_MIN_RANGE, STD_MAX_RANGE, "ARD", &Serial);
 
         sensors[0] = tofAV;
         sensors[1] = tofAVG;
@@ -64,7 +64,7 @@ public:
     {
         for (size_t i = 0; i < NB_SENSORS; i++)
         {
-            sensorsValues[i] = sensors[i].getMesure();
+            sensorsValues[i] = sensors[i].getMeasure();
         }
     }
 
