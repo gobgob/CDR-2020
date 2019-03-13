@@ -1,38 +1,25 @@
 #ifndef _DIRECTIONCONTROLLER_h
 #define _DIRECTIONCONTROLLER_h
 
-#if defined(ARDUINO) && ARDUINO >= 100
-	#include "Arduino.h"
-#else
-	#include "WProgram.h"
-#endif
-
+#include <Arduino.h>
 #include <Printable.h>
-#include "Singleton.h"
-#include "Utils.h"
-#include "Config.h"
 #include <Dynamixel.h>
 #include <DynamixelInterface.h>
 #include <DynamixelMotor.h>
+#include "Singleton.h"
+#include "Utils.h"
+#include "Config.h"
 #include "CommunicationServer.h"
 
 
-/* IDs des AX12 */
-#define ID_AX12_FRONT_LEFT  0
-#define ID_AX12_FRONT_RIGHT 1
-#define ID_AX12_BACK_LEFT   2
-#define ID_AX12_BACK_RIGHT  3
+/* Periode d'actualisation d'une requête AX12 */
+#define CONTROL_PERIOD	10000 // µs
 
-/* Periode d'actualisation d'une requête AX12 (4 requêtes au total) */
-#define CONTROL_PERIOD	3125 // µs
-
-#define MAGIC_CORRECTOR	1
-
-/* Angles des AX12 correspondant à des roues alignées vers l'avant */
-#define ANGLE_ORIGIN	149
-
-#define ANGLE_MIN	90
-#define ANGLE_MAX	210
+/* Angles limites, en degrés (uint16_t) */
+#define DIR_ANGLE_MIN	    0   // doit être positif
+#define DIR_ANGLE_ORIGIN    150
+#define DIR_ANGLE_MAX	    300 // taille du tableau de conversion angle-courbure
+#define DIR_TABLE_SIZE      (DIR_ANGLE_MAX + 1)
 
 
 enum DirectionControllerStatus
@@ -47,113 +34,53 @@ class DirectionController : public Singleton<DirectionController>, public Printa
 public:
 	DirectionController() :
 		serialAX(SERIAL_AX12),
-        frontLeftMotor(serialAX, ID_AX12_FRONT_LEFT),
-        frontRightMotor(serialAX, ID_AX12_FRONT_RIGHT),
-        backLeftMotor(serialAX, ID_AX12_BACK_LEFT),
-        backRightMotor(serialAX, ID_AX12_BACK_RIGHT)
+        directionMotor(serialAX, ID_AX12_DIRECTION)
 	{
         serialAX.begin(SERIAL_AX12_BAUDRATE, SERIAL_AX12_TIMEOUT);
 		aimCurvature = 0;
-		updateAimAngles();
-		realLeftAngle = ANGLE_ORIGIN;
-		realRightAngle = ANGLE_ORIGIN;
+		updateAimAngle();
+        realMotorAngle = DIR_ANGLE_ORIGIN;
 		updateRealCurvature();
-        frontLeftMotor.init();
-        frontRightMotor.init();
-        backLeftMotor.init();
-        backRightMotor.init();
-        frontLeftMotor.enableTorque();
-        frontRightMotor.enableTorque();
-        backLeftMotor.enableTorque();
-        backRightMotor.enableTorque();
-        frontLeftMotor.jointMode();
-        frontRightMotor.jointMode();
-        backLeftMotor.jointMode();
-        backRightMotor.jointMode();
+        directionMotor.init();
+        directionMotor.enableTorque();
+        directionMotor.jointMode();
 	}
 
     DirectionControllerStatus control()
 	{
 		static uint32_t lastUpdateTime = 0;
-		static uint8_t counter = 0;
+		static bool read = true;
         DirectionControllerStatus ret = DIRECTION_CONTROLLER_OK;
 		
 		if (micros() - lastUpdateTime >= CONTROL_PERIOD)
 		{
             DynamixelStatus dynamixelStatus = DYN_STATUS_OK;
 			lastUpdateTime = micros();
-			updateAimAngles();
-			if (counter == 0)
-			{
-                dynamixelStatus = frontLeftMotor.goalPositionDegree(aimLeftAngle) != DYN_STATUS_OK;
-				counter++;
-			}
-			else if (counter == 1)
-			{
-                dynamixelStatus = frontRightMotor.goalPositionDegree(aimRightAngle);
-				counter++;
-			}
-            else if (counter == 2)
+			
+            if (read)
             {
-                dynamixelStatus = backLeftMotor.goalPositionDegree(2 * ANGLE_ORIGIN - aimLeftAngle);
-                counter++;
+                uint16_t angle;
+                dynamixelStatus = directionMotor.currentPositionDegree(angle);
+                if (angle <= 300) {
+                    realMotorAngle = constrain(angle, DIR_ANGLE_MIN, DIR_ANGLE_MAX);
+                }
+                updateRealCurvature();
             }
-            else if (counter == 3)
-            {
-                dynamixelStatus = backRightMotor.goalPositionDegree(2 * ANGLE_ORIGIN - aimRightAngle);
-                counter++;
-            }
-			else if (counter == 4)
+            else
 			{
-                uint16_t frontAngle;
-                uint16_t backAngle;
-                dynamixelStatus = frontLeftMotor.currentPositionDegree(frontAngle);
-                dynamixelStatus |= backLeftMotor.currentPositionDegree(backAngle);
-				if (frontAngle <= 300 && backAngle <= 300)
-				{
-					realLeftAngle = (frontAngle + 2 * ANGLE_ORIGIN - backAngle) / 2;
-				}
-                else if (frontAngle <= 300)
-                {
-                    realLeftAngle = frontAngle;
-                }
-                else if (backAngle <= 300)
-                {
-                    realLeftAngle = 2 * ANGLE_ORIGIN - backAngle;
-                }
-				counter++;
+                updateAimAngle();
+                dynamixelStatus = directionMotor.goalPositionDegree(aimMotorAngle);
 			}
-			else
-			{
-                uint16_t frontAngle;
-                uint16_t backAngle;
-                dynamixelStatus = frontRightMotor.currentPositionDegree(frontAngle);
-                dynamixelStatus |= backRightMotor.currentPositionDegree(backAngle);
-                if (frontAngle <= 300 && backAngle <= 300)
-                {
-                    realRightAngle = (frontAngle + 2 * ANGLE_ORIGIN - backAngle) / 2;
-                }
-                else if (frontAngle <= 300)
-                {
-                    realRightAngle = frontAngle;
-                }
-                else if (backAngle <= 300)
-                {
-                    realRightAngle = 2 * ANGLE_ORIGIN - backAngle;
-                }
-				counter = 0;
-			}
-			updateRealCurvature();
 
             if (dynamixelStatus != DYN_STATUS_OK)
             {
-                Server.printf_err("DirectionController: errno %u on operation #%u\n", dynamixelStatus, counter);
+                Server.printf_err("DirectionController: errno %u on operation #%d\n", dynamixelStatus, read);
             }
             if (dynamixelStatus & (DYN_STATUS_OVERLOAD_ERROR | DYN_STATUS_OVERHEATING_ERROR))
             {
                 ret = DIRECTION_CONTROLLER_MOTOR_BLOCKED;
             }
-
+            read = !read;
             Server.print(DIRECTION, *this);
 		}
 
@@ -162,35 +89,24 @@ public:
 
     void recover()
     {
-        frontLeftMotor.recoverTorque();
-        frontRightMotor.recoverTorque();
-        backLeftMotor.recoverTorque();
-        backRightMotor.recoverTorque();
+        directionMotor.recoverTorque();
     }
 	
 	void setAimCurvature(float curvature)
 	{
-		aimCurvature = curvature * MAGIC_CORRECTOR;
+		aimCurvature = curvature;
 	}
 	float getRealCurvature() const
 	{
-		return realCurvature / MAGIC_CORRECTOR;
+		return realCurvature;
 	}
-	uint16_t getLeftAngle() const
+	uint16_t getMotorAngle() const
 	{
-		return realLeftAngle;
+		return realMotorAngle;
 	}
-	uint16_t getRightAngle() const
+	void setMotorAngle(uint16_t angle)
 	{
-		return realRightAngle;
-	}
-	void setLeftAngle(uint16_t angle)
-	{
-		aimLeftAngle = angle;
-	}
-	void setRightAngle(uint16_t angle)
-	{
-		aimRightAngle = angle;
+		aimMotorAngle = angle;
 	}
 
 	size_t printTo(Print& p) const
@@ -201,77 +117,38 @@ public:
 private:
 	void updateRealCurvature()
 	{
-		float leftCurvature, rightCurvature;
-		if (realLeftAngle == ANGLE_ORIGIN)
-		{
-			leftCurvature = 0;
-		}
-		else
-		{
-			float leftAngle_rad = ((float)realLeftAngle - ANGLE_ORIGIN) * PI / 180;
-			leftCurvature = -1000 / (FRONT_BACK_WHEELS_DISTANCE / tanf(leftAngle_rad) - DIRECTION_ROTATION_POINT_Y);
-		}
-
-		if (realRightAngle == ANGLE_ORIGIN)
-		{
-			rightCurvature = 0;
-		}
-		else
-		{
-			float rightAngle_rad = ((float)realRightAngle - ANGLE_ORIGIN) * PI / 180;
-			rightCurvature = -1000 / (FRONT_BACK_WHEELS_DISTANCE / tanf(rightAngle_rad) + DIRECTION_ROTATION_POINT_Y);
-		}
 		noInterrupts();
-		realCurvature = (leftCurvature + rightCurvature) / 2;
+		realCurvature = angle_curvature_table[realMotorAngle];
 		interrupts();
 	}
 
-	void updateAimAngles()
+	void updateAimAngle()
 	{
 		noInterrupts();
 		float aimCurvature_cpy = aimCurvature;
 		interrupts();
-		float leftAngle_rad, rightAngle_rad;
-		if (aimCurvature_cpy == 0)
-		{
-			leftAngle_rad = 0;
-			rightAngle_rad = 0;
-		}
-		else
-		{
-			float bendRadius; // en mm
-			bendRadius = (1 / aimCurvature_cpy) * 1000;
-			if (aimCurvature_cpy > 0)
-			{
-				leftAngle_rad = -atan2f(FRONT_BACK_WHEELS_DISTANCE, bendRadius - DIRECTION_ROTATION_POINT_Y);
-				rightAngle_rad = -atan2f(FRONT_BACK_WHEELS_DISTANCE, bendRadius + DIRECTION_ROTATION_POINT_Y);
-			}
-			else
-			{
-				leftAngle_rad = atan2f(FRONT_BACK_WHEELS_DISTANCE, DIRECTION_ROTATION_POINT_Y - bendRadius);
-				rightAngle_rad = atan2f(FRONT_BACK_WHEELS_DISTANCE, -DIRECTION_ROTATION_POINT_Y - bendRadius);
-			}
-		}
-		aimLeftAngle = (uint16_t)((ANGLE_ORIGIN + leftAngle_rad * 180 / PI) + 0.5);
-		aimRightAngle = (uint16_t)((ANGLE_ORIGIN + rightAngle_rad * 180 / PI) + 0.5);
+        size_t min_index = DIR_ANGLE_MIN;
+        size_t max_index = DIR_ANGLE_MAX;
+        size_t index = (DIR_ANGLE_MIN + DIR_ANGLE_MAX) / 2;
 
-		if (aimLeftAngle < ANGLE_MIN)
-		{
-			aimLeftAngle = ANGLE_MIN;
-		}
-		else if (aimLeftAngle > ANGLE_MAX)
-		{
-			aimLeftAngle = ANGLE_MAX;
-		}
-
-		if (aimRightAngle < ANGLE_MIN)
-		{
-			aimRightAngle = ANGLE_MIN;
-		}
-		else if (aimRightAngle > ANGLE_MAX)
-		{
-			aimRightAngle = ANGLE_MAX;
-		}
+        while (max_index - min_index > 1)
+        {
+            // todo : vérifier le sens des comparaisons
+            if (aimCurvature_cpy > angle_curvature_table[index])
+            {
+                min_index = index;
+            }
+            else if (aimCurvature_cpy < angle_curvature_table[index])
+            {
+                max_index = index;
+            }
+            else
+            {
+                break;
+            }
+            index = (min_index + max_index) / 2;
+        }
+        aimMotorAngle = index;
 	}
 	
 	/* Courbure, en m^-1 */
@@ -279,19 +156,16 @@ private:
 	volatile float realCurvature;
 
 	/* Angles des AX12, en degrés */
-	uint16_t aimLeftAngle;
-	uint16_t aimRightAngle;
-	uint16_t realLeftAngle;
-	uint16_t realRightAngle;
+	uint16_t aimMotorAngle;
+	uint16_t realMotorAngle;
 
-	/* Les AX12 de direction */
+	/* L'AX12 de direction */
 	DynamixelInterface serialAX;
-	DynamixelMotor frontLeftMotor;
-	DynamixelMotor frontRightMotor;
-	DynamixelMotor backLeftMotor;
-	DynamixelMotor backRightMotor;
+	DynamixelMotor directionMotor;
+
+    /* Table de conversion Angle-Courbure */
+    static float angle_curvature_table[DIR_TABLE_SIZE];
 };
 
 
 #endif
-

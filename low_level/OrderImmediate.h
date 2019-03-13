@@ -89,25 +89,28 @@ public:
 class GetColor : public OrderImmediate, public Singleton<GetColor>
 {
 public:
-    GetColor() {}
+    GetColor()
+    {
+        pinMode(PIN_GET_COLOR, INPUT);
+        pinMode(PIN_GET_JUMPER, INPUT_PULLUP);
+    }
     virtual void execute(std::vector<uint8_t> & io)
     {
         if (io.size() == 0)
         {
             io.clear();
-            pinMode(PIN_GET_JUMPER, INPUT_PULLUP);
-            uint8_t jumperDetected = digitalRead(PIN_GET_JUMPER);
-            int32_t colorAnalog = analogRead(PIN_GET_COLOR);
+            
+            uint8_t jumperDetected = !digitalRead(PIN_GET_JUMPER);
             Color color = UNKNOWN;
             if (jumperDetected)
             {
-                if (colorAnalog > 512)
+                if (digitalRead(PIN_GET_COLOR))
                 {
-                    color = VERT;
+                    color = VIOLET;
                 }
                 else
                 {
-                    color = ORANGE;
+                    color = JAUNE;
                 }
             }
             Serializer::writeEnum((uint8_t)color, io);
@@ -122,8 +125,8 @@ public:
 private:
     enum Color
     {
-        ORANGE = 0x00,
-        VERT = 0x01,
+        VIOLET = 0x00,
+        JAUNE = 0x01,
         UNKNOWN = 0x02
     };
 };
@@ -297,29 +300,6 @@ public:
 };
 
 
-class SetSensorsAngles : public OrderImmediate, public Singleton<SetSensorsAngles>
-{
-public:
-    SetSensorsAngles() {}
-    virtual void execute(std::vector<uint8_t> & io)
-    {
-        if (io.size() == 8)
-        {
-            size_t index = 0;
-            float angleG = Serializer::readFloat(io, index);
-            float angleD = Serializer::readFloat(io, index);
-            //slaveActuator.setSensorsAngles(angleG, angleD);
-            io.clear();
-        }
-        else
-        {
-            Server.printf_err("SetSensorsAngles: wrong number of arguments\n");
-            io.clear();
-        }
-    }
-};
-
-
 class SetScore : public OrderImmediate, public Singleton<SetScore>
 {
 public:
@@ -336,31 +316,6 @@ public:
         else
         {
             Server.printf_err("SetScore: wrong number of arguments\n");
-            io.clear();
-        }
-    }
-};
-
-
-class GetArmPosition : public OrderImmediate, public Singleton<GetArmPosition>
-{
-public:
-    GetArmPosition() {}
-    virtual void execute(std::vector<uint8_t> & io)
-    {
-        if (io.size() == 0)
-        {
-            io.clear();
-            float hAngle, vAngle, headAngle, plierPos;
-            //slaveActuator.getArmPosition(hAngle, vAngle, headAngle, plierPos);
-            Serializer::writeFloat(hAngle, io);
-            Serializer::writeFloat(vAngle, io);
-            Serializer::writeFloat(headAngle, io);
-            Serializer::writeFloat(plierPos, io);
-        }
-        else
-        {
-            Server.printf_err("GetArmPosition: wrong number of arguments\n");
             io.clear();
         }
     }
@@ -455,26 +410,6 @@ public:
 };
 
 
-class GetBattery : public OrderImmediate, public Singleton<GetBattery>
-{
-public:
-    GetBattery() {}
-    virtual void execute(std::vector<uint8_t> & io)
-    {
-        if (io.size() == 0)
-        {
-            io.clear();
-            // TODO
-        }
-        else
-        {
-            Server.printf_err("GetBattery: wrong number of arguments\n");
-            io.clear();
-        }
-    }
-};
-
-
 class SetControlLevel : public OrderImmediate, public Singleton<SetControlLevel>
 {
 public:
@@ -498,29 +433,6 @@ public:
 };
 
 
-class SetMonitoredMotor : public OrderImmediate, public Singleton<SetMonitoredMotor>
-{
-public:
-    SetMonitoredMotor() {}
-    virtual void execute(std::vector<uint8_t> & io)
-    {
-        if (io.size() == 1)
-        {
-            size_t index = 0;
-            uint8_t motor = Serializer::readEnum(io, index);
-            motionControlSystem.setMonitoredMotor((MonitoredMotor)motor);
-            Server.printf(SPY_ORDER, "SetMonitoredMotor: %u\n", motor);
-            io.clear();
-        }
-        else
-        {
-            Server.printf_err("SetMonitoredMotor: wrong number of arguments\n");
-            io.clear();
-        }
-    }
-};
-
-
 class StartManualMove : public OrderImmediate, public Singleton<StartManualMove>
 {
 public:
@@ -536,29 +448,6 @@ public:
         else
         {
             Server.printf_err("StartManualMove: wrong number of arguments\n");
-            io.clear();
-        }
-    }
-};
-
-
-class SetPWM : public OrderImmediate, public Singleton<SetPWM>
-{
-public:
-    SetPWM() {}
-    virtual void execute(std::vector<uint8_t> & io)
-    {
-        if (io.size() == 4)
-        {
-            size_t index = 0;
-            int32_t pwm = Serializer::readInt(io, index);
-            motionControlSystem.setPWM(pwm);
-            Server.printf(SPY_ORDER, "SetPWM: %d\n", pwm);
-            io.clear();
-        }
-        else
-        {
-            Server.printf_err("SetPWM: wrong number of arguments\n");
             io.clear();
         }
     }
@@ -635,35 +524,6 @@ public:
 };
 
 
-class SetSpeedTunings : public OrderImmediate, public Singleton<SetSpeedTunings>
-{
-public:
-    SetSpeedTunings() {}
-    virtual void execute(std::vector<uint8_t> & io)
-    {
-        if (io.size() == 12)
-        {
-            size_t index = 0;
-            float kp = Serializer::readFloat(io, index);
-            float ki = Serializer::readFloat(io, index);
-            float kd = Serializer::readFloat(io, index);
-            MotionControlTunings tunings = motionControlSystem.getTunings();
-            tunings.speedKp = kp;
-            tunings.speedKi = ki;
-            tunings.speedKd = kd;
-            motionControlSystem.setTunings(tunings);
-            Server.printf(SPY_ORDER, "Speed Kp=%g Ki=%g Kd=%g\n", kp, ki, kd);
-            io.clear();
-        }
-        else
-        {
-            Server.printf_err("SetSpeedTunings: wrong number of arguments\n");
-            io.clear();
-        }
-    }
-};
-
-
 class SetTranslationTunings : public OrderImmediate, public Singleton<SetTranslationTunings>
 {
 public:
@@ -714,33 +574,6 @@ public:
         else
         {
             Server.printf_err("SetTrajectoryTunings: wrong number of arguments\n");
-            io.clear();
-        }
-    }
-};
-
-
-class SetBlockingTunings : public OrderImmediate, public Singleton<SetBlockingTunings>
-{
-public:
-    SetBlockingTunings() {}
-    virtual void execute(std::vector<uint8_t> & io)
-    {
-        if (io.size() == 8)
-        {
-            size_t index = 0;
-            float sensibility = Serializer::readFloat(io, index);
-            uint32_t responseTime = Serializer::readUInt(io, index);
-            MotionControlTunings tunings = motionControlSystem.getTunings();
-            tunings.blockingSensibility = sensibility;
-            tunings.blockingResponseTime = responseTime;
-            motionControlSystem.setTunings(tunings);
-            Server.printf(SPY_ORDER, "Blocking sensib=%g delay=%ums\n", sensibility, responseTime);
-            io.clear();
-        }
-        else
-        {
-            Server.printf_err("SetBlockingTunings: wrong number of arguments\n");
             io.clear();
         }
     }
@@ -847,31 +680,6 @@ public:
         }
     }
 };
-
-
-//class SetSwagg : public OrderImmediate, public Singleton<SetSwagg>
-//{
-//public:
-//    SetSwagg() {}
-//    virtual void execute(std::vector<uint8_t> & io)
-//    {
-//        if (io.size() == 16)
-//        {
-//            size_t index = 0;
-//            int32_t avg = Serializer::readInt(io, index);
-//            int32_t avd = Serializer::readInt(io, index);
-//            int32_t arg = Serializer::readInt(io, index);
-//            int32_t ard = Serializer::readInt(io, index);
-//            //todo
-//            io.clear();
-//        }
-//        else
-//        {
-//            Server.printf_err("Rien: wrong number of arguments\n");
-//            io.clear();
-//        }
-//    }
-//};
 
 
 #endif

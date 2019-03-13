@@ -4,57 +4,56 @@
 #include <Printable.h>
 #include <ToF_sensor.h>
 #include "Config.h"
+#include "Serializer.h"
 
-#define STD_MIN_RANGE   18
-#define STD_MAX_RANGE   200
-#define MAX_POWERON_ATTEMPTS    10
+#define NB_SENSORS          6
+#define TOF_SR_MIN_RANGE    18
+#define TOF_SR_MAX_RANGE    200
+#define TOF_LR_MIN_RANGE    30
+#define TOF_LR_MAX_RANGE    700
+#define TOF_LR_MEDIAN_SIZE  3
 
 
-class SensorsMgr : public Printable
+class SensorsMgr : public Printable, public Singleton<SensorsMgr>
 {
 public:
     SensorsMgr()
     {
-        ToF_shortRange tofAVG(42, PIN_EN_TOF_AVG, STD_MIN_RANGE, STD_MAX_RANGE, "AVG", &Serial);
-        ToF_shortRange tofAV(43, PIN_EN_TOF_AV, STD_MIN_RANGE, STD_MAX_RANGE, "AV", &Serial);
-        ToF_shortRange tofAVD(44, PIN_EN_TOF_AVD, STD_MIN_RANGE, STD_MAX_RANGE, "AVD", &Serial);
-        ToF_shortRange tofFlanAVG(45, PIN_EN_TOF_FLAN_AVG, STD_MIN_RANGE, STD_MAX_RANGE, "FlanAVG", &Serial);
-        ToF_shortRange tofFlanAVD(46, PIN_EN_TOF_FLAN_AVD, STD_MIN_RANGE, STD_MAX_RANGE, "FlanAVD", &Serial);
-        ToF_shortRange tofFlanARG(47, PIN_EN_TOF_FLAN_ARG, STD_MIN_RANGE, STD_MAX_RANGE, "FlanARG", &Serial);
-        ToF_shortRange tofFlanARD(48, PIN_EN_TOF_FLAN_ARD, STD_MIN_RANGE, STD_MAX_RANGE, "FlanARD", &Serial);
-        ToF_shortRange tofARG(49, PIN_EN_TOF_ARG, STD_MIN_RANGE, STD_MAX_RANGE, "ARG", &Serial);
-        ToF_shortRange tofARD(50, PIN_EN_TOF_ARD, STD_MIN_RANGE, STD_MAX_RANGE, "ARD", &Serial);
+        sensors[0] = new ToF_longRange_med<TOF_LR_MEDIAN_SIZE>(
+            42, PIN_EN_TOF_AVG, TOF_LR_MIN_RANGE, TOF_LR_MAX_RANGE, "AVG", &Serial);
+        sensors[1] = new ToF_longRange_med<TOF_LR_MEDIAN_SIZE>(
+            44, PIN_EN_TOF_AVD, TOF_LR_MIN_RANGE, TOF_LR_MAX_RANGE, "AVD", &Serial);
+        sensors[2] = new ToF_shortRange(
+            47, PIN_EN_TOF_FLAN_ARG, TOF_SR_MIN_RANGE, TOF_SR_MAX_RANGE, "FlanARG", &Serial);
+        sensors[3] = new ToF_shortRange(
+            48, PIN_EN_TOF_FLAN_ARD, TOF_SR_MIN_RANGE, TOF_SR_MAX_RANGE, "FlanARD", &Serial);
+        sensors[4] = new ToF_longRange_med<TOF_LR_MEDIAN_SIZE>(
+            49, PIN_EN_TOF_ARG, TOF_LR_MIN_RANGE, TOF_LR_MAX_RANGE, "ARG", &Serial);
+        sensors[5] = new ToF_longRange_med<TOF_LR_MEDIAN_SIZE>(
+            50, PIN_EN_TOF_ARD, TOF_LR_MIN_RANGE, TOF_LR_MAX_RANGE, "ARD", &Serial);
 
-        sensors[0] = tofAV;
-        sensors[1] = tofAVG;
-        sensors[2] = tofAVD;
-        sensors[3] = tofFlanAVG;
-        sensors[4] = tofFlanAVD;
-        sensors[5] = tofFlanARG;
-        sensors[6] = tofFlanARD;
-        sensors[7] = tofARG;
-        sensors[8] = tofARD;
-
+        members_allocated = true;
         for (size_t i = 0; i < NB_SENSORS; i++)
         {
             sensorsValues[i] = (SensorValue)SENSOR_DEAD;
+            if (sensors[i] == nullptr)
+            {
+                members_allocated = false;
+            }
         }
     }
 
     int init()
     {
-        int ret = 0;
+        if (!members_allocated) {
+            return EXIT_FAILURE;
+        }
+        int ret = EXIT_SUCCESS;
         for (size_t i = 0; i < NB_SENSORS; i++)
         {
-            int nbAttempts = 0;
-            while (sensors[i].powerON() != 0)
+            if (sensors[i]->powerON() != EXIT_SUCCESS)
             {
-                nbAttempts++;
-                if (nbAttempts > MAX_POWERON_ATTEMPTS)
-                {
-                    ret = -1;
-                    break;
-                }
+                ret = EXIT_FAILURE;
             }
         }
         return ret;
@@ -62,17 +61,28 @@ public:
 
     void update()
     {
+        if (!members_allocated) {
+            return;
+        }
         for (size_t i = 0; i < NB_SENSORS; i++)
         {
-            sensorsValues[i] = sensors[i].getMeasure();
+            sensorsValues[i] = sensors[i]->getMeasure();
         }
     }
 
-    void getValues(SensorValue values[NB_SENSORS])
+    void update(size_t i)
+    {
+        if (!members_allocated || i >= NB_SENSORS) {
+            return;
+        }
+        sensorsValues[i] = sensors[i]->getMeasure();
+    }
+
+    void appendValuesToVect(std::vector<uint8_t> & output)
     {
         for (size_t i = 0; i < NB_SENSORS; i++)
         {
-            values[i] = sensorsValues[i];
+            Serializer::writeInt(sensorsValues[i], output);
             sensorsValues[i] = (SensorValue)SENSOR_NOT_UPDATED;
         }
     }
@@ -80,9 +90,13 @@ public:
     size_t printTo(Print& p) const
     {
         size_t ret = 0;
+        if (!members_allocated) {
+            ret += p.println("SensorsMgr::allocation_error");
+            return ret;
+        }
         for (size_t i = 0; i < NB_SENSORS; i++)
         {
-            ret += p.print(sensors[i].name);
+            ret += p.print(sensors[i]->name);
             ret += p.print("=");
             SensorValue val = sensorsValues[i];
             if (val == (SensorValue)SENSOR_DEAD || val == (SensorValue)SENSOR_NOT_UPDATED)
@@ -106,8 +120,9 @@ public:
     }
 
 private:
-    ToF_shortRange sensors[NB_SENSORS];
+    ToF_sensor *sensors[NB_SENSORS];
     SensorValue sensorsValues[NB_SENSORS];
+    bool members_allocated;
 };
 
 

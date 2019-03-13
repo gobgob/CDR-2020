@@ -169,7 +169,7 @@ Command(0x30, "Take from human",    CommandType.LONG_ORDER, [Field("side", float
 
 # Short orders
 Command(0x80, "Ping",           CommandType.SHORT_ORDER, [], [Field("Zero", int)]),
-Command(0x81, "Get color",      CommandType.SHORT_ORDER, [], [Field("Color", Enum, ["Orange", "Green", "Unknown"])]),
+Command(0x81, "Get color",      CommandType.SHORT_ORDER, [], [Field("Color", Enum, ["Violet", "Jaune", "Unknown"])]),
 Command(0x82, "Edit position",  CommandType.SHORT_ORDER, [Field("x", int), Field("y", int), Field("angle", float)], []),
 Command(0x83, "Set position",   CommandType.SHORT_ORDER, [Field("x", int), Field("y", int), Field("angle", float)], []),
 Command(0x84, "Append traj pt", CommandType.SHORT_ORDER,

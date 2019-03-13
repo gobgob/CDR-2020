@@ -20,7 +20,7 @@
 #define SERIAL_ENABLE 1
 
 /* Configurations diverses */
-#define COMMAND_BUFFER_SIZE     5
+#define COMMAND_BUFFER_SIZE     (MAX_SOCK_NUM + 1)
 #define OUTPUT_BUFFER_SIZE      255
 #define HEADER_BYTE             0xFF
 #define DEFAULT_SUSCRIPTION     0x06

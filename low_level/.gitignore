@@ -2,6 +2,7 @@
 
 .vs/
 Debug/
+Release/
 *.sln
 __vm/
 *.vcxproj

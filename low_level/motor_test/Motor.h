@@ -2,13 +2,13 @@
 #define _MOTOR_h
 
 #include "Arduino.h"
-#include "Config.h"
 
 #define MOTOR_MAX_SPEED 1500.0  // mm/s
 #define MOTOR_PWM_RES   16      // bits
 #define MOTOR_PWM_FREQ  50      // Hz
 #define MOTOR_MAX_PWM   6553
 #define MOTOR_MIN_PWM   3277
+#define PIN_VESC        14
 
 /*
     20ms PPM period and 16-bit PWM
@@ -43,6 +43,8 @@ public:
         static const float b = (float)(MOTOR_MAX_PWM + MOTOR_MIN_PWM) / 2;
         speed = constrain(speed, -MOTOR_MAX_SPEED, MOTOR_MAX_SPEED);
         float pwm = a * speed + b;
+        Serial.print("PWM= ");
+        Serial.println((int)pwm);
         analogWrite(PIN_VESC, (int)pwm);
     }
 };

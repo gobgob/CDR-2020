@@ -338,13 +338,6 @@ private:
 		return trajectoryFollower.getTunings();
 	}
 
-    void setPWM(int16_t pwm)
-    {
-        noInterrupts();
-        trajectoryFollower.setPWM(pwm);
-        interrupts();
-    }
-
     void setMaxSpeed(float speed)
     {
         noInterrupts();
@@ -372,11 +365,6 @@ private:
         float curvature = trajectoryFollower.getCurvature();
         interrupts();
         return curvature;
-    }
-
-    void setMonitoredMotor(MonitoredMotor m)
-    {
-        trajectoryFollower.setMonitoredMotor(m);
     }
 
     void sendLogs()

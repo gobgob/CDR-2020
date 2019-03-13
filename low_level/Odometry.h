@@ -17,17 +17,13 @@ class Odometry
 public:
 	Odometry(
 		const float freqAsserv,
-		volatile Position & p, 
-		volatile float & frontLeftMotorSpeed,
-        volatile float & frontRightMotorSpeed,
-        volatile float & backLeftMotorSpeed,
-		volatile float & backRightMotorSpeed,
+		volatile Position & p,
 		volatile float & currentTranslation,
 		volatile float & translationSpeed
 	) :
         freqAsserv(freqAsserv),
-		leftOdometryEncoder(PIN_A_LEFT_ENCODER, PIN_B_LEFT_ENCODER),
-		rightOdometryEncoder(PIN_B_RIGHT_ENCODER, PIN_A_RIGHT_ENCODER),
+		leftOdometryEncoder(PIN_B_LEFT_ENCODER, PIN_A_LEFT_ENCODER),
+		rightOdometryEncoder(PIN_A_RIGHT_ENCODER, PIN_B_RIGHT_ENCODER),
 		position(p),
 		currentTranslation(currentTranslation),
 		translationSpeed(translationSpeed)

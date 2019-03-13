@@ -1,7 +1,7 @@
 /*
- Name:		lowlevel_master.ino
- Created:	04/03/2018 20:10:42
- Author:	Sylvain Gaultier
+    Name:       low_level.ino
+    Created:    02/03/2019
+    Author:	    Sylvain Gaultier
 */
 
 #include <Ethernet.h>
@@ -11,11 +11,13 @@
 #include <DynamixelMotor.h>
 #include <Encoder.h>
 #include <ToF_sensor.h>
+#include <A4988.h>
 #include "Config.h"
 #include "OrderMgr.h"
 #include "MotionControlSystem.h"
 #include "ContextualLightning.h"
 #include "ActuatorMgr.h"
+#include "SensorsMgr.h"
 #include "Serializer.h"
 
 #define ODOMETRY_REPORT_PERIOD  20  // ms
@@ -40,9 +42,8 @@ void loop()
     OrderMgr orderManager;
     MotionControlSystem &motionControlSystem = MotionControlSystem::Instance();
     DirectionController &directionController = DirectionController::Instance();
-    //SlaveSensorLed &slaveSensorLed = SlaveSensorLed::Instance();
-    //SlaveActuator &slaveActuator = SlaveActuator::Instance();
-    ContextualLightning contextualLightning;
+    SensorsMgr &sensorMgr = SensorsMgr::Instance();
+    ActuatorMgr &actuatorMgr = ActuatorMgr::Instance();
     
     IntervalTimer motionControlTimer;
     motionControlTimer.priority(253);
@@ -50,30 +51,6 @@ void loop()
 
     uint32_t odometryReportTimer = 0;
     std::vector<uint8_t> odometryReport;
-    std::vector<uint8_t> shortRangeSensorsValues;
-    std::vector<uint8_t> longRangeSensorsValues;
-
-    // Attente du démarrage de la grue
-    digitalWrite(PIN_DEL_STATUS_2, HIGH);
-    //while (!slaveActuator.sensorDataAvailable())
-    //{
-    //    slaveActuator.listen();
-    //}
-    //slaveActuator.getSensorsValues(longRangeSensorsValues);
-    digitalWrite(PIN_DEL_STATUS_2, LOW);
-
-    // Lancement de la carte capteurs
-    //slaveSensorLed.setLightningMode((uint8_t)SlaveSensorLed::ALL_OFF);
-
-    // Attente du démarrage de la carte capteurs
-    //while (!slaveSensorLed.available())
-    //{
-    //    slaveSensorLed.listen();
-    //}
-    //slaveSensorLed.getSensorsValues(shortRangeSensorsValues);
-
-    // Affichage du succès du démarrage
-    //slaveSensorLed.setLightningMode((uint8_t)SlaveSensorLed::NIGHT_LIGHT_HIGH);
 
     uint32_t delTimer = 0;
     bool delState = true;
@@ -82,20 +59,8 @@ void loop()
     {
         orderManager.execute();
         directionController.control();
-
-        //slaveActuator.listen();
-        //if (slaveActuator.sensorDataAvailable())
-        //{
-        //    slaveActuator.getSensorsValues(longRangeSensorsValues);
-        //}
-
-        //slaveSensorLed.listen();
-        //if (slaveSensorLed.available())
-        //{
-        //    slaveSensorLed.getSensorsValues(shortRangeSensorsValues);
-        //}
-
-        //contextualLightning.update();
+        sensorMgr.update();
+        actuatorMgr.mainLoopControl();
 
         if (millis() - odometryReportTimer > ODOMETRY_REPORT_PERIOD)
         {
@@ -109,8 +74,7 @@ void loop()
             Serializer::writeFloat(motionControlSystem.getCurvature(), odometryReport);
             Serializer::writeUInt(motionControlSystem.getTrajectoryIndex(), odometryReport);
             Serializer::writeBool(motionControlSystem.isMovingForward(), odometryReport);
-            odometryReport.insert(odometryReport.end(), shortRangeSensorsValues.begin(), shortRangeSensorsValues.end());
-            odometryReport.insert(odometryReport.end(), longRangeSensorsValues.begin(), longRangeSensorsValues.end());
+            sensorMgr.appendValuesToVect(odometryReport);
             Server.sendData(ODOMETRY_AND_SENSORS, odometryReport);
 
             motionControlSystem.sendLogs();
@@ -130,6 +94,13 @@ void motionControlInterrupt()
 {
     static MotionControlSystem &motionControlSystem = MotionControlSystem::Instance();
     motionControlSystem.control();
+}
+
+
+void actuatorMgrInterrupt()
+{
+    static ActuatorMgr &actuatorMgr = ActuatorMgr::Instance();
+    actuatorMgr.interruptControl();
 }
 
 
