@@ -1,13 +1,14 @@
 #ifndef CONTEXTUAL_LIGHTNING_h
 #define CONTEXTUAL_LIGHTNING_h
 
+#include <Printable.h>
 #include "MotionControlSystem.h"
 
 #define CONTEXTUAL_LIGHTNING_UPDATE_PERIOD  50  // ms
 #define TURNING_THRESHOLD                   0.5 // m^-1
 
 
-class ContextualLightning
+class ContextualLightning : public Singleton<ContextualLightning>, public Printable
 {
 public:
 //    ContextualLightning() :

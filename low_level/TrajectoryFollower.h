@@ -258,6 +258,11 @@ public:
         return movePhase == BREAKING || endOfMoveMgr.isBreaking();
     }
 
+    float getCurrentMovingSpeed() const
+    {
+        return currentMovingSpeed;
+    }
+
     void emergency_stop_from_interrupt()
     {
         if (movePhase != MOVE_ENDED)

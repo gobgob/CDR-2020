@@ -12,6 +12,7 @@
 #include <Encoder.h>
 #include <ToF_sensor.h>
 #include <A4988.h>
+#include <Adafruit_LEDBackpack.h>
 #include "Config.h"
 #include "OrderMgr.h"
 #include "MotionControlSystem.h"
@@ -25,13 +26,13 @@
 
 void setup()
 {
-    pinMode(PIN_DEL_STATUS_1, OUTPUT);
-    pinMode(PIN_DEL_STATUS_2, OUTPUT);
-    digitalWrite(PIN_DEL_STATUS_1, HIGH);
+    pinMode(PIN_DEL_WARNING, OUTPUT);
+    pinMode(PIN_DEL_ERROR, OUTPUT);
+    digitalWrite(PIN_DEL_WARNING, HIGH);
 
     if (Server.begin() != 0)
     {
-        digitalWrite(PIN_DEL_STATUS_2, HIGH);
+        digitalWrite(PIN_DEL_ERROR, HIGH);
         delay(500);
     }
 }
@@ -44,7 +45,7 @@ void loop()
     DirectionController &directionController = DirectionController::Instance();
     SensorsMgr &sensorMgr = SensorsMgr::Instance();
     ActuatorMgr &actuatorMgr = ActuatorMgr::Instance();
-    
+
     IntervalTimer motionControlTimer;
     motionControlTimer.priority(253);
     motionControlTimer.begin(motionControlInterrupt, PERIOD_ASSERV);
@@ -83,7 +84,7 @@ void loop()
         if (millis() - delTimer > 500)
         {
             delState = !delState;
-            digitalWrite(PIN_DEL_STATUS_1, delState);
+            digitalWrite(PIN_DEL_WARNING, delState);
             delTimer = millis();
         }
     }

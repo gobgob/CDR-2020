@@ -26,8 +26,8 @@
 #define PIN_VESC            14
 
 /* DELs */
-#define PIN_DEL_STATUS_1	5
-#define PIN_DEL_STATUS_2	4
+#define PIN_DEL_WARNING	    5
+#define PIN_DEL_ERROR	    4
 
 /* Divers capteurs */
 #define PIN_GET_COLOR		8

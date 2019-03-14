@@ -22,7 +22,7 @@
 class MotionControlSystem : public Singleton<MotionControlSystem>
 {
 public:
-	MotionControlSystem() : 
+	MotionControlSystem() :
 		trajectoryFollower(FREQ_ASSERV, position, moveStatus)
 	{
 		travellingToDestination = false;
@@ -287,7 +287,7 @@ private:
 
 	Position getPosition() const
 	{
-		static Position p; 
+		static Position p;
 		noInterrupts();
 		p = position;
 		interrupts();
@@ -384,6 +384,14 @@ private:
     {
         noInterrupts();
         bool ret = trajectoryFollower.isBreaking();
+        interrupts();
+        return ret;
+    }
+
+    float getMovingSpeed() const
+    {
+        noInterrupts();
+        float ret = trajectoryFollower.getCurrentMovingSpeed();
         interrupts();
         return ret;
     }
