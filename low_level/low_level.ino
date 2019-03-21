@@ -50,6 +50,10 @@ void loop()
     motionControlTimer.priority(253);
     motionControlTimer.begin(motionControlInterrupt, PERIOD_ASSERV);
 
+    IntervalTimer actuatorMgrTimer;
+    actuatorMgrTimer.priority(252);
+    actuatorMgrTimer.begin(actuatorMgrInterrupt, ACTUATOR_MGR_INTERRUPT_PERIOD);
+
     uint32_t odometryReportTimer = 0;
     std::vector<uint8_t> odometryReport;
 

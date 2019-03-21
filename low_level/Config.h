@@ -13,8 +13,9 @@
 
 
 /* IDs des AX12 */
-#define ID_AX12_DIRECTION  0
-
+#define ID_AX12_DIRECTION   2
+#define ID_AX12_ACT_Y       0
+#define ID_AX12_ACT_THETA   1
 
 /* Encodeurs d'odométrie */
 #define PIN_A_LEFT_ENCODER		34
@@ -24,6 +25,16 @@
 
 /* Moteur */
 #define PIN_VESC            14
+
+/* Moteurs pas à pas */
+#define PIN_STEPPER_STEP    30
+#define PIN_STEPPER_DIR     29
+#define PIN_STEPPER_SLEEP   31
+#define PIN_STEPPER_RESET   32
+#define PIN_STEPPER_ENDSTOP 9
+#define PIN_MICROSTEP_1     28
+#define PIN_MICROSTEP_2     27
+#define PIN_MICROSTEP_3     26
 
 /* DELs */
 #define PIN_DEL_WARNING	    5
@@ -56,6 +67,14 @@
 #define PIN_EN_TOF_FLAN_ARD     16
 #define PIN_EN_TOF_ARG          22
 #define PIN_EN_TOF_ARD          23
+
+/* Fumigène */
+#define PIN_SMOKE_RESISTOR  17
+#define PIN_SMOKE_PUMP      20
+
+/* Extra */
+#define PIN_EXTRA_1     2
+#define PIN_EXTRA_2     3
 
 
 #endif
