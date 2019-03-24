@@ -16,6 +16,14 @@ public:
 
     }
 
+    void init()
+    {
+        display.begin(0x70);
+        display.clear();
+        display.println(0);
+        display.writeDisplay();
+    }
+
     void update()
     {
 
@@ -48,8 +56,13 @@ public:
 
     }
 
-private:
+    size_t printTo(Print& p) const
+    {
+        return 0;
+    }
 
+private:
+    Adafruit_7segment display;
 
 };
 

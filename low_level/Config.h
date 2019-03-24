@@ -40,6 +40,10 @@
 #define PIN_DEL_WARNING	    5
 #define PIN_DEL_ERROR	    4
 
+/* Phares */
+#define PIN_NEOPIXELS_FRONT 7
+#define PIN_NEOPIXELS_BACK  6
+
 /* Divers capteurs */
 #define PIN_GET_COLOR		8
 #define PIN_GET_JUMPER		37

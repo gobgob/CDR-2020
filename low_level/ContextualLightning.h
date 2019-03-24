@@ -1,108 +1,336 @@
 #ifndef CONTEXTUAL_LIGHTNING_h
 #define CONTEXTUAL_LIGHTNING_h
 
+#include <Arduino.h>
+#include <Adafruit_NeoPixel.h>
 #include <Printable.h>
+#include <vector>
 #include "MotionControlSystem.h"
+#include "Config.h"
 
 #define CONTEXTUAL_LIGHTNING_UPDATE_PERIOD  50  // ms
+#define NB_NEOPIXELS_FRONT                  16
+#define NB_NEOPIXELS_BACK                   14
 #define TURNING_THRESHOLD                   0.5 // m^-1
+
+/* Color definition */
+#define COLOR_ORANGE                (Adafruit_NeoPixel::Color(102, 25, 0, 0))
+#define COLOR_VIOLET                (Adafruit_NeoPixel::Color(23, 0, 105, 0))
+#define COLOR_RED_DIM               (Adafruit_NeoPixel::Color(10, 0, 0, 0))
+#define COLOR_RED_BRIGHT            (Adafruit_NeoPixel::Color(200, 0, 0, 0))
+#define COLOR_WHITE_DIM             (Adafruit_NeoPixel::Color(0, 0, 0, 10))
+#define COLOR_WHITE_BRIGHT          (Adafruit_NeoPixel::Color(0, 0, 0, 70))
+#define COLOR_WHITE_ULTRA_BRIGHT    (Adafruit_NeoPixel::Color(0, 0, 0, 255))
+
+
+class NeoPixelBlinker
+{
+public:
+    NeoPixelBlinker()
+    {
+        off_duration = 0;
+        on_duration = 0;
+        origin_time = 0;
+    }
+
+    void setPeriod(uint32_t off_d, uint32_t on_d)
+    {
+        off_duration = off_d;
+        on_duration = on_d;
+    }
+
+    void start()
+    {
+        origin_time = millis();
+    }
+
+    bool value() const
+    {
+        if (off_duration == 0) {
+            return true;
+        }
+        else if (on_duration == 0) {
+            return false;
+        }
+
+        uint32_t now = millis() - origin_time;
+        now = now % (on_duration + off_duration);
+        return now < on_duration;
+    }
+
+private:
+    uint32_t off_duration;  // ms
+    uint32_t on_duration;   // ms
+    uint32_t origin_time;   // ms
+};
+
+
+class NeoPixelSubGroup
+{
+public:
+    NeoPixelSubGroup(uint32_t c, uint16_t led_index_range, uint32_t off_d = 0, uint32_t on_d = 0)
+    {
+        enabled = false;
+        color = c;
+        blinker.setPeriod(off_d, on_d);
+        for (uint16_t i = 0; i < led_index_range; i++) {
+            led_index.push_back(i);
+        }
+    }
+
+    NeoPixelSubGroup(uint32_t c, const std::vector<uint16_t> &led_index, uint32_t off_d = 0, uint32_t on_d = 0) :
+        led_index(led_index)
+    {
+        enabled = false;
+        color = c;
+        blinker.setPeriod(off_d, on_d);
+    }
+
+    void enable(bool e)
+    {
+        if (e && !enabled) {
+            blinker.start();
+        }
+        enabled = e;
+    }
+
+    void writePixels(Adafruit_NeoPixel &pixels) const
+    {
+        if (enabled) {
+            uint32_t c = 0;
+            if (blinker.value()) {
+                c = color;
+            }
+            for (size_t i = 0; i < led_index.size(); i++) {
+                pixels.setPixelColor(led_index.at(i), c);
+            }
+        }
+    }
+
+private:
+    bool enabled;
+    NeoPixelBlinker blinker;
+    uint32_t color;
+    std::vector<uint16_t> led_index;
+};
+
+
+class NeoPixelGroup
+{
+public:
+    NeoPixelGroup(uint16_t pixel_count, uint8_t pin, std::vector<NeoPixelSubGroup> zones) :
+        pixels(pixel_count, pin, NEO_GRBW + NEO_KHZ800),
+        zones(zones)
+    {
+        pixels.begin();
+    }
+
+    void enableZone(size_t zone, bool enable)
+    {
+        if (zone < zones.size()) {
+            zones.at(zone).enable(enable);
+        }
+    }
+
+    void update()
+    {
+        pixels.clear();
+        for (size_t i = 0; i < zones.size(); i++) {
+            zones.at(i).writePixels(pixels);
+        }
+        pixels.show();
+    }
+
+private:
+    Adafruit_NeoPixel pixels;
+    std::vector<NeoPixelSubGroup> zones;
+};
 
 
 class ContextualLightning : public Singleton<ContextualLightning>, public Printable
 {
+private:
+    enum Zone {
+        ZONE_NIGHT_LIGHT_BACK = 0,
+        ZONE_NIGHT_LIGHT_FRONT_DIM = 1,
+        ZONE_NIGHT_LIGHT_FRONT_BRIGHT = 2,
+        ZONE_NIGHT_LIGHT_FRONT_ULTRA_BRIGHT = 3,
+        ZONE_BREAKING_LIGHT = 4,
+        ZONE_BLINKER_RIGHT = 5,
+        ZONE_BLINKER_LEFT = 6,
+        ZONE_DISPLAY_ORANGE = 7,
+        ZONE_DISPLAY_VIOLET = 8
+    };
+
+    enum Blinkers {
+        BLINKERS_OFF,
+        BLINKERS_LEFT,
+        BLINKERS_RIGHT,
+        BLINKERS_BOTH
+    };
+
 public:
-//    ContextualLightning() :
-//        motionControlSystem(MotionControlSystem::Instance()),
-//        slaveSensorLed(SlaveSensorLed::Instance())
-//    {
-//        movingForward = true;
-//        breaking = false;
-//        turningLeft = false;
-//        turningRight = false;
-//    }
-//
-//    void update()
-//    {
-//        static uint32_t lastUpdateTime = 0;
-//        if (millis() - lastUpdateTime > CONTEXTUAL_LIGHTNING_UPDATE_PERIOD)
-//        {
-//            lastUpdateTime = millis();
-//
-//            movingForward = motionControlSystem.isMovingForward();
-//            breaking = motionControlSystem.isBreaking();
-//            float curvature = motionControlSystem.getCurvature();
-//            if (curvature < -TURNING_THRESHOLD) {
-//                turningLeft = false;
-//                turningRight = true;
-//            }
-//            else if (curvature > TURNING_THRESHOLD) {
-//                turningLeft = true;
-//                turningRight = false;
-//            }
-//            else {
-//                turningLeft = false;
-//                turningRight = false;
-//            }
-//            sendUpdates();
-//        }
-//    }
-//
-//private:
-//    void sendUpdates()
-//    {
-//        static bool wasMovingForward = true;
-//        static bool wasBreaking = false;
-//        static bool wasTurningLeft = false;
-//        static bool wasTurningRight = false;
-//
-//        if (wasMovingForward != movingForward) {
-//            if (movingForward) {
-//                slaveSensorLed.setLightOff(SlaveSensorLed::REVERSE_LIGHT);
-//            }
-//            else {
-//                slaveSensorLed.setLightOn(SlaveSensorLed::REVERSE_LIGHT);
-//            }
-//            wasMovingForward = movingForward;
-//        }
-//
-//        if (wasBreaking != breaking) {
-//            if (breaking) {
-//                slaveSensorLed.setLightOn(SlaveSensorLed::STOP_LIGHT);
-//            }
-//            else {
-//                slaveSensorLed.setLightOff(SlaveSensorLed::STOP_LIGHT);
-//            }
-//            wasBreaking = breaking;
-//        }
-//
-//        if (wasTurningLeft != turningLeft) {
-//            if (turningLeft) {
-//                slaveSensorLed.setLightOn(SlaveSensorLed::TURN_LEFT);
-//            }
-//            else {
-//                slaveSensorLed.setLightOff(SlaveSensorLed::TURN_LEFT);
-//            }
-//            wasTurningLeft = turningLeft;
-//        }
-//
-//        if (wasTurningRight != turningRight) {
-//            if (turningRight) {
-//                slaveSensorLed.setLightOn(SlaveSensorLed::TURN_RIGHT);
-//            }
-//            else {
-//                slaveSensorLed.setLightOff(SlaveSensorLed::TURN_RIGHT);
-//            }
-//            wasTurningRight = turningRight;
-//        }
-//    }
-//
-//    const MotionControlSystem & motionControlSystem;
-//    SlaveSensorLed & slaveSensorLed;
-//    
-//    bool movingForward;
-//    bool breaking;
-//    bool turningLeft;
-//    bool turningRight;
+    enum NightLight {
+        NIGHT_LIGHT_OFF,
+        NIGHT_LIGHT_LOW,
+        NIGHT_LIGHT_MID,
+        NIGHT_LIGHT_MAX,
+    };
+
+    enum SideDisplay {
+        SIDE_DISPLAY_OFF,
+        SIDE_DISPLAY_ORANGE,
+        SIDE_DISPLAY_VIOLET
+    };
+
+    ContextualLightning() :
+        motionControlSystem(MotionControlSystem::Instance()),
+        lightGroupA(NB_NEOPIXELS_FRONT, PIN_NEOPIXELS_FRONT,
+            std::vector<NeoPixelSubGroup>({
+                /* ZONE_NIGHT_LIGHT_BACK */
+                NeoPixelSubGroup(COLOR_RED_DIM, std::vector<uint16_t>({ 0, 1, 2, 3, 12, 13, 14, 15 })),
+                /* ZONE_NIGHT_LIGHT_FRONT_DIM */
+                NeoPixelSubGroup(COLOR_WHITE_DIM, NB_NEOPIXELS_FRONT),
+                /* ZONE_NIGHT_LIGHT_FRONT_BRIGHT */
+                NeoPixelSubGroup(COLOR_WHITE_BRIGHT, NB_NEOPIXELS_FRONT),
+                /* ZONE_NIGHT_LIGHT_FRONT_ULTRA_BRIGHT */
+                NeoPixelSubGroup(COLOR_WHITE_ULTRA_BRIGHT, NB_NEOPIXELS_FRONT),
+                /* ZONE_BREAKING_LIGHT */
+                NeoPixelSubGroup(COLOR_RED_BRIGHT, std::vector<uint16_t>({ 0, 1, 2, 3, 4, 11, 12, 13, 14, 15 })),
+                /* ZONE_BLINKER_RIGHT */
+                NeoPixelSubGroup(COLOR_ORANGE, std::vector<uint16_t>({ 14, 15 }), 400, 400),
+                /* ZONE_BLINKER_LEFT */
+                NeoPixelSubGroup(COLOR_ORANGE, std::vector<uint16_t>({ 0, 1 }), 400, 400),
+                /* ZONE_DISPLAY_ORANGE */
+                NeoPixelSubGroup(COLOR_ORANGE, NB_NEOPIXELS_FRONT, 200, 800),
+                /* ZONE_DISPLAY_VIOLET */
+                NeoPixelSubGroup(COLOR_VIOLET, NB_NEOPIXELS_FRONT, 200, 800)
+            })),
+        lightGroupB(NB_NEOPIXELS_BACK, PIN_NEOPIXELS_BACK,
+            std::vector<NeoPixelSubGroup>({
+                /* ZONE_NIGHT_LIGHT_BACK */
+                NeoPixelSubGroup(COLOR_RED_DIM, std::vector<uint16_t>({ 0, 1, 2, 3, 4, 7, 8, 9, 10, 11 })),
+                /* ZONE_NIGHT_LIGHT_FRONT_DIM */
+                NeoPixelSubGroup(COLOR_WHITE_DIM, NB_NEOPIXELS_BACK),
+                /* ZONE_NIGHT_LIGHT_FRONT_BRIGHT */
+                NeoPixelSubGroup(COLOR_WHITE_BRIGHT, NB_NEOPIXELS_BACK),
+                /* ZONE_NIGHT_LIGHT_FRONT_ULTRA_BRIGHT */
+                NeoPixelSubGroup(COLOR_WHITE_ULTRA_BRIGHT, NB_NEOPIXELS_BACK),
+                /* ZONE_BREAKING_LIGHT */
+                NeoPixelSubGroup(COLOR_RED_BRIGHT, NB_NEOPIXELS_BACK),
+                /* ZONE_BLINKER_RIGHT */
+                NeoPixelSubGroup(COLOR_ORANGE, std::vector<uint16_t>({ 8, 9, 13 }), 400, 400),
+                /* ZONE_BLINKER_LEFT */
+                NeoPixelSubGroup(COLOR_ORANGE, std::vector<uint16_t>({ 3, 4, 5 }), 400, 400),
+                /* ZONE_DISPLAY_ORANGE */
+                NeoPixelSubGroup(COLOR_ORANGE, NB_NEOPIXELS_BACK, 200, 800),
+                /* ZONE_DISPLAY_VIOLET */
+                NeoPixelSubGroup(COLOR_VIOLET, NB_NEOPIXELS_BACK, 200, 800)
+            }))
+    {
+        blinkers = BLINKERS_OFF;
+        nightLight = NIGHT_LIGHT_OFF;
+        sideDisplay = SIDE_DISPLAY_OFF;
+        movingForward = true;
+        breaking = false;
+    }
+
+    void update()
+    {
+        static uint32_t lastUpdateTime = 0;
+        if (millis() - lastUpdateTime > CONTEXTUAL_LIGHTNING_UPDATE_PERIOD)
+        {
+            lastUpdateTime = millis();
+
+            movingForward = motionControlSystem.isMovingForward();
+            breaking = motionControlSystem.isBreaking();
+            float curvature = motionControlSystem.getCurvature();
+            if (blinkers != BLINKERS_BOTH) {
+                if (curvature < -TURNING_THRESHOLD) {
+                    blinkers = BLINKERS_RIGHT;
+                }
+                else if (curvature > TURNING_THRESHOLD) {
+                    blinkers = BLINKERS_LEFT;
+                }
+                else {
+                    blinkers = BLINKERS_OFF;
+                }
+            }
+
+            NeoPixelGroup *front;
+            NeoPixelGroup *rear;
+            if (movingForward) {
+                front = &lightGroupA;
+                rear = &lightGroupB;
+            }
+            else {
+                front = &lightGroupB;
+                rear = &lightGroupA;
+            }
+
+            front->enableZone(ZONE_NIGHT_LIGHT_BACK, false);
+            rear->enableZone(ZONE_NIGHT_LIGHT_BACK, nightLight != NIGHT_LIGHT_OFF);
+            front->enableZone(ZONE_NIGHT_LIGHT_FRONT_DIM, nightLight == NIGHT_LIGHT_LOW);
+            rear->enableZone(ZONE_NIGHT_LIGHT_FRONT_DIM, false);
+            front->enableZone(ZONE_NIGHT_LIGHT_FRONT_BRIGHT, nightLight == NIGHT_LIGHT_MID);
+            rear->enableZone(ZONE_NIGHT_LIGHT_FRONT_BRIGHT, false);
+            front->enableZone(ZONE_NIGHT_LIGHT_FRONT_ULTRA_BRIGHT, nightLight == NIGHT_LIGHT_MAX);
+            rear->enableZone(ZONE_NIGHT_LIGHT_FRONT_ULTRA_BRIGHT, false);
+            front->enableZone(ZONE_BREAKING_LIGHT, false);
+            rear->enableZone(ZONE_BREAKING_LIGHT, breaking);
+            front->enableZone(ZONE_BLINKER_LEFT, blinkers == BLINKERS_LEFT || blinkers == BLINKERS_BOTH);
+            rear->enableZone(ZONE_BLINKER_LEFT, blinkers == BLINKERS_LEFT || blinkers == BLINKERS_BOTH);
+            front->enableZone(ZONE_BLINKER_RIGHT, blinkers == BLINKERS_RIGHT || blinkers == BLINKERS_BOTH);
+            rear->enableZone(ZONE_BLINKER_RIGHT, blinkers == BLINKERS_RIGHT || blinkers == BLINKERS_BOTH);
+            front->enableZone(ZONE_DISPLAY_ORANGE, sideDisplay == SIDE_DISPLAY_ORANGE);
+            rear->enableZone(ZONE_DISPLAY_ORANGE, sideDisplay == SIDE_DISPLAY_ORANGE);
+            front->enableZone(ZONE_DISPLAY_VIOLET, sideDisplay == SIDE_DISPLAY_VIOLET);
+            rear->enableZone(ZONE_DISPLAY_VIOLET, sideDisplay == SIDE_DISPLAY_VIOLET);
+            
+            lightGroupA.update();
+            lightGroupB.update();
+        }
+    }
+
+    void setNightLight(NightLight mode)
+    {
+        nightLight = mode;
+    }
+
+    void setSideDisplay(SideDisplay mode)
+    {
+        sideDisplay = mode;
+    }
+
+    void enableWarnings(bool enable)
+    {
+        if (enable) {
+            blinkers = BLINKERS_BOTH;
+            lightGroupA.enableZone(ZONE_BLINKER_LEFT, false);
+            lightGroupB.enableZone(ZONE_BLINKER_LEFT, false);
+            lightGroupA.enableZone(ZONE_BLINKER_RIGHT, false);
+            lightGroupB.enableZone(ZONE_BLINKER_RIGHT, false);
+        }
+        else {
+            blinkers = BLINKERS_OFF;
+        }
+    }
+
+    size_t printTo(Print& p) const
+    {
+        return 0;
+    }
+
+private:
+    const MotionControlSystem & motionControlSystem;
+    NeoPixelGroup lightGroupA; // Horizontal bar (front)
+    NeoPixelGroup lightGroupB; // Two circles (rear)
+
+    Blinkers blinkers;
+    NightLight nightLight;
+    SideDisplay sideDisplay;
+    bool movingForward;
+    bool breaking;
 };
 
 

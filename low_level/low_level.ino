@@ -13,6 +13,7 @@
 #include <ToF_sensor.h>
 #include <A4988.h>
 #include <Adafruit_LEDBackpack.h>
+#include <Adafruit_NeoPixel.h>
 #include "Config.h"
 #include "OrderMgr.h"
 #include "MotionControlSystem.h"
@@ -20,12 +21,14 @@
 #include "ActuatorMgr.h"
 #include "SensorsMgr.h"
 #include "Serializer.h"
+#include "Dashboard.h"
 
 #define ODOMETRY_REPORT_PERIOD  20  // ms
 
 
 void setup()
 {
+    Wire.begin();
     pinMode(PIN_DEL_WARNING, OUTPUT);
     pinMode(PIN_DEL_ERROR, OUTPUT);
     digitalWrite(PIN_DEL_WARNING, HIGH);
@@ -45,6 +48,8 @@ void loop()
     DirectionController &directionController = DirectionController::Instance();
     SensorsMgr &sensorMgr = SensorsMgr::Instance();
     ActuatorMgr &actuatorMgr = ActuatorMgr::Instance();
+    Dashboard &dashboard = Dashboard::Instance();
+    ContextualLightning &contextualLightning = ContextualLightning::Instance();
 
     IntervalTimer motionControlTimer;
     motionControlTimer.priority(253);
@@ -60,16 +65,21 @@ void loop()
     uint32_t delTimer = 0;
     bool delState = true;
 
+    sensorMgr.init();
+    dashboard.init();
+
     while (true)
     {
         orderManager.execute();
         directionController.control();
-        sensorMgr.update();
         actuatorMgr.mainLoopControl();
+        contextualLightning.update();
 
         if (millis() - odometryReportTimer > ODOMETRY_REPORT_PERIOD)
         {
             odometryReportTimer = millis();
+            sensorMgr.update();
+            //Serial.println(sensorMgr);
 
             odometryReport.clear();
             Position p = motionControlSystem.getPosition();

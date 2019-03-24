@@ -23,10 +23,10 @@ public:
             42, PIN_EN_TOF_AVG, TOF_LR_MIN_RANGE, TOF_LR_MAX_RANGE, "AVG", &Serial);
         sensors[1] = new ToF_longRange_med<TOF_LR_MEDIAN_SIZE>(
             44, PIN_EN_TOF_AVD, TOF_LR_MIN_RANGE, TOF_LR_MAX_RANGE, "AVD", &Serial);
-        sensors[2] = new ToF_shortRange(
-            47, PIN_EN_TOF_FLAN_ARG, TOF_SR_MIN_RANGE, TOF_SR_MAX_RANGE, "FlanARG", &Serial);
-        sensors[3] = new ToF_shortRange(
-            48, PIN_EN_TOF_FLAN_ARD, TOF_SR_MIN_RANGE, TOF_SR_MAX_RANGE, "FlanARD", &Serial);
+        sensors[2] = new ToF_longRange_med < TOF_LR_MEDIAN_SIZE>(
+            47, PIN_EN_TOF_FLAN_ARG, TOF_LR_MIN_RANGE, TOF_LR_MAX_RANGE, "FlanARG", &Serial);
+        sensors[3] = new ToF_longRange_med<TOF_LR_MEDIAN_SIZE>(
+            48, PIN_EN_TOF_FLAN_ARD, TOF_LR_MIN_RANGE, TOF_LR_MAX_RANGE, "FlanARD", &Serial);
         sensors[4] = new ToF_longRange_med<TOF_LR_MEDIAN_SIZE>(
             49, PIN_EN_TOF_ARG, TOF_LR_MIN_RANGE, TOF_LR_MAX_RANGE, "ARG", &Serial);
         sensors[5] = new ToF_longRange_med<TOF_LR_MEDIAN_SIZE>(
