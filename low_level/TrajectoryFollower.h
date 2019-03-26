@@ -89,8 +89,8 @@ public:
 			if (trajectoryControlled)
 			{
 				curvaturePID.compute(isMovingForward());	// MAJ curvatureOrder
+			    directionController.setAimCurvature(curvatureOrder);
 			}
-			directionController.setAimCurvature(curvatureOrder);
 
 			if (translationControlled)
 			{

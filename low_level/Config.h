@@ -12,6 +12,11 @@
 #define AVERAGE_SPEED_SIZE      50          // Nombre de valeurs à utiliser dans le calcul de la moyenne glissante permettant de lisser la mesure de vitesse
 
 
+/* Liaison série AX12 */
+#define SERIAL_AX12			    Serial1		// Pins 0 1
+#define SERIAL_AX12_BAUDRATE    1000000
+#define SERIAL_AX12_TIMEOUT     50          // ms  (standard is 50ms, minimum is 2ms)
+
 /* IDs des AX12 */
 #define ID_AX12_DIRECTION   2
 #define ID_AX12_ACT_Y       0
@@ -54,13 +59,6 @@
 #define PIN_WIZ820_MOSI     11
 #define PIN_WIZ820_MISO     12
 #define PIN_WIZ820_SCLK     13
-
-/* Liaison série */
-#define SERIAL_AX12			Serial1		// Pins 0 1
-#define SERIAL_AX12_BAUDRATE        1000000
-
-/* Timeout */
-#define SERIAL_AX12_TIMEOUT     50  // ms  (standard is 50ms, minimum is 2ms)
 
 /* ToF sensors */
 #define PIN_EN_TOF_AVG          24

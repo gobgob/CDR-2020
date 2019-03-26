@@ -171,16 +171,16 @@ private:
 
 public:
     enum NightLight {
-        NIGHT_LIGHT_OFF,
-        NIGHT_LIGHT_LOW,
-        NIGHT_LIGHT_MID,
-        NIGHT_LIGHT_MAX,
+        NIGHT_LIGHT_OFF = 0,
+        NIGHT_LIGHT_LOW = 1,
+        NIGHT_LIGHT_MID = 2,
+        NIGHT_LIGHT_MAX = 3,
     };
 
     enum SideDisplay {
-        SIDE_DISPLAY_OFF,
-        SIDE_DISPLAY_ORANGE,
-        SIDE_DISPLAY_VIOLET
+        SIDE_DISPLAY_OFF    = 0,
+        SIDE_DISPLAY_ORANGE = 1,
+        SIDE_DISPLAY_VIOLET = 2
     };
 
     ContextualLightning() :

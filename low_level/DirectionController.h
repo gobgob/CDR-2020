@@ -16,10 +16,10 @@
 #define CONTROL_PERIOD	10000 // µs
 
 /* Angles limites, en degrés (uint16_t) */
-#define DIR_ANGLE_MIN	    0   // doit être positif
-#define DIR_ANGLE_ORIGIN    150
-#define DIR_ANGLE_MAX	    300 // taille du tableau de conversion angle-courbure
-#define DIR_TABLE_SIZE      (DIR_ANGLE_MAX + 1)
+#define DIR_ANGLE_MIN	    70   // doit être positif
+#define DIR_ANGLE_ORIGIN    147
+#define DIR_ANGLE_MAX	    200
+#define DIR_TABLE_SIZE      301 // taille du tableau de conversion angle-courbure
 
 
 enum DirectionControllerStatus
@@ -92,6 +92,8 @@ public:
         directionMotor.recoverTorque();
     }
 	
+
+    /*--- Méthodes à appeller depuis une interrupt ---*/
 	void setAimCurvature(float curvature)
 	{
 		aimCurvature = curvature;
@@ -100,13 +102,21 @@ public:
 	{
 		return realCurvature;
 	}
+    /*--- fin ---*/
+
 	uint16_t getMotorAngle() const
 	{
 		return realMotorAngle;
 	}
 	void setMotorAngle(uint16_t angle)
 	{
+        if (angle < DIR_ANGLE_MIN || angle > DIR_ANGLE_MAX) {
+            return;
+        }
 		aimMotorAngle = angle;
+        noInterrupts();
+        aimCurvature = angle_curvature_table[aimMotorAngle];
+        interrupts();
 	}
 
 	size_t printTo(Print& p) const
@@ -133,12 +143,11 @@ private:
 
         while (max_index - min_index > 1)
         {
-            // todo : vérifier le sens des comparaisons
-            if (aimCurvature_cpy > angle_curvature_table[index])
+            if (aimCurvature_cpy < angle_curvature_table[index])
             {
                 min_index = index;
             }
-            else if (aimCurvature_cpy < angle_curvature_table[index])
+            else if (aimCurvature_cpy > angle_curvature_table[index])
             {
                 max_index = index;
             }

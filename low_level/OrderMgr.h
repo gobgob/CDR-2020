@@ -42,29 +42,37 @@ public:
         immediateOrderList[0x04] = &AppendToTraj::Instance();
         immediateOrderList[0x05] = &EditTraj::Instance();
         immediateOrderList[0x06] = &DeleteTrajPts::Instance();
-        immediateOrderList[0x08] = &SetScore::Instance();
+        immediateOrderList[0x07] = &SetScore::Instance();
+        immediateOrderList[0x08] = &SetNightLights::Instance();
+        immediateOrderList[0x09] = &SetWarnings::Instance();
+        // 0x0A: ActuatorStop
+        // 0x0B: ActuatorGetPosition
 
         immediateOrderList[0x10] = &Display::Instance();
         immediateOrderList[0x11] = &Save::Instance();
         immediateOrderList[0x12] = &LoadDefaults::Instance();
         immediateOrderList[0x13] = &GetPosition::Instance();
-        immediateOrderList[0x15] = &SetControlLevel::Instance();
-        immediateOrderList[0x17] = &StartManualMove::Instance();
-        immediateOrderList[0x19] = &SetMaxSpeed::Instance();
-        immediateOrderList[0x1A] = &SetAimDistance::Instance();
-        immediateOrderList[0x1B] = &SetCurvature::Instance();
-        immediateOrderList[0x1D] = &SetTranslationTunings::Instance();
-        immediateOrderList[0x1E] = &SetTrajectoryTunings::Instance();
-        immediateOrderList[0x20] = &SetStoppingTunings::Instance();
-        immediateOrderList[0x21] = &SetMaxAcceleration::Instance();
-        immediateOrderList[0x22] = &SetMaxDeceleration::Instance();
-        immediateOrderList[0x23] = &SetMaxCurvature::Instance();
+        immediateOrderList[0x14] = &SetControlLevel::Instance();
+        immediateOrderList[0x15] = &StartManualMove::Instance();
+        immediateOrderList[0x16] = &SetMaxSpeed::Instance();
+        immediateOrderList[0x17] = &SetAimDistance::Instance();
+        immediateOrderList[0x18] = &SetCurvature::Instance();
+        immediateOrderList[0x19] = &SetDirAngle::Instance();
+        immediateOrderList[0x1A] = &SetTranslationTunings::Instance();
+        immediateOrderList[0x1B] = &SetTrajectoryTunings::Instance();
+        immediateOrderList[0x1C] = &SetStoppingTunings::Instance();
+        immediateOrderList[0x1D] = &SetMaxAcceleration::Instance();
+        immediateOrderList[0x1E] = &SetMaxDeceleration::Instance();
+        immediateOrderList[0x1F] = &SetMaxCurvature::Instance();
 
         // Ordres longs
         longOrderList[0x00] = &FollowTrajectory::Instance();
         longOrderList[0x01] = &Stop::Instance();
         longOrderList[0x02] = &WaitForJumper::Instance();
         longOrderList[0x03] = &StartChrono::Instance();
+        // 0x04: ActuatorHome
+        // 0x05: ActuatorGoTo
+        // 0x06: ActuatorFindPuck
     }
 
     void execute()

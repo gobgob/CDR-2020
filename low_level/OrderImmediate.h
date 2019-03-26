@@ -12,6 +12,8 @@
 #include "MotionControlTunings.h"
 #include "CommunicationServer.h"
 #include "ActuatorMgr.h"
+#include "Dashboard.h"
+#include "ContextualLightning.h"
 #include "Singleton.h"
 
 
@@ -20,8 +22,9 @@ class OrderImmediate
 public:
     OrderImmediate() : 
         motionControlSystem(MotionControlSystem::Instance()),
-        directionController(DirectionController::Instance())
-        //,slaveActuator(SlaveActuator::Instance())
+        directionController(DirectionController::Instance()),
+        dashboard(Dashboard::Instance()),
+        contextualLightning(ContextualLightning::Instance())
     {}
 
     /*
@@ -33,7 +36,8 @@ public:
 protected:
     MotionControlSystem & motionControlSystem;
     DirectionController & directionController;
-    //SlaveActuator & slaveActuator;
+    Dashboard & dashboard;
+    ContextualLightning & contextualLightning;
 };
 
 
@@ -310,7 +314,7 @@ public:
         {
             size_t index = 0;
             int32_t score = Serializer::readInt(io, index);
-            //slaveActuator.setDisplayedScore(score);
+            dashboard.setScore(score);
             io.clear();
         }
         else
@@ -320,6 +324,53 @@ public:
         }
     }
 };
+
+
+class SetNightLights : public OrderImmediate, public Singleton<SetNightLights>
+{
+public:
+    SetNightLights() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == 1)
+        {
+            size_t index = 0;
+            uint8_t lightLevel = Serializer::readEnum(io, index);
+            contextualLightning.setNightLight((ContextualLightning::NightLight)lightLevel);
+            Server.printf(SPY_ORDER, "NightLightLevel=%u\n", lightLevel);
+            io.clear();
+        }
+        else
+        {
+            Server.printf_err("SetNightLights: wrong number of arguments\n");
+            io.clear();
+        }
+    }
+};
+
+
+class SetWarnings : public OrderImmediate, public Singleton<SetWarnings>
+{
+public:
+    SetWarnings() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == 1)
+        {
+            size_t index = 0;
+            bool enable = Serializer::readBool(io, index);
+            contextualLightning.enableWarnings(enable);
+            Server.printf(SPY_ORDER, "Warnings=%d\n", enable);
+            io.clear();
+        }
+        else
+        {
+            Server.printf_err("SetWarnings: wrong number of arguments\n");
+            io.clear();
+        }
+    }
+};
+
 
 
 /********************
@@ -511,13 +562,38 @@ public:
             size_t readIndex = 0;
             float curvature = Serializer::readFloat(io, readIndex);
             motionControlSystem.setCurvature(curvature);
+            noInterrupts();
             directionController.setAimCurvature(curvature);
+            interrupts();
             Server.printf(SPY_ORDER, "SetCurvature: %gm^-1\n", curvature);
             io.clear();
         }
         else
         {
             Server.printf_err("SetCurvature: wrong number of arguments\n");
+            io.clear();
+        }
+    }
+};
+
+
+class SetDirAngle : public OrderImmediate, public Singleton<SetDirAngle>
+{
+public:
+    SetDirAngle() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == 4)
+        {
+            size_t readIndex = 0;
+            int32_t angle = Serializer::readInt(io, readIndex);
+            directionController.setMotorAngle(angle);
+            Server.printf(SPY_ORDER, "SetDirAngle: %ddeg\n", angle);
+            io.clear();
+        }
+        else
+        {
+            Server.printf_err("SetDirAngle: wrong number of arguments\n");
             io.clear();
         }
     }

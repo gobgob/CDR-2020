@@ -16,7 +16,7 @@ public:
 	{
         maxAcceleration = 1000;
         maxDeceleration = 12000;
-        maxCurvature = 10;
+        maxCurvature = 4.5;
         minAimSpeed = 80;
 
         stoppedSpeed = 10;

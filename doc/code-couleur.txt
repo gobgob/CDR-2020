@@ -1,0 +1,23 @@
+# Capteurs
+Orange			: Vin
+Marron			: GND
+Bleu-blanc		: SDA
+Vert-blanc		: SCL
+Marron-blanc	: AR-G-Flan
+Orange-blanc	: AR-G
+Bleu			: AR-D-Flan
+Vert			: AR-D
+
+# Phares
+## AR-G
+Marron		: GND
+Noir		: GND
+Orange		: +5V
+Bleu-blanc	: Data in
+Violet		: Data in
+Vert-blanc	: Data out
+
+#AX12
+Noir	: GND
+Rouge	: VCC
+Marron	: Data
