@@ -66,7 +66,10 @@ public:
         }
         for (size_t i = 0; i < NB_SENSORS; i++)
         {
-            sensorsValues[i] = sensors[i]->getMeasure();
+            SensorValue val = sensors[i]->getMeasure();
+            if (val != SENSOR_NOT_UPDATED) {
+                sensorsValues[i] = val;
+            }
         }
     }
 
@@ -75,15 +78,17 @@ public:
         if (!members_allocated || i >= NB_SENSORS) {
             return;
         }
-        sensorsValues[i] = sensors[i]->getMeasure();
+        SensorValue val = sensors[i]->getMeasure();
+        if (val != SENSOR_NOT_UPDATED) {
+            sensorsValues[i] = val;
+        }
     }
 
-    void appendValuesToVect(std::vector<uint8_t> & output)
+    void appendValuesToVect(std::vector<uint8_t> & output) const
     {
         for (size_t i = 0; i < NB_SENSORS; i++)
         {
             Serializer::writeInt(sensorsValues[i], output);
-            sensorsValues[i] = (SensorValue)SENSOR_NOT_UPDATED;
         }
     }
 
@@ -99,9 +104,13 @@ public:
             ret += p.print(sensors[i]->name);
             ret += p.print("=");
             SensorValue val = sensorsValues[i];
-            if (val == (SensorValue)SENSOR_DEAD || val == (SensorValue)SENSOR_NOT_UPDATED)
+            if (val == (SensorValue)SENSOR_DEAD)
             {
                 ret += p.print("HS ");
+            }
+            else if (val == (SensorValue)SENSOR_NOT_UPDATED)
+            {
+                ret += p.print("Old ");
             }
             else if (val == (SensorValue)NO_OBSTACLE)
             {
