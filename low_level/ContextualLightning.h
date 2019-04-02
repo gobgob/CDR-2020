@@ -6,6 +6,7 @@
 #include <Printable.h>
 #include <vector>
 #include "MotionControlSystem.h"
+#include "LedBlinker.h"
 #include "Config.h"
 
 #define CONTEXTUAL_LIGHTNING_UPDATE_PERIOD  50  // ms
@@ -21,48 +22,6 @@
 #define COLOR_WHITE_DIM             (Adafruit_NeoPixel::Color(0, 0, 0, 10))
 #define COLOR_WHITE_BRIGHT          (Adafruit_NeoPixel::Color(0, 0, 0, 70))
 #define COLOR_WHITE_ULTRA_BRIGHT    (Adafruit_NeoPixel::Color(0, 0, 0, 255))
-
-
-class NeoPixelBlinker
-{
-public:
-    NeoPixelBlinker()
-    {
-        off_duration = 0;
-        on_duration = 0;
-        origin_time = 0;
-    }
-
-    void setPeriod(uint32_t off_d, uint32_t on_d)
-    {
-        off_duration = off_d;
-        on_duration = on_d;
-    }
-
-    void start()
-    {
-        origin_time = millis();
-    }
-
-    bool value() const
-    {
-        if (off_duration == 0) {
-            return true;
-        }
-        else if (on_duration == 0) {
-            return false;
-        }
-
-        uint32_t now = millis() - origin_time;
-        now = now % (on_duration + off_duration);
-        return now < on_duration;
-    }
-
-private:
-    uint32_t off_duration;  // ms
-    uint32_t on_duration;   // ms
-    uint32_t origin_time;   // ms
-};
 
 
 class NeoPixelSubGroup
@@ -109,7 +68,7 @@ public:
 
 private:
     bool enabled;
-    NeoPixelBlinker blinker;
+    LedBlinker blinker;
     uint32_t color;
     std::vector<uint16_t> led_index;
 };

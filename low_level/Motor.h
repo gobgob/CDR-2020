@@ -4,7 +4,7 @@
 #include "Arduino.h"
 #include "Config.h"
 
-#define MOTOR_MAX_SPEED 1500.0  // mm/s
+#define MOTOR_MAX_SPEED 1800.0  // mm/s
 #define MOTOR_PWM_RES   16      // bits
 #define MOTOR_PWM_FREQ  50      // Hz
 #define MOTOR_MAX_PWM   6553

@@ -26,21 +26,7 @@
 #define ODOMETRY_REPORT_PERIOD  20  // ms
 
 
-void setup()
-{
-    Wire.begin();
-    pinMode(PIN_DEL_WARNING, OUTPUT);
-    pinMode(PIN_DEL_ERROR, OUTPUT);
-    digitalWrite(PIN_DEL_WARNING, HIGH);
-
-    if (Server.begin() != 0)
-    {
-        digitalWrite(PIN_DEL_ERROR, HIGH);
-        delay(500);
-    }
-}
-
-
+void setup() {}
 void loop()
 {
     OrderMgr orderManager;
@@ -50,23 +36,25 @@ void loop()
     ActuatorMgr &actuatorMgr = ActuatorMgr::Instance();
     Dashboard &dashboard = Dashboard::Instance();
     ContextualLightning &contextualLightning = ContextualLightning::Instance();
-
     IntervalTimer motionControlTimer;
-    motionControlTimer.priority(253);
-    motionControlTimer.begin(motionControlInterrupt, PERIOD_ASSERV);
-
     IntervalTimer actuatorMgrTimer;
-    actuatorMgrTimer.priority(252);
-    actuatorMgrTimer.begin(actuatorMgrInterrupt, ACTUATOR_MGR_INTERRUPT_PERIOD);
-
     uint32_t odometryReportTimer = 0;
     std::vector<uint8_t> odometryReport;
 
-    uint32_t delTimer = 0;
-    bool delState = true;
-
-    sensorMgr.init();
+    Wire.begin();
     dashboard.init();
+    if (Server.begin() != 0)
+    {
+        dashboard.setErrorLevel(Dashboard::WEAK_ERROR);
+    }
+    sensorMgr.init();
+
+    motionControlTimer.priority(253);
+    motionControlTimer.begin(motionControlInterrupt, PERIOD_ASSERV);
+    actuatorMgrTimer.priority(252);
+    actuatorMgrTimer.begin(actuatorMgrInterrupt, ACTUATOR_MGR_INTERRUPT_PERIOD);
+
+    contextualLightning.setNightLight(ContextualLightning::NIGHT_LIGHT_LOW);
 
     while (true)
     {
@@ -74,6 +62,7 @@ void loop()
         directionController.control();
         actuatorMgr.mainLoopControl();
         contextualLightning.update();
+        dashboard.update();
 
         if (millis() - odometryReportTimer > ODOMETRY_REPORT_PERIOD)
         {
@@ -93,13 +82,6 @@ void loop()
             Server.sendData(ODOMETRY_AND_SENSORS, odometryReport);
 
             motionControlSystem.sendLogs();
-        }
-
-        if (millis() - delTimer > 500)
-        {
-            delState = !delState;
-            digitalWrite(PIN_DEL_WARNING, delState);
-            delTimer = millis();
         }
     }
 }

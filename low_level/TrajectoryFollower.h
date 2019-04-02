@@ -349,6 +349,7 @@ public:
         Server.print(PID_TRANS, translationPID);
         Server.print(PID_TRAJECTORY, curvaturePID);
         Server.print(STOPPING_MGR, endOfMoveMgr);
+        Server.printf(PID_SPEED, "%u_%g_%g_%g", millis(), currentMovingSpeed, 0, 0);
         if (moveStatus != lastMoveStatus)
         {
             if (moveStatus != MOVE_OK)

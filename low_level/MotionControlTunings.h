@@ -14,19 +14,19 @@ public:
 
 	void setDefault()
 	{
-        maxAcceleration = 1000;
+        maxAcceleration = 2000;
         maxDeceleration = 12000;
         maxCurvature = 4.5;
-        minAimSpeed = 80;
+        minAimSpeed = 400;
 
-        stoppedSpeed = 10;
-        stoppingResponseTime = 100;
+        stoppedSpeed = 50;
+        stoppingResponseTime = 150;
 
         curvatureK1 = 0.1;
-        curvatureK2 = 12;
+        curvatureK2 = 12.0;
 
-        translationKp = 6;
-        translationKd = 0.2;
+        translationKp = 8.0;
+        translationKd = 1.0;
 	}
 
     size_t printTo(Print& p) const
