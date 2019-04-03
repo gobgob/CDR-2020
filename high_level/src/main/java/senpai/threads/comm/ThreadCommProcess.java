@@ -97,10 +97,10 @@ public class ThreadCommProcess extends Thread
 				if(paquet.origine == Id.ASK_COLOR)
 				{
 					byte code = data.get();
-					if(code == LLStatus.COULEUR_VERT.codeInt)
-						paquet.origine.ticket.set(LLStatus.COULEUR_VERT.etat, RobotColor.JAUNE);
-					else if(code == LLStatus.COULEUR_ORANGE.codeInt)
-						paquet.origine.ticket.set(LLStatus.COULEUR_ORANGE.etat, RobotColor.VIOLET);
+					if(code == LLStatus.COULEUR_JAUNE.codeInt)
+						paquet.origine.ticket.set(LLStatus.COULEUR_JAUNE.etat, RobotColor.JAUNE);
+					else if(code == LLStatus.COULEUR_VIOLET.codeInt)
+						paquet.origine.ticket.set(LLStatus.COULEUR_VIOLET.etat, RobotColor.VIOLET);
 					else
 						paquet.origine.ticket.set(LLStatus.COULEUR_ROBOT_INCONNU.etat);
 				}
@@ -171,18 +171,12 @@ public class ThreadCommProcess extends Thread
 					assert data.capacity() == 4 && data.getInt() == 0x00 : paquet;
 					paquet.origine.ticket.set(CommProtocol.State.OK);
 				}
-				
-				else if(paquet.origine == Id.GET_BATTERY)
-				{
-					int pourcentage = data.getInt();
-					paquet.origine.ticket.set(CommProtocol.State.OK, pourcentage);
-				}
 
 				/*
 				 * ACTIONNEURS
 				 */				
 
-				else if(paquet.origine.name().startsWith("ARM_"))
+				else if(paquet.origine.name().startsWith("ACTUATOR_"))
 				{
 					// Exemple
 					int code = data.getInt();

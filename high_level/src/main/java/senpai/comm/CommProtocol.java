@@ -27,9 +27,7 @@ public class CommProtocol
 	public enum State
 	{
 		OK,
-		KO,
-		DESTROYED_CUBE,
-		NO_CUBE;
+		KO;
 	}
 	
 	public enum Channel
@@ -64,7 +62,9 @@ public class CommProtocol
 		STOP(0x21, -20),
 		WAIT_FOR_JUMPER(0x22),
 		START_MATCH_CHRONO(0x23),
-//		ARM_GO_HOME(0x24, "armGoHome"),
+		ACTUATOR_GO_HOME(0x24, "actuatorGoHome"),
+		ACTUATOR_GO_TO(0x25, "actuatorGoTo"),
+		ACTUATOR_FIND_PUCK(0x26, "actuatorFindPuck"),
 				
 		// Ordres immédiats (0x80 à 0xFF)
 		PING(0x80, true),
@@ -74,10 +74,28 @@ public class CommProtocol
 		ADD_POINTS(0x84, true, -10),
 		EDIT_POINTS(0x85, true, -10),
 		DESTROY_POINTS(0x86, true, -10),
-		SET_SCORE(0x88, false),
-		GET_BATTERY(0x94, true),
-		SET_CURVATURE(0x9B, false);
+		SET_SCORE(0x87, false),
+		SET_NIGHT_LIGHT(0x88, false),
+		SET_WARNINGS(0x89, false),
+		ACT_STOP(0x8A, false),
+		ACT_GET_POSITION(0x8B, true),
 		
+		DISPLAY(0x90, false),
+		SAVE(0x91, false),
+		LOAD_DEFAULTS(0x92, false),
+		GET_POSITION(0x93, true),
+		SET_CONTROL_LEVEL(0x94, false),
+		START_MANUAL_MOVE(0x95, false),
+		SET_MAX_SPEED(0x96, false),
+		SET_DISTANCE_TO_DRIVE(0x97, false),
+		SET_CURVATURE(0x98, false),
+		SET_DIRECTION_ANGLE(0x99, false),
+		TRANSLATION_CONSTANTS(0x9A, false),
+		TRAJECTORY_CONSTANTS(0x9B, false),
+		STOPPING_CONSTANTS(0x9C, false),
+		SET_MAX_ACCELERATION(0x9D, false),
+		SET_MAX_DECELERATION(0x9E, false),
+		SET_MAX_CURVATURE(0x9F, false);
 
 		// Paramètres constants
 		public final byte code;
@@ -205,16 +223,14 @@ public class CommProtocol
 
 	public enum ActionneurMask
 	{
-		H_MOTOR_BLOCKED,
-		V_MOTOR_BLOCKED,
-		AX12_BLOCKED,
+		STEPPER_BLOCKED,
+		AX12_Y_BLOCKED,
+		AX12_THETA_BLOCKED,
 		AX12_ERR,
 		MANUAL_STOP,
 		UNREACHABLE,
 		SENSOR_ERR,
 		NO_DETECTION,
-		COMMUNICATION_ERR,
-		CUBE_MISSED,
 		MOVE_TIMED_OUT;
 
 		public final int masque = 1 << ordinal();
@@ -265,20 +281,6 @@ public class CommProtocol
 
 	}
 	
-	public enum LLCote
-	{
-		PAR_LA_GAUCHE(1),
-		PAR_LA_DROITE(-1),
-		AU_PLUS_VITE(0);
-		
-		public final int code;
-
-		private LLCote(int c)
-		{
-			code = c;
-		}
-	}
-	
 	public enum LLStatus
 	{
 		/**
@@ -286,8 +288,8 @@ public class CommProtocol
 		 */
 		
 		// Couleur
-		COULEUR_ORANGE(0x00, State.OK),
-		COULEUR_VERT(0x01, State.OK),
+		COULEUR_VIOLET(0x00, State.OK),
+		COULEUR_JAUNE(0x01, State.OK),
 		COULEUR_ROBOT_INCONNU(0x02, State.KO),
 
 		ACK_SUCCESS(0x00, State.OK),
@@ -303,4 +305,12 @@ public class CommProtocol
 		}
 	}
 
+	public enum NightLightMode
+	{
+		OFF,
+		LOW,
+		MEDIUM,
+		HIGH;
+	}
+	
 }

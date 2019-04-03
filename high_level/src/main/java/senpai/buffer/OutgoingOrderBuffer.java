@@ -24,6 +24,7 @@ import java.util.concurrent.PriorityBlockingQueue;
 import pfg.log.Log;
 import senpai.comm.Order;
 import senpai.comm.Ticket;
+import senpai.comm.CommProtocol;
 import senpai.comm.CommProtocol.Channel;
 import senpai.comm.CommProtocol.Id;
 import senpai.utils.ConfigInfoSenpai;
@@ -157,7 +158,6 @@ public class OutgoingOrderBuffer implements Plottable
 		return Id.START_MATCH_CHRONO.ticket;
 	}
 
-
 	/**
 	 * Set la courbure
 	 */
@@ -185,15 +185,6 @@ public class OutgoingOrderBuffer implements Plottable
 		addToBuffer(new Order(Id.ASK_COLOR));
 		return Id.ASK_COLOR.ticket;
 	}
-
-	/**
-	 * Demande le niveau de batterie
-	 */
-	public Ticket niveauBatterie()
-	{
-		addToBuffer(new Order(Id.GET_BATTERY));
-		return Id.GET_BATTERY.ticket;
-	}
 	
 	/**
 	 * Ping
@@ -204,6 +195,56 @@ public class OutgoingOrderBuffer implements Plottable
 		return Id.PING.ticket;
 	}
 	
+	public void setNightLight(CommProtocol.NightLightMode mode)
+	{
+		ByteBuffer data = ByteBuffer.allocate(1);
+		data.order(ByteOrder.LITTLE_ENDIAN);
+		data.put((byte)mode.ordinal());
+		addToBuffer(new Order(Id.SET_NIGHT_LIGHT));
+	}
+	
+	public void setWarnings(boolean enable)
+	{
+		ByteBuffer data = ByteBuffer.allocate(1);
+		data.order(ByteOrder.LITTLE_ENDIAN);
+		data.put((byte)(enable ? 1 : 0));
+		addToBuffer(new Order(Id.SET_WARNINGS));
+	}
+	
+	public void actuatorStop()
+	{
+		addToBuffer(new Order(Id.ACT_STOP));
+	}
+	
+	public Ticket actuatorGetPosition()
+	{
+		addToBuffer(new Order(Id.ACT_GET_POSITION));
+		return Id.ACT_GET_POSITION.ticket;
+	}
+	
+	public Ticket actuatorGoHome()
+	{
+		addToBuffer(new Order(Id.ACTUATOR_GO_HOME));
+		return Id.ACTUATOR_GO_HOME.ticket;
+	}
+
+	public Ticket actuatorGoTo()
+	{
+		addToBuffer(new Order(Id.ACTUATOR_GO_TO));
+		return Id.ACTUATOR_GO_TO.ticket;
+	}
+
+	public Ticket actuatorFindPuck(double actY, double actZ, double actTheta)
+	{
+		ByteBuffer data = ByteBuffer.allocate(3*4);
+		data.order(ByteOrder.LITTLE_ENDIAN);
+		data.putFloat((float) actY);
+		data.putFloat((float) actZ);
+		data.putFloat((float) actTheta);
+		addToBuffer(new Order(data, Id.ACTUATOR_FIND_PUCK));
+		return Id.ACTUATOR_FIND_PUCK.ticket;
+	}
+
 	/**
 	 * Démarre un stream
 	 */
