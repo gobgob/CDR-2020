@@ -14,6 +14,7 @@
 
 package senpai.table;
 
+import pfg.kraken.obstacles.CircularObstacle;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.kraken.utils.XY;
 
@@ -24,11 +25,24 @@ import pfg.kraken.utils.XY;
  *
  */
 
-public enum Atome
-{
-	EXAMPLE();
+public enum AtomeParTerre
+{	
+	BAS_GAUCHE(new CircularObstacle(new XY(-1000, 950), 76/2)),
+	MILIEU_GAUCHE(new CircularObstacle(new XY(-1000, 1250), 76/2)),
+	HAUT_GAUCHE(new CircularObstacle(new XY(-1000, 1550), 76/2)),
+	
+	BAS_DROITE(new CircularObstacle(new XY(1000, 950), 76/2)),
+	MILIEU_DROITE(new CircularObstacle(new XY(1000, 1250), 76/2)),
+	HAUT_DROITE(new CircularObstacle(new XY(1000, 1550), 76/2)),
+	
+	PENTE_GAUCHE(new CircularObstacle(new XY(-666, 200), 38)),
+	PENTE_DROITE(new CircularObstacle(new XY(666, 200), 38));
+	
+	public final Obstacle obstacle;// pour vérifier les collisions
 
-	public final Obstacle obstacle = null;// pour vérifier les collisions
-	public final XY position = null;
-
+	private AtomeParTerre(Obstacle obstacle)
+	{
+		this.obstacle = obstacle;
+	}
+	
 }

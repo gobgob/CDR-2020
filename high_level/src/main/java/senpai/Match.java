@@ -159,7 +159,6 @@ public class Match
 
 		log.write("Couleur utilisée : "+couleur, Subject.STATUS);
 		robot.updateColorAndSendPosition(couleur, byLL);
-		table.updateCote(couleur.symmetry);
 		scripts.setCouleur(couleur);
 
 //		try {

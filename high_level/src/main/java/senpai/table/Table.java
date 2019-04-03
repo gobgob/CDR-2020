@@ -46,7 +46,7 @@ public class Table implements Printable
 	// Dépendances
 	protected transient Log log;
 
-	private HashMap<Atome, Boolean> etat = new HashMap<Atome, Boolean>();
+	private HashMap<AtomeParTerre, Boolean> etat = new HashMap<AtomeParTerre, Boolean>();
 	private List<Obstacle> currentObstacles = new ArrayList<Obstacle>();
 	
 	public Table(Log log, Config config, GraphicDisplay buffer)
@@ -54,24 +54,8 @@ public class Table implements Printable
 		this.log = log;
 		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ENABLE))
 			buffer.addPrintable(this, Color.BLACK, Layer.BACKGROUND.layer);
-		for(Atome n : Atome.values())
+		for(AtomeParTerre n : AtomeParTerre.values())
 			etat.put(n, false);
-	}
-
-	public void updateCote(boolean symetrie)
-	{
-/*		for(Cube c : Cube.values())
-			if(!isDone(c) && c.position.getX() > 0 == symetrie)
-				setDone(c);
-		
-		if(symetrie)
-		{
-			pilePosition.setX(-pilePosition.getX());
-			pileOrientation = Math.PI - pileOrientation;
-		}
-		
-		obstaclePilesGrossi = new RectangularObstacle(pilePosition, 58+30, 58+30, pileOrientation);
-		obstaclePiles = new RectangularObstacle(pilePosition, 58, 58, pileOrientation);*/
 	}
 	
 	/**
@@ -81,9 +65,9 @@ public class Table implements Printable
 	 * 
 	 * @param id
 	 */
-	public void setDone(Atome id)
+	public void setDone(AtomeParTerre id)
 	{
-		log.write("Cube absent de la table : "+id, Subject.TABLE);
+		log.write("Atome absent de la table : "+id, Subject.TABLE);
 		etat.put(id, true);
 	}
 
@@ -92,7 +76,7 @@ public class Table implements Printable
 	 * 
 	 * @param id
 	 */
-	public boolean isDone(Atome id)
+	public boolean isDone(AtomeParTerre id)
 	{
 		return etat.get(id);
 	}
@@ -100,9 +84,9 @@ public class Table implements Printable
 	public Iterator<Obstacle> getCurrentObstaclesIterator()
 	{
 		currentObstacles.clear();
-//		for(Cube n : Cube.values())
-//			if(!etat.get(n))
-//				currentObstacles.add(n.obstacleGrossi);
+		for(AtomeParTerre n : AtomeParTerre.values())
+			if(!etat.get(n))
+				currentObstacles.add(n.obstacle);
 		return currentObstacles.iterator();
 	}
 	

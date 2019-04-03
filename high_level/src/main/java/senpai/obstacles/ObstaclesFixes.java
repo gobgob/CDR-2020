@@ -46,9 +46,10 @@ public enum ObstaclesFixes
 	DISTRIBUTEUR_DROITE(new RectangularObstacle(new XY(661, 428), 780, 60), true),
 	
 	BALANCES(new RectangularObstacle(new XY(0, 200), 544, 400), true),
-	TASSEAU_CENTRAL(new RectangularObstacle(new XY(0, 500), 40, 200), true),
+	TASSEAU_CENTRAL(new RectangularObstacle(new XY(0, 500), 40, 200), true);
 	
-	ATOME_HAUT_GAUCHE(new CircularObstacle(new XY(-1000, 1550), 38), false),
+	// en obstacle mobile au cas où on fonce dedans
+/*	ATOME_HAUT_GAUCHE(new CircularObstacle(new XY(-1000, 1550), 38), false),
 	ATOME_MILIEU_GAUCHE(new CircularObstacle(new XY(-1000, 1250), 38), false),
 	ATOME_BAS_GAUCHE(new CircularObstacle(new XY(-1000, 950), 38), false),
 
@@ -57,7 +58,7 @@ public enum ObstaclesFixes
 	ATOME_BAS_DROITE(new CircularObstacle(new XY(1000, 950), 38), false),
 	
 	ATOME_PENTE_GAUCHE(new CircularObstacle(new XY(-666, 200), 38), false),
-	ATOME_PENTE_DROITE(new CircularObstacle(new XY(666, 200), 38), false);
+	ATOME_PENTE_DROITE(new CircularObstacle(new XY(666, 200), 38), false);*/
 
 	public final Obstacle obstacle;
 	public final boolean visible;
