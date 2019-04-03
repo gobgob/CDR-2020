@@ -30,18 +30,22 @@ public enum CapteursRobot
 	// TODO: l'ordre doit être cohérent avec la doc
 	// TODO: largeur
 	
-	ToF_AVANT_GAUCHE(new XY(58, 99), 0, TypeCapteur.ToF_COURT, 166),
+	ToF_AVANT_GAUCHE(new XY(58, 99), 0, TypeCapteur.ToF_LONG, 166),
 
-	ToF_AVANT_DROIT(new XY(58, -99), 0, TypeCapteur.ToF_COURT, 166),
+	ToF_AVANT_DROIT(new XY(58, -99), 0, TypeCapteur.ToF_LONG, 166),
 
-	ToF_COIN_ARRIERE_GAUCHE(new XY(-204, 97), 145. * Math.PI / 180., TypeCapteur.ToF_COURT, 206),
+	ToF_COIN_ARRIERE_GAUCHE(new XY(-204, 97), 145. * Math.PI / 180., TypeCapteur.ToF_LONG, 206),
 
-	ToF_COIN_ARRIERE_DROIT(new XY(-204, -97), -145. * Math.PI / 180., TypeCapteur.ToF_COURT, 206),
+	ToF_COIN_ARRIERE_DROIT(new XY(-204, -97), -145. * Math.PI / 180., TypeCapteur.ToF_LONG, 206),
 
-	ToF_ARRIERE_GAUCHE(new XY(-229, 71), -Math.PI, TypeCapteur.ToF_COURT, 206),
+	ToF_ARRIERE_GAUCHE(new XY(-229, 71), -Math.PI, TypeCapteur.ToF_LONG, 206),
 
-	ToF_ARRIERE_DROITE(new XY(-229, -71), -Math.PI, TypeCapteur.ToF_COURT, 206);
+	ToF_ARRIERE_DROITE(new XY(-229, -71), -Math.PI, TypeCapteur.ToF_LONG, 206),
 
+	ToF_FOURCHE_GAUCHE(new XY(106+157, 48), 0, TypeCapteur.ToF_COURT, 206),
+	
+	ToF_FOURCHE_DROITE(new XY(106+157, -48), 0, TypeCapteur.ToF_COURT, 206);
+	
 	public final XY pos;
 	public final double angle;
 	public final TypeCapteur type;
