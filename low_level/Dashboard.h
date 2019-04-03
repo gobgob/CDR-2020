@@ -133,7 +133,12 @@ public:
 
     void setErrorLevel(ErrorLevel err_level)
     {
-        errorLevel = err_level;
+        if (err_level == NO_ERROR) {
+            errorLevel = NO_ERROR;
+        }
+        else if (err_level > errorLevel) {
+            errorLevel = err_level;
+        }
     }
 
     size_t printTo(Print& p) const

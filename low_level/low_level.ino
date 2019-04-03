@@ -22,6 +22,7 @@
 #include "SensorsMgr.h"
 #include "Serializer.h"
 #include "Dashboard.h"
+#include "SerialAX12.h"
 
 #define ODOMETRY_REPORT_PERIOD  20  // ms
 
@@ -47,7 +48,19 @@ void loop()
     {
         dashboard.setErrorLevel(Dashboard::WEAK_ERROR);
     }
-    sensorMgr.init();
+    SerialAX12.begin(SERIAL_AX12_BAUDRATE, SERIAL_AX12_TIMEOUT);
+    if (directionController.init() != EXIT_SUCCESS)
+    {
+        dashboard.setErrorLevel(Dashboard::WEAK_ERROR);
+    }
+    if (actuatorMgr.init() != EXIT_SUCCESS)
+    {
+        dashboard.setErrorLevel(Dashboard::STRONG_WARNING);
+    }
+    if (sensorMgr.init() != EXIT_SUCCESS)
+    {
+        dashboard.setErrorLevel(Dashboard::STRONG_WARNING);
+    }
 
     motionControlTimer.priority(253);
     motionControlTimer.begin(motionControlInterrupt, PERIOD_ASSERV);

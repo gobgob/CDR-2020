@@ -6,6 +6,7 @@
 #include <Dynamixel.h>
 #include <DynamixelInterface.h>
 #include <DynamixelMotor.h>
+#include "SerialAX12.h"
 #include "Singleton.h"
 #include "Utils.h"
 #include "Config.h"
@@ -33,18 +34,23 @@ class DirectionController : public Singleton<DirectionController>, public Printa
 {
 public:
 	DirectionController() :
-		serialAX(SERIAL_AX12),
-        directionMotor(serialAX, ID_AX12_DIRECTION)
+        directionMotor(SerialAX12, ID_AX12_DIRECTION)
 	{
-        serialAX.begin(SERIAL_AX12_BAUDRATE, SERIAL_AX12_TIMEOUT);
 		aimCurvature = 0;
 		updateAimAngle();
         realMotorAngle = DIR_ANGLE_ORIGIN;
 		updateRealCurvature();
-        directionMotor.init();
+	}
+
+    int init()
+    {
+        if (directionMotor.init() != DYN_STATUS_OK) {
+            return EXIT_FAILURE;
+        }
         directionMotor.enableTorque();
         directionMotor.jointMode();
-	}
+        return EXIT_SUCCESS;
+    }
 
     DirectionControllerStatus control()
 	{
@@ -169,7 +175,6 @@ private:
 	uint16_t realMotorAngle;
 
 	/* L'AX12 de direction */
-	DynamixelInterface serialAX;
 	DynamixelMotor directionMotor;
 
     /* Table de conversion Angle-Courbure */
