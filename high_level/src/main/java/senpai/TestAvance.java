@@ -39,6 +39,7 @@ public class TestAvance
 		try
 		{			
 			int distance = Integer.parseInt(args[0]);
+			int vitesse = Integer.parseInt(args[1]);
 			senpai = new Senpai();
 			senpai.initialize(configfile, "default", "graphic");
 			OutgoingOrderBuffer data = senpai.getService(OutgoingOrderBuffer.class);
@@ -47,7 +48,7 @@ public class TestAvance
 			senpai.getService(ThreadCommProcess.class).capteursOn = true;
 			Robot robot = senpai.getService(Robot.class);
 			robot.updateColorAndSendPosition(RobotColor.VIOLET, true);
-			robot.avance(distance, 0.8);
+			robot.avance(distance, vitesse);
 		}
 		catch(Exception e)
 		{

@@ -133,7 +133,7 @@ public class CapteursProcess
 		 * On update la table avec notre position
 		 */
 		for(Atome g : Atome.values())
-			if(!table.isDone(g) && g.obstacle.isColliding(obstacleRobot))
+			if(!table.isDone(g) && g.obstacle != null && g.obstacle.isColliding(obstacleRobot))
 			{
 				log.write("Élément shooté", Subject.CAPTEURS);
 				table.setDone(g);
