@@ -14,6 +14,7 @@
 #include "Config.h"
 
 #define ACTUATOR_MGR_INTERRUPT_PERIOD   (1000)  // µs
+#define ACTUATOR_MGR_POLL_PERIOD        (5000)  // µs
 #define ACTUATOR_MGR_MOVE_TIMEOUT       (8000)  // ms
 #define ACTUATOR_MGR_Y_TOLERANCE        (1.5)   // mm
 #define ACTUATOR_MGR_Z_TOLERANCE        (1.0)   // mm
@@ -26,6 +27,9 @@
 #define ACTUATOR_MGR_THETA_MAX          (240)   // deg (todo: set value)
 #define ACTUATOR_MGR_Y_ORIGIN           (150)   // deg (Angle de l'AX12 de l'axe Y pour une fourche centrée)
 #define ACTUATOR_MGR_Y_CONVERTER        (2.0)   // deg/mm (Conversion Y <-> Angle d'AX12) (=360/(PI * d)) (todo: set value)
+#define ACTUATOR_MGR_THETA_ORIGIN       (150)   // deg (Angle de l'AX12 theta pour une fourche horizontale)
+#define ACTUATOR_MGR_SENSE_MIN_THETA    (130)   // deg (Angle minimal de l'AX12 theta pour utiliser les capteurs de fourche)
+#define ACTUATOR_MGR_SENSE_MAX_THETA    (170)   // deg (Angle maximal de l'AX12 theta pour utiliser les capteurs de fourche)
 
 
 typedef int32_t ActuatorErrorCode;
@@ -65,6 +69,14 @@ public:
             p.theta <= theta + ACTUATOR_MGR_THETA_TOLERANCE;
     }
 
+    bool isWithinRange() const
+    {
+        return
+            y >= ACTUATOR_MGR_Y_MIN && y <= ACTUATOR_MGR_Y_MAX &&
+            z >= ACTUATOR_MGR_Z_MIN && z <= ACTUATOR_MGR_Z_MAX &&
+            theta >= ACTUATOR_MGR_THETA_MIN && theta <= ACTUATOR_MGR_THETA_MAX;
+    }
+
     /*
         y (mm) déplacement latéral
         y=0: fourche centrée
@@ -102,12 +114,17 @@ public:
         m_y_motor(SerialAX12, ID_AX12_ACT_Y),
         m_theta_motor(SerialAX12, ID_AX12_ACT_THETA)
     {
+        m_error_code = ACT_OK;
+        m_status = STATUS_IDLE;
+        m_left_sensor_value = (SensorValue)SENSOR_DEAD;
+        m_right_sensor_value = (SensorValue)SENSOR_DEAD;
+        m_composed_move_step = 0;
         attachInterrupt(PIN_STEPPER_ENDSTOP, endstopInterrupt, CHANGE);
     }
 
     int init()
     {
-        if (m_y_motor.init() != DYN_STATUS_OK || 
+        if (m_y_motor.init() != DYN_STATUS_OK ||
                 m_theta_motor.init() != DYN_STATUS_OK) {
             return EXIT_FAILURE;
         }
@@ -118,8 +135,17 @@ public:
         return EXIT_SUCCESS;
     }
 
-    void mainLoopControl() {}
-    void interruptControl() {}
+    void mainLoopControl()
+    {
+        readSensorsAndMotors();
+        // todo: call handlers
+        // todo: timeout management
+    }
+
+    void interruptControl()
+    {
+        // todo: control stepper
+    }
 
     bool commandCompleted() const
     {
@@ -143,11 +169,52 @@ public:
         Serializer::writeInt(m_right_sensor_value, output);
     }
 
+
     /* Mouvement control */
-    void stop();
-    void goToHome();
-    void goToPosition(const ActuatorPosition &p);
-    void scanPuck();
+
+    void stop()
+    {
+        if (m_status != STATUS_IDLE) {
+            m_status = STATUS_IDLE;
+            m_error_code |= ACT_STOP_REQUESTED;
+        }
+        m_composed_move_step = 0;
+        m_aim_position = m_current_position;
+        sendAimPosition();
+        // todo: stop stepper motor
+    }
+    int goToHome()
+    {
+        if (m_status != STATUS_IDLE) {
+            return EXIT_FAILURE;
+        }
+        m_error_code = ACT_OK;
+        m_status = STATUS_GOING_HOME;
+        m_composed_move_step = 0;
+        return EXIT_SUCCESS;
+    }
+    int goToPosition(const ActuatorPosition &p)
+    {
+        if (m_status != STATUS_IDLE || !p.isWithinRange()) {
+            return EXIT_FAILURE;
+        }
+        m_error_code = ACT_OK;
+        m_status = STATUS_MOVING;
+        m_composed_move_step = 0;
+        m_aim_position = p;
+        sendAimPosition();
+        return EXIT_SUCCESS;
+    }
+    int scanPuck()
+    {
+        if (m_status != STATUS_IDLE) {
+            return EXIT_FAILURE;
+        }
+        m_error_code = ACT_OK;
+        m_status = STATUS_SCANNING;
+        m_composed_move_step = 0;
+        return EXIT_SUCCESS;
+    }
 
 private:
     enum ActuatorStatus
@@ -163,9 +230,109 @@ private:
 
     }
 
+    void simpleMoveHandler()
+    {
+
+    }
+
+    void goHomeHandler()
+    {
+
+    }
+
+    void scanningHandler()
+    {
+
+    }
+
     bool aimPositionReached() const
     {
         return m_current_position.isEqualTo(m_aim_position);
+    }
+
+    bool canUseSensors() const
+    {
+        return m_current_position.theta > ACTUATOR_MGR_SENSE_MIN_THETA &&
+            m_current_position.theta < ACTUATOR_MGR_SENSE_MAX_THETA;
+    }
+
+    void sendAimPosition()
+    {
+        DynamixelStatus dynamixelStatus;
+        dynamixelStatus = m_y_motor.goalPositionDegree(
+            m_aim_position.y * ACTUATOR_MGR_Y_CONVERTER + ACTUATOR_MGR_Y_ORIGIN);
+        if (dynamixelStatus != DYN_STATUS_OK) {
+            m_error_code |= ACT_AX12_ERROR;
+        }
+        dynamixelStatus = m_theta_motor.goalPositionDegree(
+            m_aim_position.theta + ACTUATOR_MGR_THETA_ORIGIN);
+        if (dynamixelStatus != DYN_STATUS_OK) {
+            m_error_code |= ACT_AX12_ERROR;
+        }
+
+        // todo: set aim position for stepper
+    }
+
+    void readSensorsAndMotors()
+    {
+        static uint32_t last_poll_time = 0;
+        static uint8_t step = 0;
+
+        uint32_t now = micros();
+        if (now - last_poll_time > ACTUATOR_MGR_POLL_PERIOD)
+        {
+            last_poll_time = now;
+            if (step == 0)
+            {
+                uint16_t angle;
+                DynamixelStatus dynamixelStatus = m_y_motor.currentPositionDegree(angle);
+                if (angle <= 300) {
+                    m_current_position.y = ((float)angle - ACTUATOR_MGR_Y_ORIGIN) / ACTUATOR_MGR_Y_CONVERTER;
+                }
+                if (dynamixelStatus & (DYN_STATUS_OVERLOAD_ERROR | DYN_STATUS_OVERHEATING_ERROR)) {
+                    m_error_code |= ACT_AX12_Y_BLOCKED;
+                }
+                else if (dynamixelStatus != DYN_STATUS_OK) {
+                    m_error_code |= ACT_AX12_ERROR;
+                }
+                step++;
+            }
+            else if (step == 1)
+            {
+                uint16_t angle;
+                DynamixelStatus dynamixelStatus = m_theta_motor.currentPositionDegree(angle);
+                if (angle <= 300) {
+                    m_current_position.theta = (float)angle - ACTUATOR_MGR_THETA_ORIGIN;
+                }
+                if (dynamixelStatus & (DYN_STATUS_OVERLOAD_ERROR | DYN_STATUS_OVERHEATING_ERROR)) {
+                    m_error_code |= ACT_AX12_THETA_BLOCKED;
+                }
+                else if (dynamixelStatus != DYN_STATUS_OK) {
+                    m_error_code |= ACT_AX12_ERROR;
+                }
+                step++;
+            }
+            else if (step == 2)
+            {
+                SensorValue val = m_left_sensor.getMeasure();
+                if (val != SENSOR_NOT_UPDATED) {
+                    m_left_sensor_value = val;
+                }
+                step++;
+            }
+            else if (step == 3)
+            {
+                SensorValue val = m_right_sensor.getMeasure();
+                if (val != SENSOR_NOT_UPDATED) {
+                    m_right_sensor_value = val;
+                }
+                step = 0;
+            }
+
+            if (step > 1 && !canUseSensors()) {
+                step = 0;
+            }
+        }
     }
 
     ActuatorPosition m_current_position;
@@ -178,6 +345,7 @@ private:
     SensorValue m_right_sensor_value;
     DynamixelMotor m_y_motor;
     DynamixelMotor m_theta_motor;
+    uint32_t m_composed_move_step;
 };
 
 #endif
