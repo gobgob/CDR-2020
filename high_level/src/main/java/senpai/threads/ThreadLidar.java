@@ -71,20 +71,25 @@ public class ThreadLidar extends Thread
 			else
 			{
 				log.write("Démarrage de " + Thread.currentThread().getName(), Subject.STATUS);	
+				eth.initialize(config);
 				while(true)
 					Thread.sleep(10);
 			}
 		}
 		catch(InterruptedException e)
 		{
+			eth.close();
+			robot.clearLidarObs();
+			dynObs.clearLidarObs();
 			log.write("Arrêt de " + Thread.currentThread().getName(), Subject.STATUS);
 			Thread.currentThread().interrupt();
 		}
 		catch(Exception e)
 		{
-			log.write("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e, Severity.CRITICAL, Subject.STATUS);
+			eth.close();
 			robot.clearLidarObs();
 			dynObs.clearLidarObs();
+			log.write("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e, Severity.CRITICAL, Subject.STATUS);
 			e.printStackTrace();
 			Thread.currentThread().interrupt();
 		}

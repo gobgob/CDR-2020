@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import pfg.config.Config;
@@ -30,7 +30,6 @@ import senpai.utils.Subject;
 
 /**
  * Une connexion Ethernet pour le lidar
- * TODO
  * @author pf
  *
  */
@@ -38,10 +37,9 @@ import senpai.utils.Subject;
 public class LidarEth
 {
 	private Log log;
-	private int port;
-	private InetAddress adresse;
-	private Socket socket;
-
+	private ServerSocket socket = null;
+	private Socket client;
+	
 	private OutputStream output;
 	private InputStream input;
 	
@@ -54,33 +52,45 @@ public class LidarEth
 	 * Constructeur pour la série de test
 	 * 
 	 * @param log
+	 * @throws IOException 
 	 */
-	public void initialize(Config config)
+	public void initialize(Config config) throws IOException
 	{
+		int port = config.getInt(ConfigInfoSenpai.ETH_LIDAR_PORT_NUMBER);
+		String hostname = config.getString(ConfigInfoSenpai.ETH_HL_HOSTNAME_SERVER);
+		try {
+			// on accepte une connexion max à la fois			
+			socket = new ServerSocket(port, 1, InetAddress.getByName(hostname));
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+		    e.printStackTrace();
+		}
+		log.write("Attente de la connexion du lidar…", Subject.COMM);
+		client = socket.accept();
+		log.write("Lidar connecté !", Subject.COMM);
+		
+		input = client.getInputStream();
+		output = client.getOutputStream();
+		assert input != null && output != null;
+	}
 
-	}
-	
-	private boolean isClosed()
-	{
-		return socket == null || !socket.isConnected() || socket.isClosed();
-	}
-	
-	
 	/**
 	 * Doit être appelé quand on arrête de se servir de la communication
 	 */
 	public synchronized void close()
-	{
+	{		
 		if(socket == null)
 			return;
 		
-		assert socket.isConnected() && !socket.isClosed() : "État du socket : "+socket.isConnected()+" "+socket.isClosed();
+		assert !socket.isClosed() : "État du socket : "+socket.isClosed();
 		
-		if(socket.isConnected() && !socket.isClosed())
+		if(!socket.isClosed())
 		{
 			try
 			{
 				log.write("Fermeture de la communication", Subject.COMM);
+				client.close();
 				socket.close();
 				output.close();
 			}
@@ -91,12 +101,14 @@ public class LidarEth
 		}
 		else if(socket.isClosed())
 			log.write("Fermeture impossible : carte déjà fermée", Severity.WARNING, Subject.COMM);
-		else// if(!socket.isConnected())
-			log.write("Fermeture impossible : carte jamais ouverte", Severity.WARNING, Subject.COMM);
 	}
 
-	public CircularObstacle getObstacle()
+	public CircularObstacle getObstacle() throws InterruptedException, IOException
 	{
+		if(socket == null)
+			throw new IOException("Lidar plus connecté !");
+		
+		// TODO
 		return null;
 	}
 }
