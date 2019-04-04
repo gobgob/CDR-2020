@@ -40,6 +40,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	INITIAL_O(-Math.PI/2),
 
 	DEFAULT_MAX_SPEED(0.8),
+	MAX_SPEED_IN_ENEMY(0.4),
 	
 	/**
 	 * Infos sur le robot

@@ -28,6 +28,7 @@ import pfg.graphic.printable.Segment;
 import pfg.kraken.Kraken;
 import pfg.kraken.SearchParameters;
 import pfg.kraken.exceptions.PathfindingException;
+import pfg.kraken.obstacles.CircularObstacle;
 import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.robot.ItineraryPoint;
@@ -65,7 +66,7 @@ public class Robot extends RobotState
 	
 	protected volatile boolean symetrie;
 	protected Log log;
-	private double defaultSpeed;
+	private double defaultSpeed, maxSpeedInEnemy;
 	protected Kraken kraken;
 	private RectangularObstacle obstacle;
 	private List<ItineraryPoint> path = null;
@@ -84,6 +85,7 @@ public class Robot extends RobotState
 	private int score;
 	private int nbAtomesDansBalance = 0;
 	private int tailleCargoMax;
+	private CircularObstacle slowDown = null;
 	
 	public Robot(Log log, OutgoingOrderBuffer out, Config config, GraphicDisplay buffer, Kraken kraken, /*DynamicPath dpath,*/ KnownPathManager known, RectangularObstacle obstacle)
 	{
@@ -96,6 +98,7 @@ public class Robot extends RobotState
 
 		jumperOK = config.getBoolean(ConfigInfoSenpai.DISABLE_JUMPER);
 		defaultSpeed = config.getDouble(ConfigInfoSenpai.DEFAULT_MAX_SPEED);
+		maxSpeedInEnemy = config.getDouble(ConfigInfoSenpai.MAX_SPEED_IN_ENEMY);
 		
 		// On ajoute une fois pour toute l'image du robot
 		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ROBOT_AND_SENSORS))
@@ -319,6 +322,29 @@ public class Robot extends RobotState
 			printable.initPositionObject(cinematique);
 	}
 
+	XY_RW tmp = new XY_RW();
+	public List<ItineraryPoint> slowDownTrajectory(List<ItineraryPoint> path)
+	{
+		List<ItineraryPoint> out = new ArrayList<ItineraryPoint>();
+		log.write("On ralentit la trajectoire si nécessaire", Subject.TRAJECTORY);
+		assert slowDown != null;
+		for(ItineraryPoint ip : path)
+		{
+			tmp.setX(ip.x);
+			tmp.setY(ip.y);
+			if(slowDown.isInObstacle(tmp))
+			{
+				// TODO: peut-être faire quelque chose de plus progressif
+				double maxSpeed = Math.min(ip.maxSpeed, maxSpeedInEnemy);
+				ItineraryPoint newIp = new ItineraryPoint(ip.x, ip.y, ip.orientation, ip.curvature, ip.goingForward, maxSpeed, ip.possibleSpeed, ip.stop);
+				out.add(newIp);
+			}
+			else
+				out.add(ip);
+		}
+		return out;	
+	}
+	
 	public synchronized void setReady()
 	{
 		assert etat == State.STANDBY;
@@ -333,82 +359,25 @@ public class Robot extends RobotState
 	
 	public DataTicket goTo(SearchParameters sp) throws PathfindingException, InterruptedException, UnableToMoveException
 	{
-//		PriorityQueue<SavedPath> allSaved = null;
-/*		if(enableLoadPath)
-		{
-			allSaved = known.loadCompatiblePath(sp);			
-			if(allSaved != null && allSaved.isEmpty())
-				log.write("Aucun chemin connu pour : "+sp, Subject.TRAJECTORY);
-		}*/
-		
-//		if(modeDegrade)
 		long avant = System.currentTimeMillis();
 		kraken.initializeNewSearch(sp);
 		log.write("Durée d'initialisation de Kraken : "+(System.currentTimeMillis() - avant), Subject.TRAJECTORY);
 
-/*		if(allSaved != null)
-			while(!allSaved.isEmpty())
-			{
-				SavedPath saved = allSaved.poll();
-//				try
-//				{
-//					if(modeDegrade)
-//					{
-						if(kraken.checkPath(saved.path))
-						{
-							log.write("On réutilise un chemin en mode dégradé : "+saved.name, Subject.TRAJECTORY);
-							path = saved.path;
-							break;
-						}
-						else
-							log.write("Chemin inadapté", Subject.TRAJECTORY);
-/*					}
-					else
-					{
-						log.write("On démarre la recherche continue avec un chemin initial : "+saved.name, Subject.TRAJECTORY);
-						kraken.startContinuousSearchWithInitialPath(sp, saved.path);
-						path = saved.path;
-						break;
-					}
-				}
-				catch(PathfindingException e)
-				{
-					log.write("Chemin inadapté : "+e.getMessage(), Subject.TRAJECTORY);
-				}*/
-//			}
-
-//		if(modeDegrade)
-//		{
-
-//			System.out.println(path);
-			// On cherche et on envoie
-//			if(path == null)
-//			{
-				log.write("On cherche un chemin", Subject.TRAJECTORY);
-				avant = System.currentTimeMillis();
-				path = kraken.search();
-				log.write("Durée de la recherche : "+(System.currentTimeMillis() - avant), Subject.TRAJECTORY);
-//			}
-//			else
-//				log.write("On réutilise un chemin déjà connu !", Subject.TRAJECTORY);
-			if(!simuleLL)
-			{
-				log.write("On envoie la trajectoire", Subject.TRAJECTORY);
-				out.destroyPointsTrajectoires(0);
-				out.ajoutePointsTrajectoire(path, true);
-			}
-			setReady();
-/*		}
-		else
+		log.write("On cherche un chemin", Subject.TRAJECTORY);
+		avant = System.currentTimeMillis();
+		path = kraken.search();
+		log.write("Durée de la recherche : "+(System.currentTimeMillis() - avant), Subject.TRAJECTORY);
+		
+		if(slowDown != null)
+			path = slowDownTrajectory(path);
+		
+		if(!simuleLL)
 		{
-			if(path == null)
-			{
-				log.write("On cherche un chemin en mode continu", Subject.TRAJECTORY);
-				kraken.startContinuousSearch(sp);
-			}
-//			else
-//				log.write("On réutilise un chemin déjà connu !", Subject.TRAJECTORY);
-		}*/
+			log.write("On envoie la trajectoire", Subject.TRAJECTORY);
+			out.destroyPointsTrajectoires(0);
+			out.ajoutePointsTrajectoire(path, true);
+		}
+		setReady();
 
 		DataTicket out = null;
 		
@@ -416,11 +385,7 @@ public class Robot extends RobotState
 			out = followTrajectory();
 		else
 			out = new DataTicket(path, null);
-/*		if(!modeDegrade)
-		{
-			log.write("Fin de la recherche en mode continu", Subject.TRAJECTORY);
-			kraken.endContinuousSearch();
-		}*/
+
 		if(!simuleLL && out.data != null)
 			throw new UnableToMoveException(out.data.toString());
 		return out;
@@ -429,12 +394,11 @@ public class Robot extends RobotState
 	private DataTicket followTrajectory() throws InterruptedException
 	{
 		// non, marche pas avec avancer et reculer
-//		assert modeDegrade == (pathDegrade != null) : modeDegrade+" "+pathDegrade;
 		assert etat == State.READY_TO_GO || etat == State.STANDBY;
 
 		log.write("Attente de la trajectoire…", Subject.TRAJECTORY);
 
-		assert etat == State.READY_TO_GO; // parce que mode dégradé
+		assert etat == State.READY_TO_GO;
 		synchronized(this)
 		{
 			while(etat == State.STANDBY)
@@ -471,7 +435,7 @@ public class Robot extends RobotState
 		}
 		else
 		{
-			dt = new DataTicket(/*modeDegrade ?*/ path /*: dpath.getPath()*/, CommProtocol.State.OK);
+			dt = new DataTicket(path, CommProtocol.State.OK);
 		}
 		
 		path = null;
