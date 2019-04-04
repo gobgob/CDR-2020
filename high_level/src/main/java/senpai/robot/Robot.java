@@ -540,4 +540,14 @@ public class Robot extends RobotState
 				cinematique.orientationReelle + orientation, cinematique.courbureReelle);
 		out.correctPosition(position, orientation);
 	}
+
+	public void setLidarObs(CircularObstacle obs)
+	{
+		slowDown = obs;
+	}
+	
+	public void clearLidarObs()
+	{
+		slowDown = null;
+	}
 }

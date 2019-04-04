@@ -25,6 +25,7 @@ import pfg.graphic.GraphicDisplay;
 import pfg.graphic.GraphicPanel;
 import pfg.graphic.printable.Layer;
 import pfg.graphic.printable.Printable;
+import pfg.kraken.obstacles.CircularObstacle;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.obstacles.container.SmartDynamicObstacles;
@@ -49,6 +50,9 @@ public class ObstaclesDynamiques extends SmartDynamicObstacles implements Iterat
 	private transient Iterator<Obstacle> iteratorMemory;
 	private transient Iterator<Obstacle> iteratorTable;
 	private transient boolean obsTable;
+	private transient CircularObstacle lidarObs;
+	private transient boolean sentLidarObs;
+	private transient boolean useLidarObs;
 	
 	public ObstaclesDynamiques(Log log, Table table, Config config, GraphicDisplay buffer)
 	{
@@ -68,12 +72,15 @@ public class ObstaclesDynamiques extends SmartDynamicObstacles implements Iterat
 				capt.add(c.current);
 		iteratorMemory =  capt.iterator();
 		iteratorTable = table.getCurrentObstaclesIterator();
+		sentLidarObs = !(lidarObs != null && useLidarObs);
 		return this;
 	}
 
 	@Override
 	public boolean hasNext()
 	{
+		if(!sentLidarObs)
+			return true;
 		if(iteratorMemory.hasNext())
 			return true;
 		return obsTable && iteratorTable.hasNext();
@@ -82,6 +89,11 @@ public class ObstaclesDynamiques extends SmartDynamicObstacles implements Iterat
 	@Override
 	public Obstacle next()
 	{
+		if(!sentLidarObs)
+		{
+			sentLidarObs = true;
+			return lidarObs;
+		}
 		if(iteratorMemory.hasNext())
 			return iteratorMemory.next();
 		return iteratorTable.next();
@@ -133,5 +145,20 @@ public class ObstaclesDynamiques extends SmartDynamicObstacles implements Iterat
 			if(iter.next().isColliding(o))
 				return true;
 		return false;
+	}
+
+	public void setLidarObs(CircularObstacle obs)
+	{
+		lidarObs = obs;
+	}
+
+	public void clearLidarObs()
+	{
+		lidarObs = null;
+	}
+	
+	public void useLidarObs(boolean use)
+	{
+		this.useLidarObs = use;
 	}
 }
