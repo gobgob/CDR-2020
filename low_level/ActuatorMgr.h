@@ -45,6 +45,7 @@ enum ActuatorError
     ACT_SENSOR_ERROR        = 0x0040,
     ACT_NO_DETECTION        = 0x0080,
     ACT_TIMED_OUT           = 0x0100,
+    ACT_ALREADY_MOVING      = 0x0200,
 };
 
 
@@ -119,6 +120,8 @@ public:
         m_left_sensor_value = (SensorValue)SENSOR_DEAD;
         m_right_sensor_value = (SensorValue)SENSOR_DEAD;
         m_composed_move_step = 0;
+        m_move_start_time = 0;
+        m_scan_enabled = false;
         attachInterrupt(PIN_STEPPER_ENDSTOP, endstopInterrupt, CHANGE);
     }
 
@@ -138,8 +141,28 @@ public:
     void mainLoopControl()
     {
         readSensorsAndMotors();
-        // todo: call handlers
-        // todo: timeout management
+        switch (m_status)
+        {
+        case STATUS_MOVING:
+            simpleMoveHandler();
+            break;
+        case STATUS_GOING_HOME:
+            goHomeHandler();
+            break;
+        case STATUS_SCANNING:
+            scanningHandler();
+            break;
+        default:
+            break;
+        }
+        if (m_status != STATUS_IDLE)
+        {
+            if (millis() - m_move_start_time > ACTUATOR_MGR_MOVE_TIMEOUT)
+            {
+                m_error_code |= ACT_TIMED_OUT;
+                stopMove(false);
+            }
+        }
     }
 
     void interruptControl()
@@ -159,62 +182,37 @@ public:
 
     void getSensorsValues(SensorValue &left, SensorValue &right) const
     {
-        left = m_left_sensor_value;
-        right = m_right_sensor_value;
+        if (canUseSensors())
+        {
+            left = m_left_sensor_value;
+            right = m_right_sensor_value;
+        }
+        else
+        {
+            left = (SensorValue)SENSOR_DEAD;
+            right = (SensorValue)SENSOR_DEAD;
+        }
     }
 
     void appendSensorsValuesToVect(std::vector<uint8_t> & output) const
     {
-        Serializer::writeInt(m_left_sensor_value, output);
-        Serializer::writeInt(m_right_sensor_value, output);
+        if (canUseSensors())
+        {
+            Serializer::writeInt(m_left_sensor_value, output);
+            Serializer::writeInt(m_right_sensor_value, output);
+        }
+        else
+        {
+            Serializer::writeInt((SensorValue)SENSOR_DEAD, output);
+            Serializer::writeInt((SensorValue)SENSOR_DEAD, output);
+        }
     }
-
 
     /* Mouvement control */
-
-    void stop()
-    {
-        if (m_status != STATUS_IDLE) {
-            m_status = STATUS_IDLE;
-            m_error_code |= ACT_STOP_REQUESTED;
-        }
-        m_composed_move_step = 0;
-        m_aim_position = m_current_position;
-        sendAimPosition();
-        // todo: stop stepper motor
-    }
-    int goToHome()
-    {
-        if (m_status != STATUS_IDLE) {
-            return EXIT_FAILURE;
-        }
-        m_error_code = ACT_OK;
-        m_status = STATUS_GOING_HOME;
-        m_composed_move_step = 0;
-        return EXIT_SUCCESS;
-    }
-    int goToPosition(const ActuatorPosition &p)
-    {
-        if (m_status != STATUS_IDLE || !p.isWithinRange()) {
-            return EXIT_FAILURE;
-        }
-        m_error_code = ACT_OK;
-        m_status = STATUS_MOVING;
-        m_composed_move_step = 0;
-        m_aim_position = p;
-        sendAimPosition();
-        return EXIT_SUCCESS;
-    }
-    int scanPuck()
-    {
-        if (m_status != STATUS_IDLE) {
-            return EXIT_FAILURE;
-        }
-        m_error_code = ACT_OK;
-        m_status = STATUS_SCANNING;
-        m_composed_move_step = 0;
-        return EXIT_SUCCESS;
-    }
+    void stop() { stopMove(true); }
+    int goToHome() { return initMove(STATUS_GOING_HOME, m_current_position); }
+    int goToPosition(const ActuatorPosition &p) { return initMove(STATUS_MOVING, p); }
+    int scanPuck() { return initMove(STATUS_SCANNING, m_current_position); }
 
 private:
     enum ActuatorStatus
@@ -230,14 +228,60 @@ private:
 
     }
 
+    int initMove(ActuatorStatus moveId, const ActuatorPosition &p)
+    {
+        if (m_status != STATUS_IDLE)
+        {
+            return EXIT_FAILURE;
+        }
+        m_error_code = ACT_OK;
+        if (!p.isWithinRange())
+        {
+            m_error_code |= ACT_UNREACHABLE;
+        }
+        else
+        {
+            m_status = moveId;
+            m_aim_position = p;
+            sendAimPosition();
+            m_move_start_time = millis();
+        }
+        return EXIT_SUCCESS;
+    }
+
+    void stopMove(bool putFlag)
+    {
+        if (putFlag) {
+            m_error_code |= ACT_STOP_REQUESTED;        
+        }
+        m_status = STATUS_IDLE;
+        m_composed_move_step = 0;
+        m_scan_enabled = false;
+        // todo: reset scan structure
+        m_aim_position = m_current_position;
+        sendAimPosition();
+        // todo: stop stepper motor
+    }
+
+    void finishMove()
+    {
+        m_status = STATUS_IDLE;
+        m_composed_move_step = 0;
+        m_scan_enabled = false;
+        // todo: reset scan structure
+    }
+
     void simpleMoveHandler()
     {
-
+        if (aimPositionReached())
+        {
+            finishMove();
+        }
     }
 
     void goHomeHandler()
     {
-
+        // todo
     }
 
     void scanningHandler()
@@ -317,6 +361,9 @@ private:
                 SensorValue val = m_left_sensor.getMeasure();
                 if (val != SENSOR_NOT_UPDATED) {
                     m_left_sensor_value = val;
+                    if (m_scan_enabled) {
+                        // todo: store value in scan structure
+                    }
                 }
                 step++;
             }
@@ -325,6 +372,9 @@ private:
                 SensorValue val = m_right_sensor.getMeasure();
                 if (val != SENSOR_NOT_UPDATED) {
                     m_right_sensor_value = val;
+                    if (m_scan_enabled) {
+                        // todo: store value in scan structure
+                    }
                 }
                 step = 0;
             }
@@ -345,7 +395,11 @@ private:
     SensorValue m_right_sensor_value;
     DynamixelMotor m_y_motor;
     DynamixelMotor m_theta_motor;
+    // todo: add stepper motor
     uint32_t m_composed_move_step;
+    uint32_t m_move_start_time; // ms
+    bool m_scan_enabled;
+    // todo: add structure to store scan data
 };
 
 #endif
