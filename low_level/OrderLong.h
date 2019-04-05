@@ -16,8 +16,7 @@ class OrderLong
 public:
     OrderLong() :
         motionControlSystem(MotionControlSystem::Instance()),
-        //slaveActuator(SlaveActuator::Instance()),
-        //slaveSensorLed(SlaveSensorLed::Instance()),
+        actuatorMgr(ActuatorMgr::Instance()),
         finished(true)
     {}
 
@@ -44,8 +43,7 @@ public:
 
 protected:
     MotionControlSystem & motionControlSystem;
-    //SlaveActuator & slaveActuator;
-    //SlaveSensorLed & slaveSensorLed;
+    ActuatorMgr & actuatorMgr;
     bool finished;
 };
 
@@ -70,7 +68,7 @@ public:
     }
     void onExecute()
     {
-        
+
     }
     void terminate(std::vector<uint8_t> & output)
     {
@@ -222,9 +220,7 @@ public:
     void terminate(std::vector<uint8_t> & output)
     {
         motionControlSystem.stop_and_clear_trajectory();
-        //slaveActuator.stop();
-        // todo Maybe: prevent HL from giving orders
-        //slaveSensorLed.setLightOn((uint8_t)(SlaveSensorLed::TURN_LEFT | SlaveSensorLed::TURN_RIGHT));
+        actuatorMgr.stop();
     }
 
 private:
@@ -235,6 +231,135 @@ private:
 /*
     Contrôle de l'actionneur
 */
+
+class ActuatorGoHome : public OrderLong, public Singleton<ActuatorGoHome>
+{
+public:
+    ActuatorGoHome() {}
+    void _launch(const std::vector<uint8_t> & input)
+    {
+        if (input.size() == 0)
+        {
+            Server.printf(SPY_ORDER, "ActuatorGoHome");
+            if (actuatorMgr.goToHome() != EXIT_SUCCESS)
+            {
+                finished = true;
+                ret_code = ACT_ALREADY_MOVING;
+            }
+            else
+            {
+                ret_code = ACT_OK;
+            }
+        }
+        else
+        {
+            Server.printf_err("ActuatorGoHome: wrong number of arguments\n");
+        }
+    }
+    void onExecute()
+    {
+        if (actuatorMgr.commandCompleted())
+        {
+            finished = true;
+        }
+    }
+    void terminate(std::vector<uint8_t> & output)
+    {
+        ret_code |= actuatorMgr.getErrorCode();
+        Serializer::writeInt(ret_code, output);
+    }
+
+private:
+    ActuatorErrorCode ret_code;
+};
+
+class ActuatorGoTo : public OrderLong, public Singleton<ActuatorGoTo>
+{
+public:
+    ActuatorGoTo() {}
+    void _launch(const std::vector<uint8_t> & input)
+    {
+        if (input.size() == 0)
+        {
+            Server.printf(SPY_ORDER, "ActuatorGoTo");
+            ActuatorPosition p;
+            size_t index = 0;
+            p.y = Serializer::readFloat(input, index);
+            p.z = Serializer::readFloat(input, index);
+            p.theta = Serializer::readFloat(input, index);
+
+            if (actuatorMgr.goToPosition(p) != EXIT_SUCCESS)
+            {
+                finished = true;
+                ret_code = ACT_ALREADY_MOVING;
+            }
+            else
+            {
+                ret_code = ACT_OK;
+            }
+        }
+        else
+        {
+            Server.printf_err("ActuatorGoTo: wrong number of arguments\n");
+        }
+    }
+    void onExecute()
+    {
+        if (actuatorMgr.commandCompleted())
+        {
+            finished = true;
+        }
+    }
+    void terminate(std::vector<uint8_t> & output)
+    {
+        ret_code |= actuatorMgr.getErrorCode();
+        Serializer::writeInt(ret_code, output);
+    }
+
+private:
+    ActuatorErrorCode ret_code;
+};
+
+class ActuatorFindPuck : public OrderLong, public Singleton<ActuatorFindPuck>
+{
+public:
+    ActuatorFindPuck() {}
+    void _launch(const std::vector<uint8_t> & input)
+    {
+        if (input.size() == 0)
+        {
+            Server.printf(SPY_ORDER, "ActuatorFindPuck");
+            if (actuatorMgr.scanPuck() != EXIT_SUCCESS)
+            {
+                finished = true;
+                ret_code = ACT_ALREADY_MOVING;
+            }
+            else
+            {
+                ret_code = ACT_OK;
+            }
+        }
+        else
+        {
+            Server.printf_err("ActuatorFindPuck: wrong number of arguments\n");
+        }
+    }
+    void onExecute()
+    {
+        if (actuatorMgr.commandCompleted())
+        {
+            finished = true;
+        }
+    }
+    void terminate(std::vector<uint8_t> & output)
+    {
+        ret_code |= actuatorMgr.getErrorCode();
+        Serializer::writeInt(ret_code, output);
+    }
+
+private:
+    ActuatorErrorCode ret_code;
+};
 
 
 #endif

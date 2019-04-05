@@ -45,8 +45,8 @@ public:
         immediateOrderList[0x07] = &SetScore::Instance();
         immediateOrderList[0x08] = &SetNightLights::Instance();
         immediateOrderList[0x09] = &SetWarnings::Instance();
-        // 0x0A: ActuatorStop
-        // 0x0B: ActuatorGetPosition
+        immediateOrderList[0x0A] = &ActuatorStop::Instance();
+        immediateOrderList[0x0B] = &ActuatorGetPosition::Instance();
 
         immediateOrderList[0x10] = &Display::Instance();
         immediateOrderList[0x11] = &Save::Instance();
@@ -70,9 +70,9 @@ public:
         longOrderList[0x01] = &Stop::Instance();
         longOrderList[0x02] = &WaitForJumper::Instance();
         longOrderList[0x03] = &StartChrono::Instance();
-        // 0x04: ActuatorHome
-        // 0x05: ActuatorGoTo
-        // 0x06: ActuatorFindPuck
+        longOrderList[0x04] = &ActuatorGoHome::Instance();
+        longOrderList[0x05] = &ActuatorGoTo::Instance();
+        longOrderList[0x06] = &ActuatorFindPuck::Instance();
     }
 
     void execute()
@@ -212,7 +212,7 @@ private:
             }
         }
     }
-    
+
     int addOrderToStack(uint8_t index, Command const & command)
     {
         for (size_t i = 0; i < EXEC_STACK_SIZE; i++)

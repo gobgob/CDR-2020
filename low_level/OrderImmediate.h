@@ -20,11 +20,12 @@
 class OrderImmediate
 {
 public:
-    OrderImmediate() : 
+    OrderImmediate() :
         motionControlSystem(MotionControlSystem::Instance()),
         directionController(DirectionController::Instance()),
         dashboard(Dashboard::Instance()),
-        contextualLightning(ContextualLightning::Instance())
+        contextualLightning(ContextualLightning::Instance()),
+        actuatorMgr(ActuatorMgr::Instance())
     {}
 
     /*
@@ -38,6 +39,7 @@ protected:
     DirectionController & directionController;
     Dashboard & dashboard;
     ContextualLightning & contextualLightning;
+    ActuatorMgr & actuatorMgr;
 };
 
 
@@ -103,7 +105,7 @@ public:
         if (io.size() == 0)
         {
             io.clear();
-            
+
             uint8_t jumperDetected = !digitalRead(PIN_GET_JUMPER);
             Color color = UNKNOWN;
             if (jumperDetected)
@@ -227,7 +229,7 @@ public:
         }
         else
         {
-            Server.printf_err("AppendToTraj: wrong number of arguments\n");   
+            Server.printf_err("AppendToTraj: wrong number of arguments\n");
         }
         io.clear();
         Serializer::writeEnum(ret, io);
@@ -366,6 +368,47 @@ public:
         else
         {
             Server.printf_err("SetWarnings: wrong number of arguments\n");
+            io.clear();
+        }
+    }
+};
+
+class ActuatorStop : public OrderImmediate, public Singleton<ActuatorStop>
+{
+public:
+    ActuatorStop() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == 0)
+        {
+            actuatorMgr.stop();
+            io.clear();
+        }
+        else
+        {
+            Server.printf_err("ActuatorStop: wrong number of arguments\n");
+            io.clear();
+        }
+    }
+};
+
+class ActuatorGetPosition : public OrderImmediate, public Singleton<ActuatorGetPosition>
+{
+public:
+    ActuatorGetPosition() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == 0)
+        {
+            io.clear();
+            ActuatorPosition p = actuatorMgr.getPosition();
+            Serializer::writeFloat(p.y, io);
+            Serializer::writeFloat(p.z, io);
+            Serializer::writeFloat(p.theta, io);
+        }
+        else
+        {
+            Server.printf_err("ActuatorGetPosition: wrong number of arguments\n");
             io.clear();
         }
     }

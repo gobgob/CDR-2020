@@ -65,7 +65,7 @@ void loop()
     motionControlTimer.priority(253);
     motionControlTimer.begin(motionControlInterrupt, PERIOD_ASSERV);
     actuatorMgrTimer.priority(252);
-    actuatorMgrTimer.begin(actuatorMgrInterrupt, ACTUATOR_MGR_INTERRUPT_PERIOD);
+    actuatorMgrTimer.begin(actuatorMgrInterrupt, ACT_MGR_INTERRUPT_PERIOD);
 
     contextualLightning.setNightLight(ContextualLightning::NIGHT_LIGHT_LOW);
 
