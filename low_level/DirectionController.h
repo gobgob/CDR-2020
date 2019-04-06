@@ -62,7 +62,6 @@ public:
 		{
             DynamixelStatus dynamixelStatus = DYN_STATUS_OK;
 			lastUpdateTime = micros();
-			
             if (read)
             {
                 uint16_t angle;

@@ -201,7 +201,13 @@ public:
         {
             lastUpdateTime = millis();
 
-            movingForward = motionControlSystem.isMovingForward();
+            int dir = motionControlSystem.getMovingDirection();
+            if (dir > 0) {
+                movingForward = true;
+            }
+            else if (dir < 0) {
+                movingForward = false;
+            }
             breaking = motionControlSystem.isBreaking();
             float curvature = motionControlSystem.getCurvature();
             if (blinkers != BLINKERS_BOTH) {

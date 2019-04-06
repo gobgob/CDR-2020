@@ -380,6 +380,22 @@ private:
         return ret;
     }
 
+    int getMovingDirection() const
+    {
+        noInterrupts();
+        MovePhase mp = trajectoryFollower.getMovePhase();
+        interrupts();
+        if (mp == MOVE_ENDED) {
+            return 0;
+        }
+        else if (isMovingForward()) {
+            return 1;
+        }
+        else {
+            return -1;
+        }
+    }
+
     bool isBreaking() const
     {
         noInterrupts();

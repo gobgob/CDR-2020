@@ -6,12 +6,13 @@
 #include "Config.h"
 #include "Serializer.h"
 
-#define NB_SENSORS          6
-#define TOF_SR_MIN_RANGE    18
-#define TOF_SR_MAX_RANGE    200
-#define TOF_LR_MIN_RANGE    30
-#define TOF_LR_MAX_RANGE    700
-#define TOF_LR_MEDIAN_SIZE  3
+#define SENSOR_UPDATE_PERIOD    5000 // µs
+#define NB_SENSORS              6
+#define TOF_SR_MIN_RANGE        18
+#define TOF_SR_MAX_RANGE        200
+#define TOF_LR_MIN_RANGE        30
+#define TOF_LR_MAX_RANGE        700
+#define TOF_LR_MEDIAN_SIZE      3
 
 
 class SensorsMgr : public Printable, public Singleton<SensorsMgr>
@@ -19,17 +20,17 @@ class SensorsMgr : public Printable, public Singleton<SensorsMgr>
 public:
     SensorsMgr()
     {
-        sensors[0] = new ToF_longRange(I2C_ADDR_TOF_AVG, PIN_EN_TOF_AVG,
+        sensors[AVG] = new ToF_longRange(I2C_ADDR_TOF_AVG, PIN_EN_TOF_AVG,
             TOF_LR_MIN_RANGE, TOF_LR_MAX_RANGE, "AVG", &Serial);
-        sensors[1] = new ToF_longRange(I2C_ADDR_TOF_AVD, PIN_EN_TOF_AVD,
+        sensors[AVD] = new ToF_longRange(I2C_ADDR_TOF_AVD, PIN_EN_TOF_AVD,
             TOF_LR_MIN_RANGE, TOF_LR_MAX_RANGE, "AVD", &Serial);
-        sensors[2] = new ToF_longRange(I2C_ADDR_TOF_FLAN_ARG, PIN_EN_TOF_FLAN_ARG,
+        sensors[FARG] = new ToF_longRange(I2C_ADDR_TOF_FLAN_ARG, PIN_EN_TOF_FLAN_ARG,
             TOF_LR_MIN_RANGE, TOF_LR_MAX_RANGE, "FlanARG", &Serial);
-        sensors[3] = new ToF_longRange(I2C_ADDR_TOF_FLAN_ARD, PIN_EN_TOF_FLAN_ARD,
+        sensors[FARD] = new ToF_longRange(I2C_ADDR_TOF_FLAN_ARD, PIN_EN_TOF_FLAN_ARD,
             TOF_LR_MIN_RANGE, TOF_LR_MAX_RANGE, "FlanARD", &Serial);
-        sensors[4] = new ToF_longRange(I2C_ADDR_TOF_ARG, PIN_EN_TOF_ARG,
+        sensors[ARG] = new ToF_longRange(I2C_ADDR_TOF_ARG, PIN_EN_TOF_ARG,
             TOF_LR_MIN_RANGE, TOF_LR_MAX_RANGE, "ARG", &Serial);
-        sensors[5] = new ToF_longRange(I2C_ADDR_TOF_ARD, PIN_EN_TOF_ARD,
+        sensors[ARD] = new ToF_longRange(I2C_ADDR_TOF_ARD, PIN_EN_TOF_ARD,
             TOF_LR_MIN_RANGE, TOF_LR_MAX_RANGE, "ARD", &Serial);
 
         members_allocated = true;
@@ -59,21 +60,39 @@ public:
         return ret;
     }
 
-    void update()
+    void update(int moving_dir = 0)
     {
-        if (!members_allocated) {
-            return;
-        }
-        for (size_t i = 0; i < NB_SENSORS; i++)
+        static uint32_t lastUpdateTime = 0;
+        static size_t step = 0;
+        uint32_t now = micros();
+        if (now - lastUpdateTime > SENSOR_UPDATE_PERIOD)
         {
-            SensorValue val = sensors[i]->getMeasure();
-            if (val != SENSOR_NOT_UPDATED) {
-                sensorsValues[i] = val;
+            lastUpdateTime = now;
+            if (moving_dir > 0) {
+                sensorsValues[2] = (SensorValue)SENSOR_DEAD;
+                sensorsValues[3] = (SensorValue)SENSOR_DEAD;
+                sensorsValues[4] = (SensorValue)SENSOR_DEAD;
+                sensorsValues[5] = (SensorValue)SENSOR_DEAD;
+                if (step < 2 || step > 5) {
+                    step = 2;
+                }
+            }
+            else if (moving_dir < 0) {
+                sensorsValues[0] = (SensorValue)SENSOR_DEAD;
+                sensorsValues[1] = (SensorValue)SENSOR_DEAD;
+                if (step > 1) {
+                    step = 0;
+                }
+            }
+            updateNow(step);
+            step++;
+            if (step >= NB_SENSORS) {
+                step = 0;
             }
         }
     }
 
-    void update(size_t i)
+    void updateNow(size_t i)
     {
         if (!members_allocated || i >= NB_SENSORS) {
             return;
@@ -132,6 +151,16 @@ private:
     ToF_sensor *sensors[NB_SENSORS];
     SensorValue sensorsValues[NB_SENSORS];
     bool members_allocated;
+
+    enum Index
+    {
+        AVG = 0,
+        AVD = 1,
+        FARG = 2,
+        FARD = 3,
+        ARG = 4,
+        ARD = 5,
+    };
 };
 
 

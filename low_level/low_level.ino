@@ -71,16 +71,24 @@ void loop()
 
     while (true)
     {
+        //uint32_t t1, t2, t3, t4, t5, t6, t7, t8;
+        //t1 = micros();
         orderManager.execute();
+        //t2 = micros();
         directionController.control();
+        //t3 = micros();
         actuatorMgr.mainLoopControl();
-        contextualLightning.update();
+        //t4 = micros();
         dashboard.update();
+        //t5 = micros();
+        contextualLightning.update();
+        //t6 = micros();
+        sensorMgr.update(motionControlSystem.getMovingDirection());
+        //t7 = micros();
 
         if (millis() - odometryReportTimer > ODOMETRY_REPORT_PERIOD)
         {
             odometryReportTimer = millis();
-            sensorMgr.update();
             //Serial.println(sensorMgr);
 
             odometryReport.clear();
@@ -92,10 +100,35 @@ void loop()
             Serializer::writeUInt(motionControlSystem.getTrajectoryIndex(), odometryReport);
             Serializer::writeBool(motionControlSystem.isMovingForward(), odometryReport);
             sensorMgr.appendValuesToVect(odometryReport);
+            actuatorMgr.appendSensorsValuesToVect(odometryReport);
             Server.sendData(ODOMETRY_AND_SENSORS, odometryReport);
 
             motionControlSystem.sendLogs();
         }
+        //t8 = micros();
+
+        //if (t8 - t1 > 3000) {
+        //    Serial.print(t8 - t1); 
+        //    Serial.print(" [");
+        //    Serial.print(t2 - t1);
+        //    Serial.print(" ; ");
+        //    Serial.print(t3 - t2);
+        //    Serial.print(" ; ");
+        //    Serial.print(t4 - t3);
+        //    Serial.print(" ; ");
+        //    Serial.print(t5 - t4);
+        //    Serial.print(" ; ");
+        //    Serial.print(t6 - t5);
+        //    Serial.print(" ; ");
+        //    Serial.print(t7 - t6);
+        //    Serial.print(" ; ");
+        //    Serial.print(t8 - t7);
+        //    Serial.println("]");
+        //}
+        //uint32_t dt = t8 - t7;
+        //if (dt > 100) {
+        //    Serial.println(dt);
+        //}
     }
 }
 

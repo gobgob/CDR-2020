@@ -15,7 +15,7 @@
 /* Liaison série AX12 */
 #define SERIAL_AX12			    Serial1		// Pins 0 1
 #define SERIAL_AX12_BAUDRATE    1000000
-#define SERIAL_AX12_TIMEOUT     50          // ms  (standard is 50ms, minimum is 2ms)
+#define SERIAL_AX12_TIMEOUT     10          // ms  (standard is 50ms, minimum is 2ms)
 
 /* IDs des AX12 */
 #define ID_AX12_DIRECTION   2

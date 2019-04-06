@@ -317,6 +317,7 @@ public:
             size_t index = 0;
             int32_t score = Serializer::readInt(io, index);
             dashboard.setScore(score);
+            Server.printf(SPY_ORDER, "Score=%d\n", score);
             io.clear();
         }
         else
@@ -382,6 +383,7 @@ public:
         if (io.size() == 0)
         {
             actuatorMgr.stop();
+            Server.printf(SPY_ORDER, "ActuatorStop\n");
             io.clear();
         }
         else
