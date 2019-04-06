@@ -32,6 +32,7 @@ class Backend:
         self.needSmallUpdateConsole = False
         self.needUpdateCurveGraph = False
         self.needUpdateScatterGraph = False
+        self.lastSensorPrintTime = 0
 
         self.currentTime = 0    # ms
         self.tMin = None        # ms
@@ -137,6 +138,7 @@ class Backend:
                 x = None
                 y = None
                 color = None
+                sensors = []
                 for i in range(len(args)):
                     if command.outputFormat[i].name == "x":
                         x = float(args[i])
@@ -152,11 +154,37 @@ class Backend:
                                 color = command.outputFormat[i].color
                             except (AttributeError, IndexError):
                                 pass
+                    elif "ToF" in command.outputFormat[i].name:
+                        name = command.outputFormat[i].name.split()[1]
+                        sensors.append((name, int(args[i])))
                 if color is None:
                     color = QColor(197, 200, 198)
                 if x is not None and y is not None:
                     self.scatterGraphEntries.append((message.timestamp, command.name, x, y, color))
                     self.needUpdateScatterGraph = True
+                now = time.time()
+                if len(sensors) > 0 and now - self.lastSensorPrintTime > 0.3:
+                    self.lastSensorPrintTime = now
+                    string = str(message.timestamp) + "_"
+                    string += TRACE_CHANNEL_NAME + "_"
+                    for name, value in sensors:
+                        string += name + "="
+                        if value == 0 or value == 1:
+                            string += "HS"
+                        elif value == 2:
+                            string += "0"
+                        elif value == 3:
+                            string += "inf"
+                        else:
+                            string += str(value)
+                        string += "\t"
+                    string += '\n'
+                    self.consoleEntries.append((message.timestamp, string))
+                    if len(self.consoleEntries) > CONSOLE_HISTORY_SIZE:
+                        self.consoleEntries.pop(0)
+                        self.consoleEntriesIndex -= 1
+                    if not self.toolbar.paused:
+                        self.needSmallUpdateConsole = True
             else:
                 if command.type == CommandType.SUBSCRIPTION_TEXT:
                     if command.id == INFO_CHANNEL:
