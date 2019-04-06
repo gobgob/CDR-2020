@@ -116,6 +116,8 @@ class ActuatorMgr : public Singleton<ActuatorMgr>
 {
 public:
     ActuatorMgr() :
+        m_left_sensor(I2C_ADDR_TOF_FOURCHE_AVG, PIN_EN_TOF_FOURCHE_AVG, 15, 200, "FourcheG", &Serial),
+        m_right_sensor(I2C_ADDR_TOF_FOURCHE_AVD, PIN_EN_TOF_FOURCHE_AVD, 15, 200, "FourcheD", &Serial),
         m_y_motor(SerialAX12, ID_AX12_ACT_Y),
         m_theta_motor(SerialAX12, ID_AX12_ACT_THETA),
         m_z_motor(ACT_MGR_STEP_PER_TURN, PIN_STEPPER_DIR, PIN_STEPPER_STEP,
@@ -134,21 +136,32 @@ public:
 
     int init()
     {
-        if (m_y_motor.init() != DYN_STATUS_OK ||
-                m_theta_motor.init() != DYN_STATUS_OK) {
-            return EXIT_FAILURE;
+        int ret = EXIT_SUCCESS;
+
+        if (m_left_sensor.powerON() != EXIT_SUCCESS) { ret = EXIT_FAILURE; }
+        if (m_right_sensor.powerON() != EXIT_SUCCESS) { ret = EXIT_FAILURE; }
+
+        if (m_y_motor.init() == DYN_STATUS_OK)
+        {
+            m_y_motor.enableTorque();
+            m_y_motor.jointMode();
         }
-        m_y_motor.enableTorque();
-        m_y_motor.jointMode();
-        m_theta_motor.enableTorque();
-        m_theta_motor.jointMode();
+        else { ret = EXIT_FAILURE; }
+        if (m_theta_motor.init() == DYN_STATUS_OK)
+        {
+            m_theta_motor.enableTorque();
+            m_theta_motor.jointMode();
+        }
+        else { ret = EXIT_FAILURE; }
+
         pinMode(PIN_STEPPER_RESET, OUTPUT);
         digitalWrite(PIN_STEPPER_RESET, HIGH);
         noInterrupts();
         m_z_motor.begin(ACT_MGR_STEPPER_SPEED, ACT_MGR_MICROSTEP);
         m_z_motor.enable();
         interrupts();
-        return EXIT_SUCCESS;
+
+        return ret;
     }
 
     void mainLoopControl()

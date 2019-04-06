@@ -19,18 +19,18 @@ class SensorsMgr : public Printable, public Singleton<SensorsMgr>
 public:
     SensorsMgr()
     {
-        sensors[0] = new ToF_longRange_med<TOF_LR_MEDIAN_SIZE>(
-            42, PIN_EN_TOF_AVG, TOF_LR_MIN_RANGE, TOF_LR_MAX_RANGE, "AVG", &Serial);
-        sensors[1] = new ToF_longRange_med<TOF_LR_MEDIAN_SIZE>(
-            44, PIN_EN_TOF_AVD, TOF_LR_MIN_RANGE, TOF_LR_MAX_RANGE, "AVD", &Serial);
-        sensors[2] = new ToF_longRange_med < TOF_LR_MEDIAN_SIZE>(
-            47, PIN_EN_TOF_FLAN_ARG, TOF_LR_MIN_RANGE, TOF_LR_MAX_RANGE, "FlanARG", &Serial);
-        sensors[3] = new ToF_longRange_med<TOF_LR_MEDIAN_SIZE>(
-            48, PIN_EN_TOF_FLAN_ARD, TOF_LR_MIN_RANGE, TOF_LR_MAX_RANGE, "FlanARD", &Serial);
-        sensors[4] = new ToF_longRange_med<TOF_LR_MEDIAN_SIZE>(
-            49, PIN_EN_TOF_ARG, TOF_LR_MIN_RANGE, TOF_LR_MAX_RANGE, "ARG", &Serial);
-        sensors[5] = new ToF_longRange_med<TOF_LR_MEDIAN_SIZE>(
-            50, PIN_EN_TOF_ARD, TOF_LR_MIN_RANGE, TOF_LR_MAX_RANGE, "ARD", &Serial);
+        sensors[0] = new ToF_longRange(I2C_ADDR_TOF_AVG, PIN_EN_TOF_AVG,
+            TOF_LR_MIN_RANGE, TOF_LR_MAX_RANGE, "AVG", &Serial);
+        sensors[1] = new ToF_longRange(I2C_ADDR_TOF_AVD, PIN_EN_TOF_AVD,
+            TOF_LR_MIN_RANGE, TOF_LR_MAX_RANGE, "AVD", &Serial);
+        sensors[2] = new ToF_longRange(I2C_ADDR_TOF_FLAN_ARG, PIN_EN_TOF_FLAN_ARG,
+            TOF_LR_MIN_RANGE, TOF_LR_MAX_RANGE, "FlanARG", &Serial);
+        sensors[3] = new ToF_longRange(I2C_ADDR_TOF_FLAN_ARD, PIN_EN_TOF_FLAN_ARD,
+            TOF_LR_MIN_RANGE, TOF_LR_MAX_RANGE, "FlanARD", &Serial);
+        sensors[4] = new ToF_longRange(I2C_ADDR_TOF_ARG, PIN_EN_TOF_ARG,
+            TOF_LR_MIN_RANGE, TOF_LR_MAX_RANGE, "ARG", &Serial);
+        sensors[5] = new ToF_longRange(I2C_ADDR_TOF_ARD, PIN_EN_TOF_ARD,
+            TOF_LR_MIN_RANGE, TOF_LR_MAX_RANGE, "ARD", &Serial);
 
         members_allocated = true;
         for (size_t i = 0; i < NB_SENSORS; i++)

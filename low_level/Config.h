@@ -22,6 +22,17 @@
 #define ID_AX12_ACT_Y       0
 #define ID_AX12_ACT_THETA   1
 
+/* Adresses des périphériques I2C */
+#define I2C_ADDR_7_SEGMENT          112
+#define I2C_ADDR_TOF_AVG            42
+#define I2C_ADDR_TOF_AVD            43
+#define I2C_ADDR_TOF_FOURCHE_AVG    44
+#define I2C_ADDR_TOF_FOURCHE_AVD    45
+#define I2C_ADDR_TOF_FLAN_ARG       46
+#define I2C_ADDR_TOF_FLAN_ARD       47
+#define I2C_ADDR_TOF_ARG            48
+#define I2C_ADDR_TOF_ARD            49
+
 /* Encodeurs d'odométrie */
 #define PIN_A_LEFT_ENCODER		34
 #define PIN_B_LEFT_ENCODER		33

@@ -31,7 +31,7 @@ public:
 
     void init()
     {
-        display.begin(0x70);
+        display.begin(I2C_ADDR_7_SEGMENT);
         display.clear();
         display.writeDigitRaw(0, 0x40);
         display.writeDigitRaw(1, 0x40);
