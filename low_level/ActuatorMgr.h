@@ -158,6 +158,7 @@ public:
         digitalWrite(PIN_STEPPER_RESET, HIGH);
         noInterrupts();
         m_z_motor.begin(ACT_MGR_STEPPER_SPEED, ACT_MGR_MICROSTEP);
+        m_z_motor.setMicrostep(ACT_MGR_MICROSTEP);
         m_z_motor.enable();
         interrupts();
 
@@ -513,7 +514,7 @@ private:
         m_z_current_move_origin +=
             m_z_motor.getStepsCompleted() * m_z_motor.getDirection();
         m_z_motor.stop();
-        float delta_z = ACT_MGR_STEP_PER_TURN *
+        float delta_z = ACT_MGR_MICROSTEP * ACT_MGR_STEP_PER_TURN *
             (m_aim_position.z - m_current_position.z) / ACT_MGR_Z_PER_TURN;
         m_z_motor.startMove((int32_t)delta_z);
         interrupts();
@@ -524,8 +525,8 @@ private:
         noInterrupts();
         int32_t current_z_pos_step = m_z_current_move_origin +
             m_z_motor.getStepsCompleted() * m_z_motor.getDirection();
-        m_current_position.z = ACT_MGR_Z_PER_TURN *
-            (float)current_z_pos_step / ACT_MGR_STEP_PER_TURN;
+        m_current_position.z = ACT_MGR_Z_PER_TURN * (float)current_z_pos_step /
+            (ACT_MGR_STEP_PER_TURN * ACT_MGR_MICROSTEP);
         interrupts();
     }
 
@@ -533,7 +534,7 @@ private:
     {
         noInterrupts();
         m_current_position.z = ACT_MGR_Z_MAX;
-        m_z_current_move_origin = ACT_MGR_STEP_PER_TURN *
+        m_z_current_move_origin = ACT_MGR_STEP_PER_TURN * ACT_MGR_MICROSTEP *
             m_current_position.z / ACT_MGR_Z_PER_TURN;
         m_z_motor.stop();
         m_z_motor.startMove(0);
