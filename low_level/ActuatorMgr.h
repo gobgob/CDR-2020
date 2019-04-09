@@ -34,6 +34,9 @@
 #define ACT_MGR_MICROSTEP           (16)
 #define ACT_MGR_STEP_PER_TURN       (200)   // step/turn
 #define ACT_MGR_Z_PER_TURN          (8)     // mm/turn
+#define ACT_MGR_SCAN_RESOLUTION     (101)   // resolution spaciale selon l'axe Y
+#define ACT_MGR_SCAN_AVG_SIZE       (5)     // taille de la moyenne mobile du scan
+#define ACT_MGR_HALF_FORK_DIST      (30.0)  // mm (Demi distance entre les deux fourches) (todo: set value)
 
 
 typedef int32_t ActuatorErrorCode;
@@ -289,7 +292,7 @@ private:
         m_status = STATUS_IDLE;
         m_composed_move_step = 0;
         m_scan_enabled = false;
-        // todo: reset scan structure
+        m_raw_scan_data.clear();
         readZCurrentPosition();
         m_aim_position = m_current_position;
         sendAimPosition();
@@ -300,7 +303,7 @@ private:
         m_status = STATUS_IDLE;
         m_composed_move_step = 0;
         m_scan_enabled = false;
-        // todo: reset scan structure
+        m_raw_scan_data.clear();
     }
 
     void simpleMoveHandler()
@@ -384,11 +387,12 @@ private:
         case 2:
             if (aimPositionReached())
             {
-                // todo: from scan struct, determine best Y value
-                // m_aim_position.y = best_y
-                // On failure : set y to zero and raise error flag
-                m_aim_position.y = 0;
-                m_error_code |= ACT_NO_DETECTION;
+                if (computeScanData(m_aim_position.y) != EXIT_SUCCESS)
+                {
+                    // On failure : set y to zero and raise error flag
+                    m_aim_position.y = 0;
+                    m_error_code |= ACT_NO_DETECTION;
+                }
                 m_scan_enabled = false;
                 sendAimPosition();
                 m_composed_move_step++;
@@ -452,21 +456,6 @@ private:
             if (step == 0)
             {
                 uint16_t angle;
-                DynamixelStatus dynamixelStatus = m_y_motor.currentPositionDegree(angle);
-                if (angle <= 300) {
-                    m_current_position.y = ((float)angle - ACT_MGR_Y_ORIGIN) / ACT_MGR_Y_CONVERTER;
-                }
-                if (dynamixelStatus & (DYN_STATUS_OVERLOAD_ERROR | DYN_STATUS_OVERHEATING_ERROR)) {
-                    m_error_code |= ACT_AX12_Y_BLOCKED;
-                }
-                else if (dynamixelStatus != DYN_STATUS_OK) {
-                    m_error_code |= ACT_AX12_ERROR;
-                }
-                step++;
-            }
-            else if (step == 1)
-            {
-                uint16_t angle;
                 DynamixelStatus dynamixelStatus = m_theta_motor.currentPositionDegree(angle);
                 if (angle <= 300) {
                     m_current_position.theta = (float)angle - ACT_MGR_THETA_ORIGIN;
@@ -479,13 +468,29 @@ private:
                 }
                 step++;
             }
+            else if (step == 1)
+            {
+                uint16_t angle;
+                DynamixelStatus dynamixelStatus = m_y_motor.currentPositionDegree(angle);
+                if (angle <= 300) {
+                    m_current_position.y = ((float)angle - ACT_MGR_Y_ORIGIN) / ACT_MGR_Y_CONVERTER;
+                }
+                if (dynamixelStatus & (DYN_STATUS_OVERLOAD_ERROR | DYN_STATUS_OVERHEATING_ERROR)) {
+                    m_error_code |= ACT_AX12_Y_BLOCKED;
+                }
+                else if (dynamixelStatus != DYN_STATUS_OK) {
+                    m_error_code |= ACT_AX12_ERROR;
+                }
+                step++;
+            }
             else if (step == 2)
             {
                 SensorValue val = m_left_sensor.getMeasure();
                 if (val != SENSOR_NOT_UPDATED) {
                     m_left_sensor_value = val;
                     if (m_scan_enabled) {
-                        // todo: store value in scan structure
+                        m_raw_scan_data.push_back(
+                            RawScanPoint(val, m_current_position.y + ACT_MGR_HALF_FORK_DIST));
                     }
                 }
                 step++;
@@ -496,7 +501,8 @@ private:
                 if (val != SENSOR_NOT_UPDATED) {
                     m_right_sensor_value = val;
                     if (m_scan_enabled) {
-                        // todo: store value in scan structure
+                        m_raw_scan_data.push_back(
+                            RawScanPoint(val, m_current_position.y - ACT_MGR_HALF_FORK_DIST));
                     }
                 }
                 step = 0;
@@ -541,6 +547,12 @@ private:
         interrupts();
     }
 
+    int computeScanData(float & y)
+    {
+        // todo
+        return EXIT_FAILURE;
+    }
+
     ActuatorPosition m_current_position;
     ActuatorPosition m_aim_position;
     ActuatorErrorCode m_error_code;
@@ -556,7 +568,17 @@ private:
     uint32_t m_composed_move_step;
     uint32_t m_move_start_time; // ms
     bool m_scan_enabled;
-    // todo: add structure to store scan data
+
+    struct RawScanPoint {
+        RawScanPoint(SensorValue v, float y)
+        {
+            this->distance = v;
+            this->y = y;
+        }
+        SensorValue distance;
+        float y;
+    };
+    std::vector<RawScanPoint> m_raw_scan_data;
 };
 
 #endif
