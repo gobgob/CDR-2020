@@ -279,7 +279,7 @@ public:
     ActuatorGoTo() {}
     void _launch(const std::vector<uint8_t> & input)
     {
-        if (input.size() == 0)
+        if (input.size() == 12)
         {
             Server.printf(SPY_ORDER, "ActuatorGoTo");
             ActuatorPosition p;
