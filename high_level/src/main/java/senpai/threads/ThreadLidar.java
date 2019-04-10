@@ -59,6 +59,13 @@ public class ThreadLidar extends Thread
 			{
 				log.write("Démarrage de " + Thread.currentThread().getName()+" annulé !", Severity.WARNING, Subject.STATUS);
 				while(true)
+					Thread.sleep(10);
+			}
+			else
+			{
+				log.write("Démarrage de " + Thread.currentThread().getName(), Subject.STATUS);	
+				eth.initialize(config);
+				while(true)
 				{
 					CircularObstacle obs = eth.getObstacle();
 					if(obs != null)
@@ -67,13 +74,6 @@ public class ThreadLidar extends Thread
 						robot.setLidarObs(obs);
 					}
 				}
-			}
-			else
-			{
-				log.write("Démarrage de " + Thread.currentThread().getName(), Subject.STATUS);	
-				eth.initialize(config);
-				while(true)
-					Thread.sleep(10);
 			}
 		}
 		catch(InterruptedException e)
