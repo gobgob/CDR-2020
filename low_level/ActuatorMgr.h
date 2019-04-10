@@ -12,6 +12,7 @@
 #include "Singleton.h"
 #include "Serializer.h"
 #include "Config.h"
+#include "PuckScanner.h"
 
 #define ACT_MGR_INTERRUPT_PERIOD    (100)   // µs
 #define ACT_MGR_POLL_PERIOD         (5000)  // µs
@@ -37,6 +38,8 @@
 #define ACT_MGR_SCAN_RESOLUTION     (101)   // resolution spaciale selon l'axe Y
 #define ACT_MGR_SCAN_AVG_SIZE       (5)     // taille de la moyenne mobile du scan
 #define ACT_MGR_HALF_FORK_DIST      (30.0)  // mm (Demi distance entre les deux fourches) (todo: set value)
+#define ACT_MGR_SENSOR_MIN          (15)    // mm
+#define ACT_MGR_SENSOR_MAX          (200)   // mm
 
 
 typedef int32_t ActuatorErrorCode;
@@ -119,8 +122,8 @@ class ActuatorMgr : public Singleton<ActuatorMgr>
 {
 public:
     ActuatorMgr() :
-        m_left_sensor(I2C_ADDR_TOF_FOURCHE_AVG, PIN_EN_TOF_FOURCHE_AVG, 15, 200, "FourcheG", &Serial),
-        m_right_sensor(I2C_ADDR_TOF_FOURCHE_AVD, PIN_EN_TOF_FOURCHE_AVD, 15, 200, "FourcheD", &Serial),
+        m_left_sensor(I2C_ADDR_TOF_FOURCHE_AVG, PIN_EN_TOF_FOURCHE_AVG, ACT_MGR_SENSOR_MIN, ACT_MGR_SENSOR_MAX, "FourcheG", &Serial),
+        m_right_sensor(I2C_ADDR_TOF_FOURCHE_AVD, PIN_EN_TOF_FOURCHE_AVD, ACT_MGR_SENSOR_MIN, ACT_MGR_SENSOR_MAX, "FourcheD", &Serial),
         m_y_motor(SerialAX12, ID_AX12_ACT_Y),
         m_theta_motor(SerialAX12, ID_AX12_ACT_THETA),
         m_z_motor(ACT_MGR_STEP_PER_TURN, PIN_STEPPER_DIR, PIN_STEPPER_STEP,
@@ -549,7 +552,43 @@ private:
 
     int computeScanData(float & y)
     {
+        /* Index sensing values by their Y-coordinate */
+        std::vector<int32_t> preprocess_data[ACT_MGR_SCAN_RESOLUTION];
+        for (size_t i = 0; i < m_raw_scan_data.size(); i++) {
+            int32_t d = m_raw_scan_data.at(i).distance;
+            size_t idx = m_raw_scan_data.at(i).index;
+            if (d >= 0 && idx < ACT_MGR_SCAN_RESOLUTION) {
+                preprocess_data[idx].push_back(d);
+            }
+        }
+
+        /* Merge sensing values with the same Y-coordinate and mark empty areas */
+        int32_t scan_data[ACT_MGR_SCAN_RESOLUTION];
+        for (size_t i = 0; i < ACT_MGR_SCAN_RESOLUTION; i++) {
+            if (preprocess_data[i].size() == 0) {
+                scan_data[i] = -1;
+            }
+            else {
+                int32_t sum = 0;
+                for (size_t j = 0; j < preprocess_data[i].size(); j++) {
+                    sum += preprocess_data[i].at(j);
+                }
+                scan_data[i] = sum / preprocess_data[i].size();
+            }
+        }
+
+        /* Fill empty areas with linear interpolation */
+        for (size_t i = 0; i < ACT_MGR_SCAN_RESOLUTION; i++) {
+            // todo
+        }
+
+        /* Apply moving average */
         // todo
+
+        /* Detect puck */
+        // todo
+
+        y = 0;
         return EXIT_FAILURE;
     }
 
@@ -572,11 +611,23 @@ private:
     struct RawScanPoint {
         RawScanPoint(SensorValue v, float y)
         {
-            this->distance = v;
-            this->y = y;
+            if (v == OBSTACLE_TOO_CLOSE) {
+                distance = ACT_MGR_SENSOR_MIN;
+            }
+            else if (v == NO_OBSTACLE) {
+                distance = ACT_MGR_SENSOR_MAX;
+            }
+            else if (v > ACT_MGR_SENSOR_MAX || v < ACT_MGR_SENSOR_MIN) {
+                distance = -1;
+            }
+            else {
+                distance = v;
+            }
+            index = round((constrain(y, ACT_MGR_Y_MIN, ACT_MGR_Y_MAX) - ACT_MGR_Y_MIN) *
+                (ACT_MGR_SCAN_RESOLUTION - 1) / (ACT_MGR_Y_MAX - ACT_MGR_Y_MIN));
         }
-        SensorValue distance;
-        float y;
+        size_t index;
+        int32_t distance;
     };
     std::vector<RawScanPoint> m_raw_scan_data;
 };
