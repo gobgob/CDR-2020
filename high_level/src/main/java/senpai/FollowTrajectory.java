@@ -44,6 +44,8 @@ public class FollowTrajectory
 		String configfile = "senpai-trajectory.conf";
 		
 		String filename = args[0];			
+		filename = filename.substring(filename.lastIndexOf("/")+1, filename.length());
+
 		Senpai senpai = new Senpai();
 		ErrorCode error = ErrorCode.NO_ERROR;
 		try
