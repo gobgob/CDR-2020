@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 gpio mode 22 out # diode en output
 gpio mode 21 in # interrupteur en input
 gpio mode 21 up # interrupteur pull-up
