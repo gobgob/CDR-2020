@@ -11,6 +11,7 @@ ERROR_CHANNEL_NAME      = "error"
 TRACE_CHANNEL_NAME      = "trace"
 SPY_ORDER_CHANNEL_NAME  = "spyOrder"
 ANSWER_DESCRIPTOR       = "answer"
+SENSOR_CHANNEL_NAME     = "sensors"
 
 TIMESTAMP_INFO_FIELD = "timestamp"
 
@@ -109,8 +110,8 @@ Command(0x05, "Direction", CommandType.SUBSCRIPTION_CURVE_DATA, [Field("Subscrib
          InfoField("Real direction", QColor(0, 255, 0), description="m^-1")], outputInfoFrame=True),
 Command(0x06, "Aim trajectory", CommandType.SUBSCRIPTION_SCATTER_DATA, [Field("Subscribe", Enum, ["No", "Yes"])],
         [InfoField(TIMESTAMP_INFO_FIELD),
-         InfoField("x", QColor(255, 255, 255), description="mm"),
-         InfoField("y", QColor(255, 255, 255), description="mm")], outputInfoFrame=True),
+         InfoField("x", QColor(30, 144, 255), description="mm"),
+         InfoField("y", QColor(30, 144, 255), description="mm")], outputInfoFrame=True),
 Command(0x07, "Speed PID", CommandType.SUBSCRIPTION_CURVE_DATA, [Field("Subscribe", Enum, ["No", "Yes"])],
         [InfoField(TIMESTAMP_INFO_FIELD),
          InfoField("Real speed", QColor(0, 255, 0), description="mm/s"),

@@ -166,7 +166,7 @@ class Backend:
                 if len(sensors) > 0 and now - self.lastSensorPrintTime > 0.3:
                     self.lastSensorPrintTime = now
                     string = str(message.timestamp) + "_"
-                    string += TRACE_CHANNEL_NAME + "_"
+                    string += SENSOR_CHANNEL_NAME + "_"
                     for name, value in sensors:
                         string += name + "="
                         if value == 0 or value == 1:
@@ -345,6 +345,7 @@ class Backend:
             self.scatterGraphEntries[:] = [x for x in self.scatterGraphEntries if x[0] > self.tMin]
             self.splitters = [self.tMin]
             self.toolbar.enableSecondaryIcons(False)
+            self.needUpdateScatterGraph = True
 
     def cancelLastCut(self):
         if len(self.splitters) > 1:

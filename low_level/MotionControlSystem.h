@@ -219,6 +219,8 @@ private:
 			{
 				trajectoryComplete = true;
 			}
+            Position p = trajectoryPoint.getPosition();
+            Server.printf(AIM_TRAJECTORY, "%u_%g_%g", millis(), p.x, p.y);
             return TRAJECTORY_EDITION_SUCCESS;
 		}
 		else

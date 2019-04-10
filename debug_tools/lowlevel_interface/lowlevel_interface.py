@@ -505,8 +505,9 @@ class ConsolePanel(QFrame):
         self.cbInfo = QCheckBox("Info", self)
         self.cbOrders = QCheckBox("Orders", self)
         self.cbAnswers = QCheckBox("Answers", self)
+        self.cbSensors = QCheckBox("Sensors", self)
 
-        self.cbList = [self.cbTimestamp, self.cbErrors, self.cbInfo, self.cbOrders, self.cbAnswers]
+        self.cbList = [self.cbTimestamp, self.cbErrors, self.cbInfo, self.cbOrders, self.cbAnswers, self.cbSensors]
         for cb in self.cbList:
             cb.setChecked(True)
             cb.stateChanged.connect(self.settings_changed)
@@ -522,6 +523,7 @@ class ConsolePanel(QFrame):
         self.errorColor = QColor(195, 48, 39)
         self.orderColor = QColor(1, 160, 228)
         self.answerColor = QColor(1, 162, 82)
+        self.sensorColor = QColor(1, 160, 160)
 
         self.console.setStyleSheet("""
             background-color: rgb(29, 31, 33);
@@ -530,7 +532,7 @@ class ConsolePanel(QFrame):
 
         self.consoleText = ""
 
-        self.margin = 31
+        self.margin = 41 # Parameter to tune to make things work
         self.width_needed = None
 
         grid = QGridLayout()
@@ -624,6 +626,10 @@ class ConsolePanel(QFrame):
                 if not self.cbAnswers.isChecked():
                     continue
                 color = self.answerColor
+            elif sLine[1] == SENSOR_CHANNEL_NAME:
+                if not self.cbSensors.isChecked():
+                    continue
+                color = self.sensorColor
             else:
                 print("Incorrect line type :", sLine[1])
                 continue
@@ -910,6 +916,7 @@ class GraphScatterArea(QFrame):
         self.plotWidget.setEnabled(False)
         self.plotWidget.setLabel('left', 'Y', units='mm')
         self.plotWidget.setLabel('bottom', 'X', units='mm')
+        self.plotWidget.setAspectLocked(1)
         grid.addWidget(self.plotWidget, 0, 0)
         self.setLayout(grid)
         self.data = {}
