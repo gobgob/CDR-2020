@@ -117,7 +117,7 @@ public class KnownPathManager {
 		return s;
 	}
 	
-	private void loadAllPaths()
+	public void loadAllPaths()
 	{
 		File[] files = new File("paths/").listFiles();
 		int nb = 0;

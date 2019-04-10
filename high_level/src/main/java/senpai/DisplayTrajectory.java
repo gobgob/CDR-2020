@@ -56,6 +56,7 @@ public class DisplayTrajectory
 		{
 			String filename = args[i];
 			KnownPathManager manager = new KnownPathManager(log, null);
+			manager.loadAllPaths();
 			String f = filename.substring(filename.lastIndexOf("/")+1, filename.length());
 			List<ItineraryPoint> path = manager.loadPath(f).path;
 				
