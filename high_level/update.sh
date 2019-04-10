@@ -1,2 +1,2 @@
-#!/bin/sh
+#!/bin/bash
 mvn clean compile assembly:single
