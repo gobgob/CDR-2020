@@ -77,3 +77,4 @@ Et de compiler grâce à maven:
 
     mvn clean compile assembly:single
 
+Le fichier généré est `chariot-hl.jar` placé dans `high_level/target`. Des scripts placés dans `high_level` permet de l'utiliser facilement.
