@@ -45,4 +45,35 @@ Bibliothèques à installer manuellement (coiper le dossier de la librairie dire
 
 ## Code haut niveau (`high_level/`)
 
-_à compléter par les personnes compétentes_
+Programme en charge des tâches dites "haut niveau" qui nécessitent une puissance de calcul plus importante:
+
+* Recherche de trajectoire
+* Traitement haut niveau des capteurs
+* Mémorisation de l'état du robot, des éléments de jeu et des obstacles vus
+* Scripts, enchaînements d'actions écrits à l'avance
+
+
+### Dépendances
+
+Les dépendances du haut niveau ont toutes été développées en interne.
+
+Injection de dépendances : https://github.com/PFGimenez/dependency-injector
+
+Gestion de configuration : https://github.com/PFGimenez/config
+
+Log : https://github.com/PFGimenez/log
+
+Outils graphiques : https://github.com/PFGimenez/graphic-toolbox
+
+Kraken, recherche de chemin courbe : https://github.com/PFGimenez/The-Kraken-Pathfinding
+
+### Chaîne de compilation
+
+Il s'agit d'un projet maven Java. Un JDK ainsi que maven sont nécessaires. Pour compiler le haut niveau, il suffit de se placer dans le répertoire `high_level` :
+
+    cd high_level
+
+Et de compiler grâce à maven:
+
+    mvn clean compile assembly:single
+
