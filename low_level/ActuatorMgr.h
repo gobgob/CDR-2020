@@ -12,34 +12,35 @@
 #include "Singleton.h"
 #include "Serializer.h"
 #include "Config.h"
+#include "CommunicationServer.h"
 #include "PuckScanner.h"
 
-#define ACT_MGR_INTERRUPT_PERIOD    (100)   // µs
-#define ACT_MGR_POLL_PERIOD         (5000)  // µs
-#define ACT_MGR_MOVE_TIMEOUT        (8000)  // ms
-#define ACT_MGR_Y_TOLERANCE         (1.5)   // mm
-#define ACT_MGR_Z_TOLERANCE         (1.0)   // mm
-#define ACT_MGR_THETA_TOLERANCE     (5)     // deg
-#define ACT_MGR_Y_MIN               (-50)   // mm (todo: set value)
-#define ACT_MGR_Y_MAX               (50)    // mm (todo: set value)
-#define ACT_MGR_Z_MIN               (0)     // mm
-#define ACT_MGR_Z_MAX               (300)   // mm (todo: set value)
-#define ACT_MGR_THETA_MIN           (60)    // deg (todo: set value)
-#define ACT_MGR_THETA_MAX           (240)   // deg (todo: set value)
-#define ACT_MGR_Y_ORIGIN            (150)   // deg (Angle de l'AX12 de l'axe Y pour une fourche centrée)
-#define ACT_MGR_Y_CONVERTER         (2.0)   // deg/mm (Conversion Y <-> Angle d'AX12) (=360/(PI * d)) (todo: set value)
-#define ACT_MGR_THETA_ORIGIN        (150)   // deg (Angle de l'AX12 theta pour une fourche horizontale)
-#define ACT_MGR_SENSE_MIN_THETA     (130)   // deg (Angle minimal de l'AX12 theta pour utiliser les capteurs de fourche)
-#define ACT_MGR_SENSE_MAX_THETA     (170)   // deg (Angle maximal de l'AX12 theta pour utiliser les capteurs de fourche)
-#define ACT_MGR_STEPPER_SPEED       (400)   // rmp
-#define ACT_MGR_MICROSTEP           (16)
-#define ACT_MGR_STEP_PER_TURN       (200)   // step/turn
-#define ACT_MGR_Z_PER_TURN          (8)     // mm/turn
-#define ACT_MGR_SCAN_RESOLUTION     (101)   // resolution spaciale selon l'axe Y
-#define ACT_MGR_SCAN_AVG_SIZE       (5)     // taille de la moyenne mobile du scan
-#define ACT_MGR_HALF_FORK_DIST      (30.0)  // mm (Demi distance entre les deux fourches) (todo: set value)
-#define ACT_MGR_SENSOR_MIN          (15)    // mm
-#define ACT_MGR_SENSOR_MAX          (200)   // mm
+#define ACT_MGR_INTERRUPT_PERIOD    (100)       // Âµs
+#define ACT_MGR_POLL_PERIOD         (5000)      // Âµs
+#define ACT_MGR_MOVE_TIMEOUT        (8000)      // ms
+#define ACT_MGR_Y_TOLERANCE         (1.5)       // mm
+#define ACT_MGR_Z_TOLERANCE         (1.0)       // mm
+#define ACT_MGR_THETA_TOLERANCE     (5)         // deg
+#define ACT_MGR_Y_MIN               (-23.795)   // mm (47.59 / 2)
+#define ACT_MGR_Y_MAX               (23.795)    // mm
+#define ACT_MGR_Z_MIN               (0)         // mm
+#define ACT_MGR_Z_MAX               (208)       // mm (todo: adjust with the base)
+#define ACT_MGR_THETA_MIN           (-90)       // deg
+#define ACT_MGR_THETA_MAX           (40)        // deg
+#define ACT_MGR_Y_ORIGIN            (150)       // deg (Angle de l'AX12 de l'axe Y pour une fourche centrÃ©e)
+#define ACT_MGR_Y_CONVERTER         (2.8233)    // deg/mm (Conversion Y <-> Angle d'AX12) (100 deg = 35.42mm)
+#define ACT_MGR_THETA_ORIGIN        (150)       // deg (Angle de l'AX12 theta pour une fourche horizontale)
+#define ACT_MGR_SENSE_MIN_THETA     (-20)       // deg (Angle minimal de l'AX12 theta pour utiliser les capteurs de fourche)
+#define ACT_MGR_SENSE_MAX_THETA     (20)        // deg (Angle maximal de l'AX12 theta pour utiliser les capteurs de fourche)
+#define ACT_MGR_STEPPER_SPEED       (200)       // rmp
+#define ACT_MGR_MICROSTEP           (16)    
+#define ACT_MGR_STEP_PER_TURN       (200)       // step/turn
+#define ACT_MGR_Z_PER_TURN          (8)         // mm/turn
+#define ACT_MGR_SCAN_RESOLUTION     (101)       // resolution spaciale selon l'axe Y
+#define ACT_MGR_SCAN_AVG_SIZE       (5)         // taille de la moyenne mobile du scan
+#define ACT_MGR_HALF_FORK_DIST      (33.0)      // mm (Demi distance entre les deux fourches)
+#define ACT_MGR_SENSOR_MIN          (15)        // mm
+#define ACT_MGR_SENSOR_MAX          (200)       // mm
 
 
 typedef int32_t ActuatorErrorCode;
@@ -89,15 +90,15 @@ public:
     }
 
     /*
-        y (mm) déplacement latéral
-        y=0: fourche centrée
-        y>0: décalage à gauche
-        y<0: décalage à droite
+        y (mm) dÃ©placement latÃ©ral
+        y=0: fourche centrÃ©e
+        y>0: dÃ©calage Ã  gauche
+        y<0: dÃ©calage Ã  droite
     */
     float y;
 
     /*
-        z (mm) déplacement vertical
+        z (mm) dÃ©placement vertical
         z=0: fourche au niveau du sol
         z>0: translation vers le haut
     */
@@ -107,7 +108,7 @@ public:
         theta (deg) angle de la fourche
         theta=0: fourche horizontale
         theta>0: pointe vers le haut (conservation du palet)
-        theta<0: pointe vers le bas (éjection du palet)
+        theta<0: pointe vers le bas (Ã©jection du palet)
     */
     float theta;
 
@@ -276,6 +277,15 @@ private:
         if (!p.isWithinRange())
         {
             m_error_code |= ACT_UNREACHABLE;
+            if (y < ACT_MGR_Y_MIN || y > ACT_MGR_Y_MAX) {
+                Server.printf_err("y (%g) is out of range (%g;%g)", y, ACT_MGR_Y_MIN, ACT_MGR_Y_MAX);
+            }
+            if (z < ACT_MGR_Z_MIN || z > ACT_MGR_Z_MAX) {
+                Server.printf_err("z (%g) is out of range (%g;%g)", z, ACT_MGR_Z_MIN, ACT_MGR_Z_MAX);
+        }
+            if (theta < ACT_MGR_THETA_MIN | theta > ACT_MGR_THETA_MAX) {
+                Server.printf_err("theta (%g) is out of range (%g;%g)", theta, ACT_MGR_THETA_MIN, ACT_MGR_THETA_MAX);
+            }
         }
         else
         {
@@ -347,7 +357,7 @@ private:
             if (endstopPressed())
             {
                 resetZOrigin();
-                m_aim_position.z = m_current_position.z;
+                m_aim_position.z = m_current_position.z - 20; // Avoid to stress on the endstop, and it's more esthetic
                 m_aim_position.theta = ACT_MGR_THETA_MIN;
                 sendAimPosition();
                 m_composed_move_step++;
@@ -425,7 +435,6 @@ private:
 
     bool endstopPressed()
     {
-        // todo: put the apropriate logic state
         return digitalRead(PIN_STEPPER_ENDSTOP) == HIGH;
     }
 

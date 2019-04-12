@@ -38,4 +38,4 @@ project.properties
 *.log
 *.out
 *.toc
-
+.vscode
