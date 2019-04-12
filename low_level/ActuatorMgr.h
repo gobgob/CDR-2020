@@ -36,11 +36,6 @@
 #define ACT_MGR_MICROSTEP           (16)
 #define ACT_MGR_STEP_PER_TURN       (200)       // step/turn
 #define ACT_MGR_Z_PER_TURN          (8)         // mm/turn
-#define ACT_MGR_SCAN_RESOLUTION     (101)       // resolution spaciale selon l'axe Y
-#define ACT_MGR_SCAN_AVG_SIZE       (5)         // taille de la moyenne mobile du scan
-#define ACT_MGR_HALF_FORK_DIST      (33.0)      // mm (Demi distance entre les deux fourches)
-#define ACT_MGR_SENSOR_MIN          (15)        // mm
-#define ACT_MGR_SENSOR_MAX          (200)       // mm
 
 
 typedef int32_t ActuatorErrorCode;
@@ -123,12 +118,11 @@ class ActuatorMgr : public Singleton<ActuatorMgr>
 {
 public:
     ActuatorMgr() :
-        m_left_sensor(I2C_ADDR_TOF_FOURCHE_AVG, PIN_EN_TOF_FOURCHE_AVG, ACT_MGR_SENSOR_MIN, ACT_MGR_SENSOR_MAX, "FourcheG", &Serial),
-        m_right_sensor(I2C_ADDR_TOF_FOURCHE_AVD, PIN_EN_TOF_FOURCHE_AVD, ACT_MGR_SENSOR_MIN, ACT_MGR_SENSOR_MAX, "FourcheD", &Serial),
         m_y_motor(SerialAX12, ID_AX12_ACT_Y),
         m_theta_motor(SerialAX12, ID_AX12_ACT_THETA),
         m_z_motor(ACT_MGR_STEP_PER_TURN, PIN_STEPPER_DIR, PIN_STEPPER_STEP,
-            PIN_STEPPER_SLEEP, PIN_MICROSTEP_1, PIN_MICROSTEP_2, PIN_MICROSTEP_3)
+            PIN_STEPPER_SLEEP, PIN_MICROSTEP_1, PIN_MICROSTEP_2, PIN_MICROSTEP_3),
+        m_puck_scanner(ACT_MGR_Y_MIN, ACT_MGR_Y_MAX)
     {
         m_error_code = ACT_OK;
         m_status = STATUS_IDLE;
@@ -137,16 +131,12 @@ public:
         m_z_current_move_origin = 0;
         m_composed_move_step = 0;
         m_move_start_time = 0;
-        m_scan_enabled = false;
         pinMode(PIN_STEPPER_ENDSTOP, INPUT);
     }
 
     int init()
     {
-        int ret = EXIT_SUCCESS;
-
-        if (m_left_sensor.powerON() != EXIT_SUCCESS) { ret = EXIT_FAILURE; }
-        if (m_right_sensor.powerON() != EXIT_SUCCESS) { ret = EXIT_FAILURE; }
+        int ret = m_puck_scanner.init();
 
         if (m_y_motor.init() == DYN_STATUS_OK)
         {
@@ -304,8 +294,8 @@ private:
         }
         m_status = STATUS_IDLE;
         m_composed_move_step = 0;
-        m_scan_enabled = false;
-        m_raw_scan_data.clear();
+        m_puck_scanner.enable(false);
+        m_puck_scanner.reset();
         readZCurrentPosition();
         m_aim_position = m_current_position;
         sendAimPosition();
@@ -315,8 +305,8 @@ private:
     {
         m_status = STATUS_IDLE;
         m_composed_move_step = 0;
-        m_scan_enabled = false;
-        m_raw_scan_data.clear();
+        m_puck_scanner.enable(false);
+        m_puck_scanner.reset();
     }
 
     void simpleMoveHandler()
@@ -384,7 +374,7 @@ private:
         switch (m_composed_move_step)
         {
         case 0:
-            m_scan_enabled = true;
+            m_puck_scanner.enable(true);
             m_aim_position.y = ACT_MGR_Y_MIN;
             sendAimPosition();
             m_composed_move_step++;
@@ -400,13 +390,13 @@ private:
         case 2:
             if (aimPositionReached())
             {
-                if (computeScanData(m_aim_position.y) != EXIT_SUCCESS)
+                if (m_puck_scanner.compute(m_aim_position.y) != EXIT_SUCCESS)
                 {
                     // On failure : set y to zero and raise error flag
                     m_aim_position.y = 0;
                     m_error_code |= ACT_NO_DETECTION;
                 }
-                m_scan_enabled = false;
+                m_puck_scanner.enable(false);
                 sendAimPosition();
                 m_composed_move_step++;
             }
@@ -497,26 +487,12 @@ private:
             }
             else if (step == 2)
             {
-                SensorValue val = m_left_sensor.getMeasure();
-                if (val != SENSOR_NOT_UPDATED) {
-                    m_left_sensor_value = val;
-                    if (m_scan_enabled) {
-                        m_raw_scan_data.push_back(
-                            RawScanPoint(val, m_current_position.y + ACT_MGR_HALF_FORK_DIST));
-                    }
-                }
+                m_puck_scanner.updateLeftSensor(m_left_sensor_value, m_current_position.y);
                 step++;
             }
             else if (step == 3)
             {
-                SensorValue val = m_right_sensor.getMeasure();
-                if (val != SENSOR_NOT_UPDATED) {
-                    m_right_sensor_value = val;
-                    if (m_scan_enabled) {
-                        m_raw_scan_data.push_back(
-                            RawScanPoint(val, m_current_position.y - ACT_MGR_HALF_FORK_DIST));
-                    }
-                }
+                m_puck_scanner.updateRightSensor(m_right_sensor_value, m_current_position.y);
                 step = 0;
             }
 
@@ -559,54 +535,10 @@ private:
         interrupts();
     }
 
-    int computeScanData(float & y)
-    {
-        /* Index sensing values by their Y-coordinate */
-        std::vector<int32_t> preprocess_data[ACT_MGR_SCAN_RESOLUTION];
-        for (size_t i = 0; i < m_raw_scan_data.size(); i++) {
-            int32_t d = m_raw_scan_data.at(i).distance;
-            size_t idx = m_raw_scan_data.at(i).index;
-            if (d >= 0 && idx < ACT_MGR_SCAN_RESOLUTION) {
-                preprocess_data[idx].push_back(d);
-            }
-        }
-
-        /* Merge sensing values with the same Y-coordinate and mark empty areas */
-        int32_t scan_data[ACT_MGR_SCAN_RESOLUTION];
-        for (size_t i = 0; i < ACT_MGR_SCAN_RESOLUTION; i++) {
-            if (preprocess_data[i].size() == 0) {
-                scan_data[i] = -1;
-            }
-            else {
-                int32_t sum = 0;
-                for (size_t j = 0; j < preprocess_data[i].size(); j++) {
-                    sum += preprocess_data[i].at(j);
-                }
-                scan_data[i] = sum / preprocess_data[i].size();
-            }
-        }
-
-        /* Fill empty areas with linear interpolation */
-        for (size_t i = 0; i < ACT_MGR_SCAN_RESOLUTION; i++) {
-            // todo
-        }
-
-        /* Apply moving average */
-        // todo
-
-        /* Detect puck */
-        // todo
-
-        y = 0;
-        return EXIT_FAILURE;
-    }
-
     ActuatorPosition m_current_position;
     ActuatorPosition m_aim_position;
     ActuatorErrorCode m_error_code;
     ActuatorStatus m_status;
-    ToF_shortRange m_left_sensor;
-    ToF_shortRange m_right_sensor;
     SensorValue m_left_sensor_value;
     SensorValue m_right_sensor_value;
     DynamixelMotor m_y_motor;
@@ -615,30 +547,7 @@ private:
     int32_t m_z_current_move_origin; // Position, in steps, of the z-axis when the last move began
     uint32_t m_composed_move_step;
     uint32_t m_move_start_time; // ms
-    bool m_scan_enabled;
-
-    struct RawScanPoint {
-        RawScanPoint(SensorValue v, float y)
-        {
-            if (v == OBSTACLE_TOO_CLOSE) {
-                distance = ACT_MGR_SENSOR_MIN;
-            }
-            else if (v == NO_OBSTACLE) {
-                distance = ACT_MGR_SENSOR_MAX;
-            }
-            else if (v > ACT_MGR_SENSOR_MAX || v < ACT_MGR_SENSOR_MIN) {
-                distance = -1;
-            }
-            else {
-                distance = v;
-            }
-            index = round((constrain(y, ACT_MGR_Y_MIN, ACT_MGR_Y_MAX) - ACT_MGR_Y_MIN) *
-                (ACT_MGR_SCAN_RESOLUTION - 1) / (ACT_MGR_Y_MAX - ACT_MGR_Y_MIN));
-        }
-        size_t index;
-        int32_t distance;
-    };
-    std::vector<RawScanPoint> m_raw_scan_data;
+    PuckScanner m_puck_scanner;
 };
 
 #endif
