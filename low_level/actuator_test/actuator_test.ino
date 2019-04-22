@@ -24,12 +24,12 @@ char serialInput[10];
 int serialPrompt = 0;
 
 DynamixelInterface dInterface(Serial1);  // Stream
-DynamixelMotor motorX(dInterface, 0);  // Interface, ID;
+DynamixelMotor motorY(dInterface, 0);  // Interface, ID;
 DynamixelMotor motorA(dInterface, 1); // Interface, ID;
 
-int currentMotorXPosition;
+int currentMotorYPosition;
 int currentMotorAPosition;
-float currentMotorYPosition;
+float currentMotorZPosition;
 int speed = 80;
 int mode = ABSOLUTE;
 
@@ -37,10 +37,10 @@ void setup() {
   // AX-12
   dInterface.begin(1000000, 50); // baudrate, timeout
 
-  motorX.init(); // This will get the returnStatusLevel of the servo
-  Serial.printf("[Motor X] Status return level = %u\n", motorX.statusReturnLevel());
-  motorX.jointMode(); // Set the angular limits of the servo. Set to [min, max] by default (85, 215)
-  motorX.enableTorque();
+  motorY.init(); // This will get the returnStatusLevel of the servo
+  Serial.printf("[Motor Y] Status return level = %u\n", motorY.statusReturnLevel());
+  motorY.jointMode(); // Set the angular limits of the servo. Set to [min, max] by default (85, 215)
+  motorY.enableTorque();
 
   motorA.init(); // This will get the returnStatusLevel of the servo
   Serial.printf("[Motor A] Status return level = %u\n", motorA.statusReturnLevel());
@@ -84,12 +84,12 @@ void loop()
 }
 
 /**
-   Setup the Y
+   Setup the Z
 */
 void init() {
   digitalWrite(LED_WARN, HIGH);
   digitalWrite(LED_ERROR, HIGH);
-  Serial.println("[MotorY] Calibration start");
+  Serial.println("[MotorZ] Calibration start");
   digitalWrite(DIR, HIGH);
   while (digitalRead(ENDSTOP) == LOW) {
     digitalWrite(STEP, HIGH);
@@ -97,8 +97,8 @@ void init() {
     digitalWrite(STEP, LOW);
     delayMicroseconds(speed);
   }
-  currentMotorYPosition = 208; // Top
-  Serial.println("[MotorY] Calibration finish");
+  currentMotorZPosition = 208; // Top
+  Serial.println("[MotorZ] Calibration finish");
   home();
   digitalWrite(LED_WARN, LOW);
 }
@@ -110,16 +110,19 @@ void help() {
   Serial.print(F("Atome manipulator "));
   Serial.println(VERSION);
   Serial.println(F("Commands:"));
-  Serial.println(F("G0 [X(steps)] [Y(steps)] [A(steps)] [F(feedrate)]; - linear move"));
-  Serial.println(F("X(steps); - Move X axis"));
+  Serial.println(F("G0 [Y(steps)] [Z(steps)] [A(steps)] [F(feedrate)]; - linear move"));
   Serial.println(F("Y(steps); - Move Y axis"));
+  Serial.println(F("Z(steps); - Move Z axis"));
   Serial.println(F("A(steps); - Move A axis"));
   Serial.println(F("G90; - absolute mode (default)"));
   Serial.println(F("G91; - incremental mode"));
   Serial.println(F("G28; - go home"));
   Serial.println(F("G29; - go middle"));
+  Serial.println(F("G50; - disable torque"));
+  Serial.println(F("G51; - enable torque"));
   Serial.println(F("M1; - init"));
   Serial.println(F("M100; - this help message"));
+  Serial.println(F("M113; - report feedback position (ax-12 values)"));
   Serial.println(F("M114; - report position"));
   Serial.println(F("M115; - get firmware version"));
 }
@@ -156,26 +159,36 @@ void processCommand() {
   switch (cmd) {
     case 0: // move
       {
-        int X = parseNumber('X', 0);
         int Y = parseNumber('Y', 0);
+        int Z = parseNumber('Z', 0);
         int A = parseNumber('A', 0);
         int F = parseNumber('F', 0);
 
         if (F != 0) setFeedRate(F);
         if (A != 0) mode == INCREMENTAL ? motorAGotoInc(A) : motorAGotoAbs(A);
-        if (X != 0) mode == INCREMENTAL ? motorXGotoInc(X) : motorXGotoAbs(X);
         if (Y != 0) mode == INCREMENTAL ? motorYGotoInc(Y) : motorYGotoAbs(Y);
+        if (Z != 0) mode == INCREMENTAL ? motorZGotoInc(Z) : motorZGotoAbs(Z);
         break;
       }
 
     case 28: home(); break;
     case 29: {
         setFeedRate(40);
-        motorXGotoAbs(150);
+        motorYGotoAbs(150);
         motorAGotoAbs(150);
-        motorYGotoAbs(140);
+        motorZGotoAbs(140);
         break;
       }
+    case 50: {
+      motorY.enableTorque(false);
+      motorA.enableTorque(false);
+      break;
+    }
+    case 51: {
+      motorY.enableTorque(true);
+      motorA.enableTorque(true);
+      break;
+    }
 
     case 90: mode = ABSOLUTE; break;
     case 91: mode = INCREMENTAL; break;
@@ -187,19 +200,20 @@ void processCommand() {
   switch (cmd) {
     case 1: init(); break;
     case 100: help(); break;
+    case 113: reportFeedbackPosition(); break;
     case 114: reportPosition(); break;
     case 115:
-      Serial.println("ok PROTOCOL_VERSION:0.0.1 FIRMWARE_NAME:AtomeManipulator");
+      Serial.printf("ok PROTOCOL_VERSION:%s FIRMWARE_NAME:AtomeManipulator\n", VERSION);
       break;
   }
 
   // X axis shortcut
-  cmd = parseNumber('X', 0);
-  if (cmd != 0) mode == INCREMENTAL ? motorXGotoInc(cmd) : motorXGotoAbs(cmd);
-
-  // Y axis shortcut
   cmd = parseNumber('Y', 0);
   if (cmd != 0) mode == INCREMENTAL ? motorYGotoInc(cmd) : motorYGotoAbs(cmd);
+
+  // Y axis shortcut
+  cmd = parseNumber('Z', 0);
+  if (cmd != 0) mode == INCREMENTAL ? motorZGotoInc(cmd) : motorZGotoAbs(cmd);
 
   // A axis shortcut
   cmd = parseNumber('A', 0);
@@ -221,7 +235,7 @@ void motorAGotoAbs(int pos) {
   if (pos < 60 || pos > 190) {
     Serial.println("[Motor A] Range Error (60 to 190)");
   } else {
-    Serial.print("[Motor X] goto: "); Serial.println(pos, DEC);
+    Serial.print("[Motor A] goto: "); Serial.println(pos, DEC);
     motorA.goalPositionDegree(pos);
     currentMotorAPosition = pos;
   }
@@ -231,80 +245,90 @@ void motorAGotoInc(int pos) {
   motorAGotoAbs(currentMotorAPosition + pos);
 }
 
-void motorXGotoAbs(int pos) {
+void motorYGotoAbs(int pos) {
   if (pos < 85 || pos > 215) {
-    Serial.println("[Motor X] Range Error (85 to 215)");
+    Serial.println("[Motor Y] Range Error (85 to 215)");
   } else {
-    Serial.print("[Motor X] goto: "); Serial.println(pos, DEC);
-    motorX.goalPositionDegree(pos);
-    currentMotorXPosition = pos;
+    Serial.print("[Motor Y] goto: "); Serial.println(pos, DEC);
+    motorY.goalPositionDegree(pos);
+    currentMotorYPosition = pos;
   }
 }
 
-void motorXGotoInc(int pos) {
-  motorXGotoAbs(currentMotorXPosition + pos);
+void motorYGotoInc(int pos) {
+  motorYGotoAbs(currentMotorYPosition + pos);
 }
 
 /**
-   Move Y axis of `pos` mm (incremental)
+   Move Z axis of `pos` mm (incremental)
 */
-void motorYGotoInc(int pos) {
-  if (currentMotorYPosition + pos < 0 || currentMotorYPosition + pos > 208) {
-    Serial.println("[Motor Y] Range Error (0 to 208)");
+void motorZGotoInc(int pos) {
+  if (currentMotorZPosition + pos < 0 || currentMotorZPosition + pos > 208) {
+    Serial.println("[Motor Z] Range Error (0 to 208)");
   } else {
     // Direction
     digitalWrite(DIR, pos > 0 ? HIGH : LOW);
 
     float mmPerStep = 0.04 / 16; // 0.04 mm per step | 16 microsteps
-    float goal = currentMotorYPosition + pos;
+    float goal = currentMotorZPosition + pos;
 
-    while (fabs(currentMotorYPosition - goal) > 0.01) {
+    while (fabs(currentMotorZPosition - goal) > 0.01) {
       digitalWrite(STEP, HIGH);
       delayMicroseconds(speed);
       digitalWrite(STEP, LOW);
       delayMicroseconds(speed);
-      currentMotorYPosition += (digitalRead(DIR) == HIGH ? mmPerStep : -mmPerStep);
+      currentMotorZPosition += (digitalRead(DIR) == HIGH ? mmPerStep : -mmPerStep);
     }
   }
 }
 
 /**
-   Move Y axis of `pos` mm (absolute)
+   Move Z axis of `pos` mm (absolute)
 */
-void motorYGotoAbs(int pos) {
+void motorZGotoAbs(int pos) {
   if (pos < 0 || pos > 205) {
     // Abs have less max value due to the endstop
-    Serial.println("[Motor Y] Range Error (0 to 205)");
+    Serial.println("[Motor Z] Range Error (0 to 205)");
   } else {
     // Direction
-    digitalWrite(DIR, pos - currentMotorYPosition > 0 ? HIGH : LOW);
+    digitalWrite(DIR, pos - currentMotorZPosition > 0 ? HIGH : LOW);
 
     float mmPerStep = 0.04 / 16; // 0.04 mm per step | 16 microsteps
 
-    while (fabs(currentMotorYPosition - pos) > 0.01) {
+    while (fabs(currentMotorZPosition - pos) > 0.01) {
       if (digitalRead(ENDSTOP) == HIGH) break;
       digitalWrite(STEP, HIGH);
       delayMicroseconds(speed);
       digitalWrite(STEP, LOW);
       delayMicroseconds(speed);
-      currentMotorYPosition += (digitalRead(DIR) == HIGH ? mmPerStep : -mmPerStep);
+      currentMotorZPosition += (digitalRead(DIR) == HIGH ? mmPerStep : -mmPerStep);
     }
   }
 
 }
 
 void reportPosition() {
-  Serial.print("[Motor X]: position = "); Serial.println(currentMotorXPosition, DEC);
   Serial.print("[Motor Y]: position = "); Serial.println(currentMotorYPosition, DEC);
+  Serial.print("[Motor Z]: position = "); Serial.println(currentMotorZPosition, DEC);
   Serial.print("[Motor A]: position = "); Serial.println(currentMotorAPosition, DEC);
   Serial.print("[FeedRate]: speed = "); Serial.println(speed, DEC);
+}
+
+void reportFeedbackPosition() {
+  uint16_t yAngle;
+  uint16_t aAngle;
+  motorY.currentPositionDegree(yAngle);
+  motorA.currentPositionDegree(aAngle);
+
+  Serial.print("[Motor Y]: position = "); Serial.println(yAngle, DEC);
+  Serial.print("[Motor A]: position = "); Serial.println(aAngle, DEC);
 }
 
 void home() {
   Serial.println("Go home");
   setFeedRate(40);
-  digitalRead(ENDSTOP) == HIGH ? motorYGotoInc(-20) : motorYGotoAbs(208 - 20);
-  motorXGotoAbs(150);
+  digitalRead(ENDSTOP) == HIGH ? motorZGotoInc(-20) : motorZGotoAbs(208 - 20);
+  motorYGotoAbs(150);
   motorAGotoAbs(60);
 }
 
