@@ -146,6 +146,14 @@ Command(0x23, "Start match chrono", CommandType.LONG_ORDER, [], []),
 Command(0x24, "Actuator Go Home",   CommandType.LONG_ORDER, [], [Field("Return code", int)]),
 Command(0x25, "Actuator Go To",     CommandType.LONG_ORDER, [Field("y", float), Field("z", float), Field("theta", float)], [Field("Return code", int)]),
 Command(0x26, "Actuator Find Puck", CommandType.LONG_ORDER, [], [Field("Return code", int)]),
+Command(0x27, "Act Go To at Speed", CommandType.LONG_ORDER,
+        [Field("y", float),
+         Field("z", float),
+         Field("theta", float),
+         Field("y-speed", int),
+         Field("z-speed", int),
+         Field("theta-speed", int)],
+        [Field("Return code", int)]),
 
 
 # Short orders

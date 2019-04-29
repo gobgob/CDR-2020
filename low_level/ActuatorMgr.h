@@ -36,6 +36,9 @@
 #define ACT_MGR_MICROSTEP           (16)
 #define ACT_MGR_STEP_PER_TURN       (200)       // step/turn
 #define ACT_MGR_Z_PER_TURN          (8)         // mm/turn
+#define ACT_MGR_MAX_SPEED_Y         (1023)      // AX12 speed unit
+#define ACT_MGR_MAX_SPEED_Z         (300)       // rpm
+#define ACT_MGR_MAX_SPEED_THETA     (1023)      // AX12 speed unit
 
 
 typedef int32_t ActuatorErrorCode;
@@ -131,6 +134,7 @@ public:
         m_z_current_move_origin = 0;
         m_composed_move_step = 0;
         m_move_start_time = 0;
+        setSpeedToMax();
         pinMode(PIN_STEPPER_ENDSTOP, INPUT);
     }
 
@@ -244,9 +248,28 @@ public:
 
     /* Mouvement control */
     void stop() { stopMove(true); }
-    int goToHome() { return initMove(STATUS_GOING_HOME, m_current_position); }
-    int goToPosition(const ActuatorPosition &p) { return initMove(STATUS_MOVING, p); }
-    int scanPuck() { return initMove(STATUS_SCANNING, m_current_position); }
+    int goToHome()
+    {
+        setSpeedToMax();
+        return initMove(STATUS_GOING_HOME, m_current_position);
+    }
+    int scanPuck()
+    {
+        setSpeedToMax();
+        return initMove(STATUS_SCANNING, m_current_position);
+    }
+    int goToPosition(const ActuatorPosition &p)
+    {
+        setSpeedToMax();
+        return initMove(STATUS_MOVING, p);
+    }
+    int goToPosition(const ActuatorPosition &p, int32_t y_speed, int32_t z_speed, int32_t theta_speed)
+    {
+        m_y_speed = constrain(y_speed, 0, ACT_MGR_MAX_SPEED_Y);
+        m_z_speed = constrain(z_speed, 0, ACT_MGR_MAX_SPEED_Z);
+        m_theta_speed = constrain(theta_speed, 0, ACT_MGR_MAX_SPEED_THETA);
+        return initMove(STATUS_MOVING, p);
+    }
 
 private:
     enum ActuatorStatus
@@ -298,6 +321,7 @@ private:
         m_puck_scanner.reset();
         readZCurrentPosition();
         m_aim_position = m_current_position;
+        setSpeedToMax();
         sendAimPosition();
     }
 
@@ -431,17 +455,17 @@ private:
     void sendAimPosition()
     {
         DynamixelStatus dynamixelStatus;
+        dynamixelStatus = m_y_motor.speed(m_y_speed);
+        readDynamixelStatus(dynamixelStatus, ACT_AX12_Y_BLOCKED);
+        dynamixelStatus = m_theta_motor.speed(m_theta_speed);
+        readDynamixelStatus(dynamixelStatus, ACT_AX12_THETA_BLOCKED);
+        m_z_motor.setRPM(m_z_speed);
         dynamixelStatus = m_y_motor.goalPositionDegree(
             m_aim_position.y * ACT_MGR_Y_CONVERTER + ACT_MGR_Y_ORIGIN);
-        if (dynamixelStatus != DYN_STATUS_OK) {
-            m_error_code |= ACT_AX12_ERROR;
-        }
+        readDynamixelStatus(dynamixelStatus, ACT_AX12_Y_BLOCKED);
         dynamixelStatus = m_theta_motor.goalPositionDegree(
             m_aim_position.theta + ACT_MGR_THETA_ORIGIN);
-        if (dynamixelStatus != DYN_STATUS_OK) {
-            m_error_code |= ACT_AX12_ERROR;
-        }
-
+        readDynamixelStatus(dynamixelStatus, ACT_AX12_THETA_BLOCKED);
         writeZAimPosition();
     }
 
@@ -462,12 +486,7 @@ private:
                 if (angle <= 300) {
                     m_current_position.theta = (float)angle - ACT_MGR_THETA_ORIGIN;
                 }
-                if (dynamixelStatus & (DYN_STATUS_OVERLOAD_ERROR | DYN_STATUS_OVERHEATING_ERROR)) {
-                    m_error_code |= ACT_AX12_THETA_BLOCKED;
-                }
-                else if (dynamixelStatus != DYN_STATUS_OK) {
-                    m_error_code |= ACT_AX12_ERROR;
-                }
+                readDynamixelStatus(dynamixelStatus, ACT_AX12_THETA_BLOCKED);
                 step++;
             }
             else if (step == 1)
@@ -477,12 +496,7 @@ private:
                 if (angle <= 300) {
                     m_current_position.y = ((float)angle - ACT_MGR_Y_ORIGIN) / ACT_MGR_Y_CONVERTER;
                 }
-                if (dynamixelStatus & (DYN_STATUS_OVERLOAD_ERROR | DYN_STATUS_OVERHEATING_ERROR)) {
-                    m_error_code |= ACT_AX12_Y_BLOCKED;
-                }
-                else if (dynamixelStatus != DYN_STATUS_OK) {
-                    m_error_code |= ACT_AX12_ERROR;
-                }
+                readDynamixelStatus(dynamixelStatus, ACT_AX12_Y_BLOCKED);
                 step++;
             }
             else if (step == 2)
@@ -535,6 +549,23 @@ private:
         interrupts();
     }
 
+    void readDynamixelStatus(DynamixelStatus status, int32_t blocked_flag)
+    {
+        if (status & (DYN_STATUS_OVERLOAD_ERROR | DYN_STATUS_OVERHEATING_ERROR)) {
+            m_error_code |= blocked_flag;
+        }
+        else if (status != DYN_STATUS_OK) {
+            m_error_code |= ACT_AX12_ERROR;
+        }
+    }
+
+    void setSpeedToMax()
+    {
+        m_y_speed = ACT_MGR_MAX_SPEED_Y;
+        m_z_speed = ACT_MGR_MAX_SPEED_Z;
+        m_theta_speed = ACT_MGR_MAX_SPEED_THETA;
+    }
+
     ActuatorPosition m_current_position;
     ActuatorPosition m_aim_position;
     ActuatorErrorCode m_error_code;
@@ -548,6 +579,9 @@ private:
     uint32_t m_composed_move_step;
     uint32_t m_move_start_time; // ms
     PuckScanner m_puck_scanner;
+    uint16_t m_y_speed;
+    uint16_t m_theta_speed;
+    uint16_t m_z_speed;
 };
 
 #endif

@@ -361,5 +361,54 @@ private:
     ActuatorErrorCode ret_code;
 };
 
+class ActuatorGoToWithSpeed : public OrderLong, public Singleton<ActuatorGoToWithSpeed>
+{
+public:
+    ActuatorGoToWithSpeed() {}
+    void _launch(const std::vector<uint8_t>& input)
+    {
+        if (input.size() == 24)
+        {
+            Server.printf(SPY_ORDER, "ActuatorGoToWithSpeed");
+            ActuatorPosition p;
+            size_t index = 0;
+            p.y = Serializer::readFloat(input, index);
+            p.z = Serializer::readFloat(input, index);
+            p.theta = Serializer::readFloat(input, index);
+            int32_t y_speed = Serializer::readInt(input, index);
+            int32_t z_speed = Serializer::readInt(input, index);
+            int32_t theta_speed = Serializer::readInt(input, index);
+
+            if (actuatorMgr.goToPosition(p, y_speed, z_speed, theta_speed) != EXIT_SUCCESS)
+            {
+                finished = true;
+                ret_code = ACT_ALREADY_MOVING;
+            }
+            else
+            {
+                ret_code = ACT_OK;
+            }
+        }
+        else
+        {
+            Server.printf_err("ActuatorGoToWithSpeed: wrong number of arguments\n");
+        }
+    }
+    void onExecute()
+    {
+        if (actuatorMgr.commandCompleted())
+        {
+            finished = true;
+        }
+    }
+    void terminate(std::vector<uint8_t>& output)
+    {
+        ret_code |= actuatorMgr.getErrorCode();
+        Serializer::writeInt(ret_code, output);
+    }
+
+private:
+    ActuatorErrorCode ret_code;
+};
 
 #endif

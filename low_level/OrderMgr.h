@@ -73,6 +73,7 @@ public:
         longOrderList[0x04] = &ActuatorGoHome::Instance();
         longOrderList[0x05] = &ActuatorGoTo::Instance();
         longOrderList[0x06] = &ActuatorFindPuck::Instance();
+        longOrderList[0x07] = &ActuatorGoToWithSpeed::Instance();
     }
 
     void execute()
