@@ -32,7 +32,6 @@
 #define ACT_MGR_THETA_ORIGIN        (150)       // deg (Angle de l'AX12 theta pour une fourche horizontale)
 #define ACT_MGR_SENSE_MIN_THETA     (-20)       // deg (Angle minimal de l'AX12 theta pour utiliser les capteurs de fourche)
 #define ACT_MGR_SENSE_MAX_THETA     (20)        // deg (Angle maximal de l'AX12 theta pour utiliser les capteurs de fourche)
-#define ACT_MGR_STEPPER_SPEED       (200)       // rmp
 #define ACT_MGR_MICROSTEP           (16)
 #define ACT_MGR_STEP_PER_TURN       (200)       // step/turn
 #define ACT_MGR_Z_PER_TURN          (8)         // mm/turn
@@ -158,7 +157,7 @@ public:
         pinMode(PIN_STEPPER_RESET, OUTPUT);
         digitalWrite(PIN_STEPPER_RESET, HIGH);
         noInterrupts();
-        m_z_motor.begin(ACT_MGR_STEPPER_SPEED, ACT_MGR_MICROSTEP);
+        m_z_motor.begin(ACT_MGR_MAX_SPEED_Z, ACT_MGR_MICROSTEP);
         m_z_motor.setMicrostep(ACT_MGR_MICROSTEP);
         m_z_motor.enable();
         interrupts();
@@ -484,7 +483,8 @@ private:
                 uint16_t angle;
                 DynamixelStatus dynamixelStatus = m_theta_motor.currentPositionDegree(angle);
                 if (angle <= 300) {
-                    m_current_position.theta = (float)angle - ACT_MGR_THETA_ORIGIN;
+                    m_current_position.theta = constrain((float)angle - ACT_MGR_THETA_ORIGIN,
+                        ACT_MGR_THETA_MIN, ACT_MGR_THETA_MAX);
                 }
                 readDynamixelStatus(dynamixelStatus, ACT_AX12_THETA_BLOCKED);
                 step++;
@@ -494,7 +494,8 @@ private:
                 uint16_t angle;
                 DynamixelStatus dynamixelStatus = m_y_motor.currentPositionDegree(angle);
                 if (angle <= 300) {
-                    m_current_position.y = ((float)angle - ACT_MGR_Y_ORIGIN) / ACT_MGR_Y_CONVERTER;
+                    m_current_position.y = constrain(((float)angle - ACT_MGR_Y_ORIGIN) / ACT_MGR_Y_CONVERTER,
+                        ACT_MGR_Y_MIN, ACT_MGR_Y_MAX);
                 }
                 readDynamixelStatus(dynamixelStatus, ACT_AX12_Y_BLOCKED);
                 step++;
