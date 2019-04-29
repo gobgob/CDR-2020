@@ -75,12 +75,14 @@ public:
 				{
 					movePhase = MOVING;
 					endOfMoveMgr.moveIsStarting();
+                    updateTranslationSetPoint();
 				}
 			}
 			else
 			{
 				movePhase = MOVING;
 				endOfMoveMgr.moveIsStarting();
+                updateTranslationSetPoint();
 			}
             movingSpeedSetPoint = 0;
 		}
@@ -112,36 +114,21 @@ public:
 			}
 
 			previousMovingSpeedSetpoint = movingSpeedSetPoint;
-
-			// Limitation de la vitesse
-			if (movingSpeedSetPoint > ABS(maxMovingSpeed))
-			{
-				movingSpeedSetPoint = ABS(maxMovingSpeed);
-			}
-			else if (movingSpeedSetPoint < -ABS(maxMovingSpeed))
-			{
-				movingSpeedSetPoint = -ABS(maxMovingSpeed);
-			}
-
-            if (ABS(movingSpeedSetPoint) < stoppedSpeed)
-            {
-                movingSpeedSetPoint = 0;
-            }
-            else if (ABS(movingSpeedSetPoint) < minAimSpeed)
-            {
-                if (movingSpeedSetPoint > 0) {
-                    movingSpeedSetPoint = minAimSpeed;
-                }
-                else {
-                    movingSpeedSetPoint = -minAimSpeed;
-                }
-            }
 		}
+        else if (movePhase == MOVE_ENDED)
+        {
+            // Frein de parking actif
+            if (trajectoryControlled && translationControlled)
+            {
+                translationPID.compute();	// MAJ movingSpeedSetPoint
+            }
+        }
 		else
 		{
             movingSpeedSetPoint = 0;
 		}
 
+        enforceSpeedLimits();
         if (isMovingForward())
         {
             motor.run(movingSpeedSetPoint);
@@ -198,13 +185,11 @@ public:
 	{
 		if (translationControlled)
 		{
-			bool resetNeeded = translationSetPoint >= INFINITE_DISTANCE;
-			translationSetPoint = currentTranslation + distance;
-			if (resetNeeded)
-			{
-				translationPID.resetIntegralError();
-				translationPID.resetDerivativeError();
-			}
+			translationSetPointBuffer = currentTranslation + distance;
+            if (movePhase == MOVING)
+            {
+                updateTranslationSetPoint();
+            }
 		}
 		else
 		{
@@ -216,13 +201,11 @@ public:
 	{
 		if (translationControlled)
 		{
-			bool resetNeeded = translationSetPoint < INFINITE_DISTANCE;
-			translationSetPoint = INFINITE_DISTANCE;
-			if (resetNeeded)
-			{
-				translationPID.resetIntegralError();
-				translationPID.resetDerivativeError();
-			}
+			translationSetPointBuffer = INFINITE_DISTANCE;
+            if (movePhase == MOVING)
+            {
+                updateTranslationSetPoint();
+            }
 		}
 		else
 		{
@@ -370,6 +353,7 @@ private:
 	{
 		currentTranslation = 0;
 		translationSetPoint = 0;
+        translationSetPointBuffer = 0;
 		movingSpeedSetPoint = 0;
 		previousMovingSpeedSetpoint = 0;
         maxMovingSpeed = 0;
@@ -417,6 +401,47 @@ private:
 		}
 	}
 
+    void updateTranslationSetPoint()
+    {
+        bool resetNeeded = (translationSetPoint < INFINITE_DISTANCE &&
+            translationSetPointBuffer >= INFINITE_DISTANCE) ||
+            (translationSetPoint >= INFINITE_DISTANCE &&
+                translationSetPointBuffer < INFINITE_DISTANCE);
+        translationSetPoint = translationSetPointBuffer;
+        if (resetNeeded)
+        {
+            translationPID.resetIntegralError();
+            translationPID.resetDerivativeError();
+        }
+    }
+
+    void enforceSpeedLimits()
+    {
+        // Limitation de la vitesse
+        if (movingSpeedSetPoint > ABS(maxMovingSpeed))
+        {
+            movingSpeedSetPoint = ABS(maxMovingSpeed);
+        }
+        else if (movingSpeedSetPoint < -ABS(maxMovingSpeed))
+        {
+            movingSpeedSetPoint = -ABS(maxMovingSpeed);
+        }
+
+        if (ABS(movingSpeedSetPoint) < stoppedSpeed)
+        {
+            movingSpeedSetPoint = 0;
+        }
+        else if (ABS(movingSpeedSetPoint) < minAimSpeed)
+        {
+            if (movingSpeedSetPoint > 0) {
+                movingSpeedSetPoint = minAimSpeed;
+            }
+            else {
+                movingSpeedSetPoint = -minAimSpeed;
+            }
+        }
+    }
+
     void updateTunings()
     {
         noInterrupts();
@@ -451,6 +476,7 @@ private:
 	/* Asservissement en translation */
 	PID translationPID;
 	volatile float translationSetPoint;	// consigne (mm)
+    volatile float translationSetPointBuffer; // sauvegarde de la consigne avant son application effective
 	volatile float currentTranslation;	// position réelle (mm)
 	volatile float movingSpeedSetPoint;	// sortie (mm/s)
 	StoppingMgr endOfMoveMgr;
