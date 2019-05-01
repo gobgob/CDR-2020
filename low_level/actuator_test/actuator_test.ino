@@ -20,6 +20,9 @@
 #define ABSOLUTE 0
 #define INCREMENTAL 1
 
+#define Y_MIDDLE 160
+#define A_MIDDLE 150
+
 char serialInput[10];
 int serialPrompt = 0;
 
@@ -118,8 +121,8 @@ void help() {
   Serial.println(F("G91; - incremental mode"));
   Serial.println(F("G28; - go home"));
   Serial.println(F("G29; - go middle"));
-  Serial.println(F("G50; - disable torque"));
-  Serial.println(F("G51; - enable torque"));
+  Serial.println(F("G50; - motors off"));
+  Serial.println(F("G51; - motors on"));
   Serial.println(F("M1; - init"));
   Serial.println(F("M100; - this help message"));
   Serial.println(F("M113; - report feedback position (ax-12 values)"));
@@ -174,19 +177,21 @@ void processCommand() {
     case 28: home(); break;
     case 29: {
         setFeedRate(40);
-        motorYGotoAbs(150);
-        motorAGotoAbs(150);
+        motorYGotoAbs(Y_MIDDLE);
+        motorAGotoAbs(A_MIDDLE);
         motorZGotoAbs(140);
         break;
       }
     case 50: {
       motorY.enableTorque(false);
       motorA.enableTorque(false);
+      digitalWrite(SLEEP, LOW);
       break;
     }
     case 51: {
-      motorY.enableTorque(true);
-      motorA.enableTorque(true);
+      motorY.recoverTorque();
+      motorA.recoverTorque();
+      digitalWrite(SLEEP, HIGH);
       break;
     }
 
@@ -317,18 +322,18 @@ void reportPosition() {
 void reportFeedbackPosition() {
   uint16_t yAngle;
   uint16_t aAngle;
-  motorY.currentPositionDegree(yAngle);
-  motorA.currentPositionDegree(aAngle);
+  DynamixelStatus yStatus = motorY.currentPositionDegree(yAngle);
+  DynamixelStatus aStatus = motorA.currentPositionDegree(aAngle);
 
-  Serial.print("[Motor Y]: position = "); Serial.println(yAngle, DEC);
-  Serial.print("[Motor A]: position = "); Serial.println(aAngle, DEC);
+  Serial.printf("[Motor Y]: position = %u (status: %u)\n", yAngle, yStatus);
+  Serial.printf("[Motor A]: position = %u (status: %u)\n", aAngle, aStatus);
 }
 
 void home() {
   Serial.println("Go home");
   setFeedRate(40);
   digitalRead(ENDSTOP) == HIGH ? motorZGotoInc(-20) : motorZGotoAbs(208 - 20);
-  motorYGotoAbs(150);
+  motorYGotoAbs(Y_MIDDLE);
   motorAGotoAbs(60);
 }
 
