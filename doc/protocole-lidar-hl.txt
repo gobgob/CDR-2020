@@ -9,21 +9,17 @@ Message de démarrage du lidar depuis le HL avec la couleur du robot.
 BEGIN VIOLET
 BEGIN JAUNE
 
-Message d'arrêt temporaire du lidar
-
-PAUSE
-
-Message de reprise du lidar
-
-UNPAUSE
-
 Message d'arrêt complet du lidar
 
 STOP
 
 = Messages Lidar vers HL =
 
-OBSTACLE x y id
+OBSTACLE x y radius id timestamp
 
-x, y et id sont des entiers.
-(x,y) est la position de l'obstacle dans le repère d'INTech, id le numéro du robot associé
+x, y, radius, id et timestamp sont des entiers.
+
+(x,y) est la position de l'obstacle dans le repère d'INTech (en mm)
+radius est le rayon estimé du robot adversaire (en mm)
+id le numéro du robot associé
+timestamp est la date de la lecture en ms
