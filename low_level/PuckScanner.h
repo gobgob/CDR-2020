@@ -5,16 +5,15 @@
 #include "Config.h"
 #include "CommunicationServer.h"
 
-#define SCAN_SENSOR_MIN             (15)    // mm
-#define SCAN_SENSOR_MAX             (200)   // mm
-#define SCAN_RESOLUTION             (101)   // resolution spaciale selon l'axe Y
-#define SCAN_AVG_SIZE               (5.0)   // mm (taille de la moyenne mobile du scan)
-#define SCAN_LEFT_SENSOR_POSITION	(33.0)  // mm
-#define SCAN_RIGHT_SENSOR_POSITION	(-33.0) // mm
-#define SCAN_EDGE_MIN_HEIGHT        (20.0)  // mm
-#define SCAN_EDGE_MAX_WIDTH         (5.0)   // mm
-#define SCAN_EDGES_MIN_DIST         (61)    // mm
-#define SCAN_EDGES_MAX_DIST         (91)    // mm
+#define SCAN_SENSOR_MIN             (15)      // mm
+#define SCAN_SENSOR_MAX             (200)     // mm
+#define SCAN_RESOLUTION             (101)     // resolution spaciale selon l'axe Y
+#define SCAN_LEFT_SENSOR_POSITION	(-43.83)  // mm
+#define SCAN_RIGHT_SENSOR_POSITION	(43.83)   // mm
+#define SCAN_EDGE_MIN_HEIGHT        (20.0)    // mm
+#define SCAN_EDGE_MAX_WIDTH         (2)       // index
+#define SCAN_EDGES_MIN_DIST         (50)      // index
+#define SCAN_EDGES_MAX_DIST         (70)      // index
 
 
 class PuckScanner
@@ -23,7 +22,7 @@ public:
     PuckScanner(float y_min, float y_max) :
         m_left_sensor(I2C_ADDR_TOF_FOURCHE_AVG, PIN_EN_TOF_FOURCHE_AVG, SCAN_SENSOR_MIN, SCAN_SENSOR_MAX, "FourcheG", &Serial),
         m_right_sensor(I2C_ADDR_TOF_FOURCHE_AVD, PIN_EN_TOF_FOURCHE_AVD, SCAN_SENSOR_MIN, SCAN_SENSOR_MAX, "FourcheD", &Serial),
-        m_y_min(y_min), m_y_max(y_max)
+        m_y_min(y_min + SCAN_LEFT_SENSOR_POSITION), m_y_max(y_max + SCAN_RIGHT_SENSOR_POSITION)
     {
         m_scan_enabled = false;
     }
@@ -97,22 +96,16 @@ public:
             scan_data[i] = scan_data[pre_index];
         }
 
-        /* Apply moving average */
-        int32_t avg_scan_data[SCAN_RESOLUTION];
-        for (size_t i = 0; i < SCAN_RESOLUTION; i++) {
-            avg_scan_data[i] = computeAverage(scan_data, i);
-        }
-
         /* Edge detection */
-        int32_t width = mmToIndex(SCAN_EDGE_MAX_WIDTH);
-        int32_t height = mmToIndex(SCAN_EDGE_MIN_HEIGHT);
-        int32_t puck_min_size = mmToIndex(SCAN_EDGES_MIN_DIST);
-        int32_t puck_max_size = mmToIndex(SCAN_EDGES_MAX_DIST);
+        int32_t width = SCAN_EDGE_MAX_WIDTH;
+        int32_t height = SCAN_EDGE_MIN_HEIGHT;
+        int32_t puck_min_size = SCAN_EDGES_MIN_DIST;
+        int32_t puck_max_size = SCAN_EDGES_MAX_DIST;
         int32_t puck_start_pos = 0;
         bool e = false;
         bool foundFallingEdge = false;
         for (size_t i = 0; i < SCAN_RESOLUTION - (size_t)width; i++) {
-            int32_t delta = avg_scan_data[i + width] - avg_scan_data[i];
+            int32_t delta = scan_data[i + width] - scan_data[i];
             if (!e && abs(delta) > height) {
                 e = true;
                 // New edge found
@@ -160,24 +153,6 @@ private:
             }
         }
         return SCAN_RESOLUTION;
-    }
-
-    int32_t computeAverage(int32_t tab[SCAN_RESOLUTION], int32_t index)
-    {
-        index = constrain(index, 0, SCAN_RESOLUTION);
-        int32_t scan_half_size = mmToIndex(SCAN_AVG_SIZE / 2);
-        int32_t start = max(index - scan_half_size, 0);
-        int32_t end = min(index + 1 + scan_half_size, SCAN_RESOLUTION);
-        int32_t sum = 0;
-        for (size_t i = start; i < (size_t)end; i++) {
-            sum += tab[i];
-        }
-        if (start == end) {
-            return tab[index];
-        }
-        else {
-            return sum / (end - start);
-        }
     }
 
     int32_t interpolate(int32_t tab[SCAN_RESOLUTION], size_t index, size_t pre_index, size_t next_index)
