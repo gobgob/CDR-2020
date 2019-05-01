@@ -63,6 +63,7 @@ public class DisplayTrajectory
 			for(ItineraryPoint p : path)
 			{
 				log.write(p, Subject.STATUS);
+				System.out.println(p);
 				display.addPrintable(p, couleurs[i % couleurs.length], Layer.FOREGROUND.layer);
 			}
 		}
