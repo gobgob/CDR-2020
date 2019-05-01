@@ -228,21 +228,35 @@ public class OutgoingOrderBuffer implements Plottable
 		return Id.ACTUATOR_GO_HOME.ticket;
 	}
 
-	public Ticket actuatorGoTo()
+	public Ticket actuatorFindPuck()
 	{
-		addToBuffer(new Order(Id.ACTUATOR_GO_TO));
-		return Id.ACTUATOR_GO_TO.ticket;
+		addToBuffer(new Order(Id.ACTUATOR_FIND_PUCK));
+		return Id.ACTUATOR_FIND_PUCK.ticket;
 	}
-
-	public Ticket actuatorFindPuck(double actY, double actZ, double actTheta)
+	
+	public Ticket actuatorGoToAtSpeed(double actY, double actZ, double actTheta, double speedY, double speedZ, double speedTheta)
+	{
+		ByteBuffer data = ByteBuffer.allocate(6*4);
+		data.order(ByteOrder.LITTLE_ENDIAN);
+		data.putFloat((float) actY);
+		data.putFloat((float) actZ);
+		data.putFloat((float) actTheta);
+		data.putFloat((float) speedY);
+		data.putFloat((float) speedZ);
+		data.putFloat((float) speedTheta);
+		addToBuffer(new Order(data, Id.ACTUATOR_GO_TO_AT_SPEED));
+		return Id.ACTUATOR_GO_TO_AT_SPEED.ticket;
+	}
+	
+	public Ticket actuatorGoTo(double actY, double actZ, double actTheta)
 	{
 		ByteBuffer data = ByteBuffer.allocate(3*4);
 		data.order(ByteOrder.LITTLE_ENDIAN);
 		data.putFloat((float) actY);
 		data.putFloat((float) actZ);
 		data.putFloat((float) actTheta);
-		addToBuffer(new Order(data, Id.ACTUATOR_FIND_PUCK));
-		return Id.ACTUATOR_FIND_PUCK.ticket;
+		addToBuffer(new Order(data, Id.ACTUATOR_GO_TO));
+		return Id.ACTUATOR_GO_TO.ticket;
 	}
 
 	/**
