@@ -202,11 +202,20 @@ public class Match
 			}
 		} while(restart && nbEssaiChemin > 0);
 		
-		if(checkFin && Math.abs(XYO.angleDifference(robot.getCinematique().orientationReelle, pointEntree.orientation)) > 5.*Math.PI/180)
-			robot.goTo(pointEntree);
-
-		if(checkFin && Math.abs(XYO.angleDifference(robot.getCinematique().orientationReelle, pointEntree.orientation)) > 5.*Math.PI/180)
-			throw new ScriptException("On n'a pas réussi à arriver à l'orientation voulue");
+		if(checkFin)
+		{
+			double toleranceAngle = 5; // en degré
+			double tolerancePosition = 40; // en mm
+			tolerancePosition *= tolerancePosition;
+			if(Math.abs(XYO.angleDifference(robot.getCinematique().orientationReelle, pointEntree.orientation)) > toleranceAngle*Math.PI/180
+					|| robot.getCinematique().getPosition().squaredDistance(pointEntree.position) > tolerancePosition)
+				// on retente
+				robot.goTo(pointEntree);
+	
+			if(Math.abs(XYO.angleDifference(robot.getCinematique().orientationReelle, pointEntree.orientation)) > toleranceAngle*Math.PI/180
+					|| robot.getCinematique().getPosition().squaredDistance(pointEntree.position) > tolerancePosition)
+				throw new ScriptException("On n'a pas réussi à se positionner une précision suffisante.");
+		}
 		
 		if(!restart)
 			s.execute();
