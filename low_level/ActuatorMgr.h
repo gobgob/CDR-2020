@@ -35,7 +35,7 @@
 #define ACT_MGR_MICROSTEP           (16)
 #define ACT_MGR_STEP_PER_TURN       (200)       // step/turn
 #define ACT_MGR_Z_PER_TURN          (8)         // mm/turn
-#define ACT_MGR_MAX_SPEED_Y         (1023)      // AX12 speed unit
+#define ACT_MGR_MAX_SPEED_Y         (1023)      // AX12 speed unit (1023 is max, 1 is min, 0 means non coltrolled)
 #define ACT_MGR_MAX_SPEED_Z         (300)       // rpm
 #define ACT_MGR_MAX_SPEED_THETA     (1023)      // AX12 speed unit
 
@@ -133,6 +133,7 @@ public:
         m_z_current_move_origin = 0;
         m_composed_move_step = 0;
         m_move_start_time = 0;
+        m_last_scan_result = 0;
         setSpeedToMax();
         pinMode(PIN_STEPPER_ENDSTOP, INPUT);
     }
@@ -243,6 +244,11 @@ public:
             Serializer::writeInt((SensorValue)SENSOR_DEAD, output);
             Serializer::writeInt((SensorValue)SENSOR_DEAD, output);
         }
+    }
+
+    float getLastScanResult() const
+    {
+        return m_last_scan_result;
     }
 
     /* Mouvement control */
@@ -419,6 +425,7 @@ private:
                     m_aim_position.y = 0;
                     m_error_code |= ACT_NO_DETECTION;
                 }
+                m_last_scan_result = m_aim_position.y;
                 m_puck_scanner.enable(false);
                 sendAimPosition();
                 m_composed_move_step++;
@@ -580,6 +587,7 @@ private:
     uint32_t m_composed_move_step;
     uint32_t m_move_start_time; // ms
     PuckScanner m_puck_scanner;
+    float m_last_scan_result; // y coordinate, result of the last scan
     uint16_t m_y_speed;
     uint16_t m_theta_speed;
     uint16_t m_z_speed;

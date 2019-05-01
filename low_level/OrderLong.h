@@ -354,6 +354,7 @@ public:
     void terminate(std::vector<uint8_t> & output)
     {
         ret_code |= actuatorMgr.getErrorCode();
+        Serializer::writeFloat(actuatorMgr.getLastScanResult(), output);
         Serializer::writeInt(ret_code, output);
     }
 
