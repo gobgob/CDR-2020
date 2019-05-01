@@ -407,6 +407,7 @@ private:
 
     void scanningHandler()
     {
+        m_aim_position.theta = 0; // Ensure that the fork is parallel to the floor
         switch (m_composed_move_step)
         {
         case 0:
