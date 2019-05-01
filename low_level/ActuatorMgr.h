@@ -408,11 +408,11 @@ private:
 
     void scanningHandler()
     {
-        m_aim_position.theta = 0; // Ensure that the fork is parallel to the floor
-        m_y_speed = ACT_MGR_SCANNING_SPEED; // Scanning speed to optimize the scan quality
         switch (m_composed_move_step)
         {
         case 0:
+            m_aim_position.theta = 0; // Ensure that the fork is parallel to the floor
+            m_y_speed = ACT_MGR_SCANNING_SPEED; // Scanning speed to optimize the scan quality
             m_puck_scanner.enable(true);
             m_aim_position.y = ACT_MGR_Y_MIN;
             sendAimPosition();
