@@ -56,6 +56,8 @@ void loop()
     if (actuatorMgr.init() != EXIT_SUCCESS)
     {
         dashboard.setErrorLevel(Dashboard::STRONG_WARNING);
+    } else {
+        actuatorMgr.goToHome();
     }
     if (sensorMgr.init() != EXIT_SUCCESS)
     {
