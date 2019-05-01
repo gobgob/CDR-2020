@@ -55,7 +55,7 @@ enum ActuatorError
     ACT_NO_DETECTION        = 0x0080,
     ACT_TIMED_OUT           = 0x0100,
     ACT_ALREADY_MOVING      = 0x0200,
-    ACT_NOT_HOMED           = 0x0300,
+    ACT_NOT_HOMED           = 0x0400,
 };
 
 
@@ -295,7 +295,7 @@ private:
             return EXIT_FAILURE;
         }
         m_error_code = ACT_OK;
-        if (moveId != STATUS_GOING_HOME && m_z_homed == false)
+        if (moveId != STATUS_GOING_HOME && !m_z_homed)
         {
             m_error_code |= ACT_NOT_HOMED;
         }
