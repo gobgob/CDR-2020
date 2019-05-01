@@ -2,6 +2,8 @@
 
 Un message est composé de caractères ASCII et est terminé par un retour à la ligne (\n).
 
+Le HL est serveur. Il ouvre le port 8765.
+
 = Messages HL vers Lidar =
 
 Message de démarrage du lidar depuis le HL avec la couleur du robot.
@@ -17,7 +19,15 @@ Message d'arrêt complet du lidar
 
 STOP
 
+Message d'acquittement, qui signale juste que l'ordre a bien été reçu.
+
+ACK
+
 = Messages Lidar vers HL =
+
+ASK_STATUS
+
+Demande le status actuel. Le HL doit répondre par INIT, START, STOP ou ACK.
 
 OBSTACLE x y radius id timestamp
 
@@ -27,3 +37,5 @@ x, y, radius, id et timestamp sont des entiers.
 radius est le rayon estimé du robot adversaire (en mm)
 id le numéro du robot associé
 timestamp est la date de la lecture en ms
+
+Le HL doit répondre par ACK.

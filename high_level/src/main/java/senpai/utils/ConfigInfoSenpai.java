@@ -79,7 +79,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	ETH_LL_HOSTNAME_SERVER("172.16.0.2"), // adresse ip du LL. Un hostname fonctionne aussi
 	
 	ETH_HL_HOSTNAME_SERVER("127.0.0.1"),
-	ETH_LIDAR_PORT_NUMBER(8080), // port socket HL
+	ETH_LIDAR_PORT_NUMBER(8765), // port socket HL
 	/**
 	 * Paramètres du traitement des capteurs
 	 */
