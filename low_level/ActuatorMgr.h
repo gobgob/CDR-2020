@@ -38,6 +38,7 @@
 #define ACT_MGR_MAX_SPEED_Y         (1023)      // AX12 speed unit (1023 is max, 1 is min, 0 means non coltrolled)
 #define ACT_MGR_MAX_SPEED_Z         (300)       // rpm
 #define ACT_MGR_MAX_SPEED_THETA     (1023)      // AX12 speed unit
+#define ACT_MGR_SCANNING_SPEED      (130)       // AX12 speed unit
 
 
 typedef int32_t ActuatorErrorCode;
@@ -408,6 +409,7 @@ private:
     void scanningHandler()
     {
         m_aim_position.theta = 0; // Ensure that the fork is parallel to the floor
+        m_y_speed = ACT_MGR_SCANNING_SPEED; // Scanning speed to optimize the scan quality
         switch (m_composed_move_step)
         {
         case 0:
