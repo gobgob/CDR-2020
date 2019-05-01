@@ -9,13 +9,13 @@ import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.CommProtocol;
 import senpai.comm.DataTicket;
 import senpai.comm.Ticket;
+import senpai.exceptions.ActionneurException;
 import senpai.exceptions.ScriptException;
 import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
 import senpai.robot.RobotColor;
 import senpai.scripts.Script;
 import senpai.scripts.ScriptManager;
-import senpai.scripts.ScriptRecalageInitial;
 import senpai.table.Table;
 import senpai.threads.comm.ThreadCommProcess;
 import senpai.utils.ConfigInfoSenpai;
@@ -52,6 +52,10 @@ public class Match
 	private Log log;
 	private Config config;
 
+	/**
+	 * Gestion des paramètres et de la fermeture
+	 * @param args
+	 */
 	public static void main(String[] args)
 	{
 		ErrorCode error = ErrorCode.NO_ERROR;
@@ -85,6 +89,10 @@ public class Match
 	
 	public void exec(String configFile) throws InterruptedException
 	{
+		/**
+		 * Initialisation
+		 */
+		
 		String configfile = configFile;
 		
 		senpai = new Senpai();
@@ -125,11 +133,17 @@ public class Match
 		 */
 		senpai.getService(ThreadCommProcess.class).capteursOn = true;
 		
+
+		
+		Script accelerateur = scripts.getScriptAccelerateur();
+		Script recupereGold = scripts.getScriptRecupereGold();
+		Script recupereDistrib = scripts.getScriptRecupereDistrib();
+		Script deposeBalance = scripts.getScriptDeposeBalance();
 		
 		/*
 		 * Recalage initial
 		 */
-		boolean byLL;
+/*		boolean byLL;
 		ScriptRecalageInitial rec = scripts.getScriptRecalageInitial();
 		try {
 			RobotColor couleurRecalage;
@@ -158,21 +172,65 @@ public class Match
 		}
 
 		log.write("Couleur utilisée : "+couleur, Subject.STATUS);
-		robot.updateColorAndSendPosition(couleur, byLL);
+		robot.updateColorAndSendPosition(couleur, byLL);*/
 		scripts.setCouleur(couleur);
 
-//		try {
-			// INIT actionneurs
-//		} catch (ActionneurException e1) {
-//			log.write("Erreur lors de l'initialisation du bras : "+e1, Subject.STATUS);
-//		}
+		try {
+			robot.initActionneurs();
+		} catch (ActionneurException e1) {
+			log.write("Erreur lors de l'initialisation du bras : "+e1, Subject.STATUS);
+		}
 
+		while(true)
+		{
+			try
+			{
+				doScript(accelerateur, 3, true);
+			}
+			catch(PathfindingException | UnableToMoveException | ScriptException e)
+			{
+				log.write("Erreur : "+e, Subject.SCRIPT);
+			}
+			
+			try
+			{
+				doScript(recupereDistrib, 3, true);
+			}
+			catch(PathfindingException | UnableToMoveException | ScriptException e)
+			{
+				log.write("Erreur : "+e, Subject.SCRIPT);
+			}
+			
+			try
+			{
+				doScript(deposeBalance, 3, true);
+			}
+			catch(PathfindingException | UnableToMoveException | ScriptException e)
+			{
+				log.write("Erreur : "+e, Subject.SCRIPT);
+			}
+			
+			try
+			{
+				doScript(recupereGold, 3, true);
+			}
+			catch(PathfindingException | UnableToMoveException | ScriptException e)
+			{
+				log.write("Erreur : "+e, Subject.SCRIPT);
+			}
+			
+			try
+			{
+				doScript(deposeBalance, 3, true);
+			}
+			catch(PathfindingException | UnableToMoveException | ScriptException e)
+			{
+				log.write("Erreur : "+e, Subject.SCRIPT);
+			}
+			
+		}
+		
 
-	}
-	
-	private void doScript(Script s, int nbEssaiChemin) throws PathfindingException, InterruptedException, UnableToMoveException, ScriptException
-	{
-		doScript(s, nbEssaiChemin, true);
 	}
 	
 	private void doScript(Script s, int nbEssaiChemin, boolean checkFin) throws PathfindingException, InterruptedException, UnableToMoveException, ScriptException

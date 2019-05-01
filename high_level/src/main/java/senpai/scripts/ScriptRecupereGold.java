@@ -15,8 +15,8 @@
 package senpai.scripts;
 
 import pfg.kraken.utils.XYO;
+import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
-import senpai.capteurs.CapteursCorrection;
 import senpai.capteurs.CapteursProcess;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.ScriptException;
@@ -25,22 +25,19 @@ import senpai.robot.Robot;
 import senpai.table.Table;
 
 /**
- * Script de recalage initial
+ * Script de l'accelerateur
  * @author pf
  *
  */
 
-public class ScriptRecalageInitial extends Script
+public class ScriptRecupereGold extends Script
 {
-	private XYO correction;
-	private CapteursCorrection[] capteurs;
-	private long dureeRecalage;
+	private XY_RW positionEntree = new XY_RW(750,1700);
+	private boolean done = false;
 	
-	public ScriptRecalageInitial(Log log, Robot robot, Table table, CapteursProcess cp, long dureeRecalage)
+	public ScriptRecupereGold(Log log, Robot robot, Table table, CapteursProcess cp)
 	{
 		super(log, robot, table, cp);
-		this.dureeRecalage = dureeRecalage;
-//		capteurs = new CapteursCorrection[] {CapteursCorrection.DROITE, CapteursCorrection.GAUCHE, CapteursCorrection.ARRIERE};
 	}
 
 	@Override
@@ -52,26 +49,18 @@ public class ScriptRecalageInitial extends Script
 	@Override
 	public XYO getPointEntree()
 	{
-		return null;
+		return new XYO(positionEntree, Math.PI / 2);
 	}
 
 	@Override
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException, ScriptException
 	{		
-		correction = cp.doStaticCorrection(dureeRecalage, capteurs);
-		if(correction == null)
-			throw new ScriptException("Aucune correction réalisée !");
-		Thread.sleep(100); // attendre la mise à jour de la correction
+		done = true;
 	}
 	
-	public XYO getCorrection()
-	{
-		return correction;
-	}
-
 	@Override
 	public boolean faisable()
 	{
-		return true;
+		return !done && !robot.isCargoFull();
 	}
 }

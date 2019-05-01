@@ -50,8 +50,6 @@ public class ScriptManager
 		this.couleur = couleur;
 	}
 	
-	private boolean coteDroit;
-	
 	public ScriptManager(Log log, Config config, Table table, Robot robot, CapteursProcess cp, ObstaclesDynamiques obsDyn)
 	{
 		this.obsDyn = obsDyn;
@@ -60,14 +58,30 @@ public class ScriptManager
 		this.robot = robot;
 		this.cp = cp;
 	}
-
-	public ScriptRecalageInitial getScriptRecalageInitial()
-	{
-		return new ScriptRecalageInitial(log, robot, table, cp, 1000);
-	}
 	
 	public ScriptRecalage getScriptRecalage()
 	{
 		return new ScriptRecalage(log, robot, table, cp, couleur.symmetry, 500);		
 	}
+	
+	public ScriptAccelerateur getScriptAccelerateur()
+	{
+		return new ScriptAccelerateur(log, robot, table, cp);
+	}
+	
+	public ScriptRecupereGold getScriptRecupereGold()
+	{
+		return new ScriptRecupereGold(log, robot, table, cp);
+	}
+	
+	public ScriptRecupereDistrib getScriptRecupereDistrib()
+	{
+		return new ScriptRecupereDistrib(log, robot, table, cp);
+	}
+	
+	public ScriptDeposeBalance getScriptDeposeBalance()
+	{
+		return new ScriptDeposeBalance(log, robot, table, cp);
+	}
 }
+

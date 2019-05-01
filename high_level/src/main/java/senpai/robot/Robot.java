@@ -550,4 +550,30 @@ public class Robot extends RobotState
 	{
 		slowDown = null;
 	}
+
+	public void initActionneurs() throws ActionneurException, InterruptedException
+	{
+		execute(CommProtocol.Id.ACTUATOR_GO_HOME);
+	}
+
+	public void rangeSiPossible() throws InterruptedException, ActionneurException
+	{
+		if(cargo.isEmpty())
+			execute(CommProtocol.Id.ACTUATOR_GO_HOME);
+	}
+	
+	public boolean isCargoEmpty()
+	{
+		return cargo.isEmpty();
+	}
+	
+	public boolean isCargoFull()
+	{
+		return cargo.size() == tailleCargoMax;
+	}
+	
+	public void addToCargo(TypeAtome atome)
+	{
+		cargo.add(atome);
+	}
 }
