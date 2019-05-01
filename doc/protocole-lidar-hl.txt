@@ -6,8 +6,12 @@ Un message est composé de caractères ASCII et est terminé par un retour à la
 
 Message de démarrage du lidar depuis le HL avec la couleur du robot.
 
-BEGIN VIOLET
-BEGIN JAUNE
+INIT VIOLET
+INIT JAUNE
+
+Message de début de match
+
+START
 
 Message d'arrêt complet du lidar
 
