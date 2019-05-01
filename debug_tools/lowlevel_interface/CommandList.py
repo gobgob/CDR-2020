@@ -190,6 +190,7 @@ Command(0x8B, "Actuator Get Position", CommandType.SHORT_ORDER, [],
 		[Field("y", float),
 		 Field("z", float),
 		 Field("theta", float)]),
+Command(0x8C, "Parking break", CommandType.SHORT_ORDER, [Field("Enable", bool)], []),
 
 Command(0x90, "Display",        CommandType.SHORT_ORDER, [], []),
 Command(0x91, "Save",           CommandType.SHORT_ORDER, [], []),

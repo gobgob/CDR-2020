@@ -22,8 +22,8 @@ public:
         stoppedSpeed = 50;
         stoppingResponseTime = 150;
 
-        curvatureK1 = 0.1;
-        curvatureK2 = 12.0;
+        curvatureK1 = 0.08;
+        curvatureK2 = 16.0;
 
         translationKp = 8.0;
         translationKd = 1.0;

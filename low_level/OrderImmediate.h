@@ -416,6 +416,28 @@ public:
     }
 };
 
+class EnableParkingBreak : public OrderImmediate, public Singleton<EnableParkingBreak>
+{
+public:
+    EnableParkingBreak() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == 1)
+        {
+            size_t index = 0;
+            bool enable = Serializer::readBool(io, index);
+            motionControlSystem.enableParkingBreak(enable);
+            Server.printf(SPY_ORDER, "ParkingBreak=%d\n", enable);
+            io.clear();
+        }
+        else
+        {
+            Server.printf_err("EnableParkingBreak: wrong number of arguments\n");
+            io.clear();
+        }
+    }
+};
+
 
 
 /********************

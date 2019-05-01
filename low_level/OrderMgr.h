@@ -47,6 +47,7 @@ public:
         immediateOrderList[0x09] = &SetWarnings::Instance();
         immediateOrderList[0x0A] = &ActuatorStop::Instance();
         immediateOrderList[0x0B] = &ActuatorGetPosition::Instance();
+        immediateOrderList[0x0C] = &EnableParkingBreak::Instance();
 
         immediateOrderList[0x10] = &Display::Instance();
         immediateOrderList[0x11] = &Save::Instance();

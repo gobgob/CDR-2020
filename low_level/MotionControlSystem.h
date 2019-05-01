@@ -414,6 +414,16 @@ private:
         return ret;
     }
 
+    void enableParkingBreak(bool enable)
+    {
+        trajectoryFollower.enableParkingBreak(enable);
+    }
+
+    bool parkingBreakEnabled() const
+    {
+        return trajectoryFollower.parkingBreakEnabled();
+    }
+
 private:
 	TrajectoryFollower trajectoryFollower;
 	volatile Position position;

@@ -17,6 +17,7 @@
 #define DISTANCE_MAX_TO_TRAJ	40			// Distance (entre notre position et la trajectoire) au delà de laquelle on abandonne la trajectoire. Unité : mm
 #define TIMEOUT_MOVE_INIT		1000		// Durée maximale le la phase "MOVE_INIT" d'une trajectoire. Unité : ms
 #define INFINITE_DISTANCE		INT32_MAX
+#define PARKING_MAX_SPEED       500         // mm/s (vitesse max en mode asservissement sur place)
 
 
 class TrajectoryFollower
@@ -43,6 +44,7 @@ public:
         setMotionControlLevel(4);
         curvatureOrder = 0;
         currentMovingSpeed = 0;
+        enableParkingBreak(false);
         updateTunings();
 	}
 
@@ -118,9 +120,13 @@ public:
         else if (movePhase == MOVE_ENDED)
         {
             // Frein de parking actif
-            if (trajectoryControlled && translationControlled)
+            if (translationControlled)
             {
                 translationPID.compute();	// MAJ movingSpeedSetPoint
+            }
+            else
+            {
+                movingSpeedSetPoint = 0;
             }
         }
 		else
@@ -325,6 +331,33 @@ public:
 		return motionControlTunings;
 	}
 
+    void enableParkingBreak(bool enable)
+    {
+        noInterrupts();
+        if (enable)
+        {
+            parkingMaxMovingSpeed = PARKING_MAX_SPEED;
+        }
+        else
+        {
+            parkingMaxMovingSpeed = 0;
+        }
+        if (movePhase == MOVE_ENDED)
+        {
+            finalise_stop();
+        }
+        interrupts();
+    }
+
+    bool parkingBreakEnabled() const
+    {
+        bool ret;
+        noInterrupts();
+        ret = parkingMaxMovingSpeed != 0;
+        interrupts();
+        return ret;
+    }
+
     void sendLogs()
     {
         static MoveStatus lastMoveStatus = MOVE_OK;
@@ -356,7 +389,7 @@ private:
         translationSetPointBuffer = 0;
 		movingSpeedSetPoint = 0;
 		previousMovingSpeedSetpoint = 0;
-        maxMovingSpeed = 0;
+        maxMovingSpeed = parkingMaxMovingSpeed;
         motor.run(0);
 		translationPID.resetIntegralError();
 		translationPID.resetDerivativeError();
@@ -511,6 +544,9 @@ private:
 
     /* Pour le réglage des paramètres des PID, BlockingMgr et StoppingMgr */
     MotionControlTunings motionControlTunings;
+
+    /* Vitesse maximale en mode asservissement sur place (vaut 0 si la fonctionalité est désactivée) */
+    volatile float parkingMaxMovingSpeed;
 };
 
 

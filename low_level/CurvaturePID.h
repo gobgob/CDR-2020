@@ -24,6 +24,7 @@ public:
 		setTunings(0, 0);
 		posError = 0;
 		orientationError = 0;
+        curvatureCorrection = 0;
 	}
 
 	inline void compute(bool movingForward)
@@ -42,32 +43,22 @@ public:
 
 		if (movingForward)
 		{
-			curvatureOrder = trajectoryCurvature - k1 * posError - k2 * orientationError;
+            curvatureCorrection = -k1 * posError - k2 * orientationError;
 		}
 		else
 		{
-			curvatureOrder = trajectoryCurvature - k1 * posError + k2 * orientationError;
+            curvatureCorrection = -k1 * posError + k2 * orientationError;
 		}
+        curvatureOrder = constrain(trajectoryCurvature + curvatureCorrection, outMin, outMax);
 	}
 
 	void setCurvatureLimits(float min, float max)
 	{
-		if (min >= max)
-		{
-			return;
-		}
+		if (min >= max) { return; }
 
 		outMin = min;
 		outMax = max;
-
-		if (curvatureOrder > outMax)
-		{
-			curvatureOrder = outMax;
-		}
-		else if (curvatureOrder < outMin)
-		{
-			curvatureOrder = outMin;
-		}
+        curvatureOrder = constrain(curvatureOrder, outMin, outMax);
 	}
 
 	void setTunings(float k1, float k2)
@@ -93,13 +84,14 @@ public:
 
 	size_t printTo(Print& p) const
 	{
-		return p.printf("%u_%g_%g_%g", millis(), posError, orientationError, curvatureOrder);
+		return p.printf("%u_%g_%g_%g", millis(), posError * k1, orientationError * k2, curvatureCorrection);
 	}
 
 private:
 	volatile Position const & currentPosition;	// Position courante du robot
 	TrajectoryPoint const & trajectoryPoint;	// Point de trajectoire courant (consigne à suivre)
 	volatile float & curvatureOrder;			// Courbure consigne. Unitée : m^-1
+    volatile float curvatureCorrection;         // m^-1
 
 	float k1, k2;
 	float posError, orientationError;
