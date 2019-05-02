@@ -3,11 +3,6 @@ script :
     - cd high_level
     - mvn clean compile assembly:single
 jdk :
-    - oraclejdk8
+    - oraclejdk11
 cache :
     directories : "$HOME/.m2"
-notifications:
-    slack: intech-sudparis:Z3xKQEmZT2a9BFBqouokQ6J7
-    on_success: change
-    on_failure: always
-    email : false
