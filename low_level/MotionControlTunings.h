@@ -20,10 +20,10 @@ public:
         minAimSpeed = 400;
 
         stoppedSpeed = 50;
-        stoppingResponseTime = 150;
+        stoppingResponseTime = 200;
 
-        curvatureK1 = 0.08;
-        curvatureK2 = 16.0;
+        curvatureK1 = 0.025;
+        curvatureK2 = 7.0;
 
         translationKp = 8.0;
         translationKd = 1.0;

@@ -14,7 +14,7 @@
 
 
 #define CURVATURE_TOLERANCE		0.3			// Ecart maximal entre la consigne en courbure et la courbure réelle admissible au démarrage. Unité : m^-1
-#define DISTANCE_MAX_TO_TRAJ	40			// Distance (entre notre position et la trajectoire) au delà de laquelle on abandonne la trajectoire. Unité : mm
+#define DISTANCE_MAX_TO_TRAJ	50			// Distance (entre notre position et la trajectoire) au delà de laquelle on abandonne la trajectoire. Unité : mm
 #define TIMEOUT_MOVE_INIT		1000		// Durée maximale le la phase "MOVE_INIT" d'une trajectoire. Unité : ms
 #define INFINITE_DISTANCE		INT32_MAX
 #define PARKING_MAX_SPEED       500         // mm/s (vitesse max en mode asservissement sur place)
