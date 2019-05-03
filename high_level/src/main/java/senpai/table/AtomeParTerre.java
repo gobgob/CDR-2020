@@ -28,12 +28,12 @@ import pfg.kraken.utils.XY;
 public enum AtomeParTerre
 {	
 	BAS_GAUCHE(new CircularObstacle(new XY(-1000, 950), 76/2)),
-	MILIEU_GAUCHE(new CircularObstacle(new XY(-1000, 1250), 76/2)),
-	HAUT_GAUCHE(new CircularObstacle(new XY(-1000, 1550), 76/2)),
+	MILIEU_GAUCHE(new CircularObstacle(new XY(-1000, 1250-10), 76/2-10)),
+	HAUT_GAUCHE(new CircularObstacle(new XY(-1000, 1550+10), 76/2-10)),
 	
 	BAS_DROITE(new CircularObstacle(new XY(1000, 950), 76/2)),
-	MILIEU_DROITE(new CircularObstacle(new XY(1000, 1250), 76/2)),
-	HAUT_DROITE(new CircularObstacle(new XY(1000, 1550), 76/2)),
+	MILIEU_DROITE(new CircularObstacle(new XY(1000, 1250-10), 76/2-10)),
+	HAUT_DROITE(new CircularObstacle(new XY(1000, 1550+10), 76/2-10)),
 	
 	PENTE_GAUCHE(new CircularObstacle(new XY(-666, 200), 38)),
 	PENTE_DROITE(new CircularObstacle(new XY(666, 200), 38));

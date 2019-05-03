@@ -28,7 +28,7 @@ public enum RobotColor
 	 * Ces noms sont utilisés pour les tests uniquement. Sinon, on utilise le
 	 * boolean symmetry
 	 */
-	VIOLET(false), // côté droite de la table
+	VIOLET(false), // côté droit de la table
 	JAUNE(true); // côté gauche de la table
 
 	public final boolean symmetry;

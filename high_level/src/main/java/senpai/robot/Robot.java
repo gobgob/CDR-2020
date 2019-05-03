@@ -79,6 +79,7 @@ public class Robot extends RobotState
 	private OutgoingOrderBuffer out;
 	private GraphicDisplay buffer;
 	private RobotPrintable printable = null;
+	private boolean graphicPath;
 	private volatile boolean cinematiqueInitialised = false;
 	private int currentIndexTrajectory = 0;
 	private List<TypeAtome> cargo = new ArrayList<TypeAtome>();
@@ -99,7 +100,7 @@ public class Robot extends RobotState
 		jumperOK = config.getBoolean(ConfigInfoSenpai.DISABLE_JUMPER);
 		defaultSpeed = config.getDouble(ConfigInfoSenpai.DEFAULT_MAX_SPEED);
 		maxSpeedInEnemy = config.getDouble(ConfigInfoSenpai.MAX_SPEED_IN_ENEMY);
-		
+		graphicPath = config.getBoolean(ConfigInfoSenpai.GRAPHIC_PATH);
 		// On ajoute une fois pour toute l'image du robot
 		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ROBOT_AND_SENSORS))
 		{
@@ -165,7 +166,7 @@ public class Robot extends RobotState
 	 * @throws InterruptedException
 	 * @throws ActionneurException
 	 */
-	protected void bloque(String nom, Object... param) throws InterruptedException, ActionneurException
+	protected Object bloque(String nom, Object... param) throws InterruptedException, ActionneurException
 	{
 		if(param == null || param.length == 0)
 			log.write("Appel à " + nom, Subject.SCRIPT);
@@ -182,7 +183,7 @@ public class Robot extends RobotState
 		}
 
 		if(simuleLL)
-			return;
+			return null;
 
 		Ticket t = null;
 		Class<?>[] paramClasses = null;
@@ -207,6 +208,7 @@ public class Robot extends RobotState
 			throw new ActionneurException("Problème pour l'actionneur " + nom+" : "+CommProtocol.ActionneurMask.describe((int)dt.data), (int)dt.data);
 
 		log.write("Temps d'exécution de " + nom + " : " + (System.currentTimeMillis() - avant), Subject.SCRIPT);
+		return dt.data;
 	}
 	
 	public void avance(double distance) throws InterruptedException, UnableToMoveException
@@ -259,14 +261,14 @@ public class Robot extends RobotState
 			throw new UnableToMoveException(dt.data.toString());
 	}
 	
-	public void execute(CommProtocol.Id ordre, Object... param) throws InterruptedException, ActionneurException
+	public Object execute(CommProtocol.Id ordre, Object... param) throws InterruptedException, ActionneurException
 	{
 		int nbEssaiMax = 2;
 		boolean retry;
 		do {
 			retry = false;
 			try {
-				bloque(ordre.getMethodName(), param);
+				return bloque(ordre.getMethodName(), param);
 			}
 			catch(ActionneurException e)
 			{
@@ -285,9 +287,12 @@ public class Robot extends RobotState
 					throw e;
 			}
 		} while(retry);
+		
+		assert false;
+		return null;
 	}
 
-	public void updateColorAndSendPosition(RobotColor c, boolean byLL) throws InterruptedException
+	public void updateColorAndSendPosition(RobotColor c) throws InterruptedException
 	{
 		assert cinematique != null;
 		symetrie = c.symmetry;
@@ -295,7 +300,7 @@ public class Robot extends RobotState
 		// avec la correction, la position est déjà à jour et envoyée
 		
 		// on applique la symétrie à la position initiale
-		if(symetrie && byLL)
+		if(symetrie)
 			setCinematique(new Cinematique(-cinematique.getPosition().getX(),
 					cinematique.getPosition().getY(),
 					Math.PI - cinematique.orientationReelle,
@@ -366,6 +371,10 @@ public class Robot extends RobotState
 		log.write("On cherche un chemin", Subject.TRAJECTORY);
 		avant = System.currentTimeMillis();
 		path = kraken.search();
+		if(graphicPath)
+			for(ItineraryPoint ip: path)
+				buffer.addPrintable(ip, Color.BLACK, Layer.FOREGROUND.layer);
+		
 		log.write("Durée de la recherche : "+(System.currentTimeMillis() - avant), Subject.TRAJECTORY);
 		
 		if(slowDown != null)

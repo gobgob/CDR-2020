@@ -47,10 +47,10 @@ public class Match
 	private static Senpai senpai;
 	private OutgoingOrderBuffer ll;
 	private Robot robot;
-	private Table table;
 	private ScriptManager scripts;
 	private Log log;
 	private Config config;
+	private Table table;
 
 	/**
 	 * Gestion des paramètres et de la fermeture
@@ -100,9 +100,9 @@ public class Match
 		config = senpai.getService(Config.class);
 		ll = senpai.getService(OutgoingOrderBuffer.class);
 		robot = senpai.getService(Robot.class);
-		table = senpai.getService(Table.class);
 		scripts = senpai.getService(ScriptManager.class);
 		log = senpai.getService(Log.class);
+		table = senpai.getService(Table.class);
 		
 		RobotColor couleur;
 
@@ -127,12 +127,16 @@ public class Match
 			} while(etat.status != CommProtocol.State.OK);
 			couleur = (RobotColor) etat.data;
 		}
+		
+
+		
+		log.write("Couleur utilisée : "+couleur, Subject.STATUS);
+		robot.updateColorAndSendPosition(couleur);
 
 		/*
 		 * Allumage des capteurs
 		 */
 		senpai.getService(ThreadCommProcess.class).capteursOn = true;
-		
 
 		
 		Script accelerateur = scripts.getScriptAccelerateur();
@@ -140,39 +144,7 @@ public class Match
 		Script recupereDistrib = scripts.getScriptRecupereDistrib();
 		Script deposeBalance = scripts.getScriptDeposeBalance();
 		
-		/*
-		 * Recalage initial
-		 */
-/*		boolean byLL;
-		ScriptRecalageInitial rec = scripts.getScriptRecalageInitial();
-		try {
-			RobotColor couleurRecalage;
-			rec.execute();
-			XYO initialCorrection = rec.getCorrection();
-			double deltaX = Math.round(initialCorrection.position.getX())/10.;
-			double deltaY = Math.round(initialCorrection.position.getY())/10.;
-			double orientation = initialCorrection.orientation * 180. / Math.PI;
-			log.write("Je suis "+Math.abs(deltaX)+"cm sur la "+(deltaX < 0 ? "droite" : "gauche"), Subject.STATUS);
-			log.write("Je suis "+Math.abs(deltaY)+"cm vers l'"+(deltaY < 0 ? "avant" : "arrière"), Subject.STATUS);
-			log.write("Je suis orienté vers la "+(orientation < 0 ? "droite" : "gauche")+" de "+Math.abs(orientation)+"°", Subject.STATUS);
 
-			if(robot.getCinematique().getPosition().getX() > 0)
-				couleurRecalage = RobotColor.VIOLET;
-			else
-				couleurRecalage = RobotColor.JAUNE;
-			if(couleur != couleurRecalage)
-			{
-				log.write("Conflit de couleur ! LL : "+couleur+", recalage : "+couleurRecalage, Severity.CRITICAL, Subject.STATUS);
-				couleur = couleurRecalage;
-			}
-			byLL = false;
-		} catch (ScriptException e) {
-			log.write("Aucun recalage possible, on prend la couleur du bas niveau", Severity.WARNING, Subject.STATUS);
-			byLL = true;
-		}
-
-		log.write("Couleur utilisée : "+couleur, Subject.STATUS);
-		robot.updateColorAndSendPosition(couleur, byLL);*/
 		scripts.setCouleur(couleur);
 
 		try {
@@ -191,7 +163,9 @@ public class Match
 			{
 				log.write("Erreur : "+e, Subject.SCRIPT);
 			}
-			
+			if(true)
+				while(true)
+					Thread.sleep(10000);
 			try
 			{
 				doScript(recupereDistrib, 3, true);
@@ -260,7 +234,7 @@ public class Match
 			}
 		} while(restart && nbEssaiChemin > 0);
 		
-		if(checkFin)
+		if(checkFin && !config.getBoolean(ConfigInfoSenpai.SIMULE_COMM))
 		{
 			double toleranceAngle = 5; // en degré
 			double tolerancePosition = 40; // en mm
@@ -282,5 +256,8 @@ public class Match
 
 		if(Thread.currentThread().isInterrupted())
 			throw new InterruptedException();
+		
+		if(config.getBoolean(ConfigInfoSenpai.SIMULE_COMM))
+			Thread.sleep(5000);
 	}
 }

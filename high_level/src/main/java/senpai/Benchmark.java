@@ -54,7 +54,7 @@ public class Benchmark
 		log.write("Durée du warm-up : "+config.getInt(ConfigInfoSenpai.WARM_UP_DURATION), Subject.STATUS);
 		int demieLargeurNonDeploye = config.getInt(ConfigInfoSenpai.LARGEUR_NON_DEPLOYE) / 2;
 		int demieLongueurArriere = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
-		int demieLongueurAvant = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
+		int demieLongueurAvant = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_DEPLOYE_AVANT);
 
 		RectangularObstacle robotTemplate = new RectangularObstacle(demieLargeurNonDeploye, demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
 

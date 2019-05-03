@@ -285,7 +285,7 @@ public class Senpai
 		int marge = config.getInt(ConfigInfoSenpai.MARGE_PATHFINDING);
 		int demieLargeurNonDeploye = config.getInt(ConfigInfoSenpai.LARGEUR_NON_DEPLOYE) / 2 + marge;
 		int demieLongueurArriere = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
-		int demieLongueurAvant = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
+		int demieLongueurAvant = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_DEPLOYE_AVANT);
 
 		RectangularObstacle robotTemplate = new RectangularObstacle(demieLongueurAvant, demieLongueurArriere, demieLargeurNonDeploye, demieLargeurNonDeploye);
 		injector.addService(RectangularObstacle.class, robotTemplate);
