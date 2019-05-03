@@ -10,11 +10,22 @@
 _(Par la suite, on se considère du côté Violet)_
 > Attention: la coordonnée `y` de l'actionneur doit être symétrisée pour passer côté orange
 
-## 1. Libération du goldenium
+## 1. Libération du Goldenium
 Point de départ du script : `x=-135; y=1790; o=pi/2`
 
 * Actuator GoTo : `y=-23.7; z=152; theta=0`
 * Robot GoTo : `x=-135; y=1840; o=pi/2`
-* Actuator GoTo at Speed : `y=23.7; z=225; theta=0; s_y=350; s_z=300; s_theta=1023`
+* Actuator GoTo at Speed : `y=23.7; z=190; theta=0; s_y=350; s_z=300; s_theta=1023`
 * Robot GoTo : `x=-135; y=1790; o=pi/2`
 * Actuator GoHome
+
+## 2. Prise du Goldenium
+Point de départ du script : `x=-725; y=1765; o=pi/2`
+
+* Actuator GoTo : `y=-23.7; z=200; theta=0`
+* Actuator ScanPuck
+* Actuator GoTo : `y=[result from scan]; z=180; theta=0`
+* Robot GoTo : `x=-725; y=1840; o=pi/2`
+* Actuator GoTo at Speed : `y=[result from scan]; z=180; theta=15; s_y=1023; s_z=300; s_theta=900`
+* Robot GoTo : `x=-725; y=1765; o=pi/2`
+* Actuator GoTo at Speed : `y=0; z=180; theta=15; s_y=1023; s_z=300; s_theta=900`
