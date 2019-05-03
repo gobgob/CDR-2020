@@ -34,3 +34,11 @@ Point de départ du script : `x=-725; y=1665; o=pi/2`
 
 
 ## 3. Livraison du Goldenium
+Point de départ du script : `x=135; y=700; o=-pi/2`
+
+* Actuator GoTo at Speed : `y=0; z=200; theta=15; s_y=1023; s_z=300; s_theta=1023`
+* Robot GoTo : `x=135; y=530; o=-pi/2`
+* Actuator GoTo at Speed : `y=0; z=200; theta=-75; s_y=1023; s_z=300; s_theta=1023`
+* Actuator GoTo : `y=0; z=200; theta=0`
+* Robot GoTo : `x=135; y=700; o=-pi/2`
+* Actuator GoHome
