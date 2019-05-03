@@ -23,6 +23,7 @@
 #include "Serializer.h"
 #include "Dashboard.h"
 #include "SerialAX12.h"
+#include "SmokeMgr.h"
 
 #define ODOMETRY_REPORT_PERIOD  20  // ms
 
@@ -37,8 +38,10 @@ void loop()
     ActuatorMgr &actuatorMgr = ActuatorMgr::Instance();
     Dashboard &dashboard = Dashboard::Instance();
     ContextualLightning &contextualLightning = ContextualLightning::Instance();
+    SmokeMgr &smokeMgr = SmokeMgr::Instance();
     IntervalTimer motionControlTimer;
     IntervalTimer actuatorMgrTimer;
+    IntervalTimer smokeMgrTimer;
     uint32_t odometryReportTimer = 0;
     std::vector<uint8_t> odometryReport;
 
@@ -68,6 +71,8 @@ void loop()
     motionControlTimer.begin(motionControlInterrupt, PERIOD_ASSERV);
     actuatorMgrTimer.priority(252);
     actuatorMgrTimer.begin(actuatorMgrInterrupt, ACT_MGR_INTERRUPT_PERIOD);
+    smokeMgrTimer.priority(254);
+    smokeMgrTimer.begin(smokeMgrInterrupt, SMOKE_MGR_INTERRUPT_PERIOD);
 
     contextualLightning.setNightLight(ContextualLightning::NIGHT_LIGHT_LOW);
 
@@ -84,6 +89,7 @@ void loop()
         dashboard.update();
         //t5 = micros();
         contextualLightning.update();
+        smokeMgr.update();
         //t6 = micros();
         sensorMgr.update(motionControlSystem.getMovingDirection());
         //t7 = micros();
@@ -146,6 +152,13 @@ void actuatorMgrInterrupt()
 {
     static ActuatorMgr &actuatorMgr = ActuatorMgr::Instance();
     actuatorMgr.interruptControl();
+}
+
+
+void smokeMgrInterrupt()
+{
+    static SmokeMgr &smokeMgr = SmokeMgr::Instance();
+    smokeMgr.softPwmInterrupt();
 }
 
 

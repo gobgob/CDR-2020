@@ -212,6 +212,7 @@ Command(0x9C, "Stopping tunings",       CommandType.SHORT_ORDER, [Field("Epsilon
 Command(0x9D, "Set max acceleration",   CommandType.SHORT_ORDER, [Field("Acceleration", float)], []),
 Command(0x9E, "Set max deceleration",   CommandType.SHORT_ORDER, [Field("Deceleration", float)], []),
 Command(0x9F, "Set max curvature",      CommandType.SHORT_ORDER, [Field("Curvature", float)], []),
+Command(0xA0, "Set Smoke Level",        CommandType.SHORT_ORDER, [Field("Level", Enum, ["Off", "Low", "Medium", "Max", "Speed dependant"])], []),
 
 ]
 
