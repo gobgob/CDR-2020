@@ -35,9 +35,9 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	/**
 	 * Position initiale du robot
 	 */
-	INITIAL_X(1300),
-	INITIAL_Y(1700),
-	INITIAL_O(-Math.PI/2),
+	INITIAL_X(1210),
+	INITIAL_Y(1400),
+	INITIAL_O(Math.PI),
 
 	DEFAULT_MAX_SPEED(0.8),
 	MAX_SPEED_IN_ENEMY(0.4),
@@ -51,10 +51,13 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE(278), // distance entre le centre du robot
 											// et le bord arrière du robot
 											// non-déployé
-	DEMI_LONGUEUR_NON_DEPLOYE_AVANT(263), // distance entre le centre du
+	DEMI_LONGUEUR_DEPLOYE_AVANT(263), // distance entre le centre du
 												// robot et le bord avant du
 												// robot non-déployé
-	LARGEUR_NON_DEPLOYE(105), // distance entre le bord gauche et le bord droit
+	DEMI_LONGUEUR_NON_DEPLOYE_AVANT(106), // distance entre le centre du
+	// robot et le bord avant du
+	// robot déployé
+	LARGEUR_NON_DEPLOYE(210), // distance entre le bord gauche et le bord droit
 								// du robot non-déployé
 	MARGE_PATHFINDING(20), // marge latérale sur la dimension du robot
 
