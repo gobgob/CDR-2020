@@ -18,21 +18,23 @@ import pfg.kraken.utils.XYO;
 import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
 import senpai.capteurs.CapteursProcess;
+import senpai.comm.CommProtocol;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.ScriptException;
 import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
 import senpai.table.Table;
+import senpai.table.TypeAtome;
 
 /**
- * Script de l'accelerateur
+ * Script de récupération du goldenium
  * @author pf
  *
  */
 
 public class ScriptRecupereGold extends Script
 {
-	private XY_RW positionEntree = new XY_RW(750,1700);
+	private XY_RW positionEntree = new XY_RW(-725,1665);
 	private boolean done = false;
 	
 	public ScriptRecupereGold(Log log, Robot robot, Table table, CapteursProcess cp)
@@ -55,7 +57,26 @@ public class ScriptRecupereGold extends Script
 	@Override
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException, ScriptException
 	{		
-		done = true;
+		boolean success = false;
+		try {
+			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, -23.7, 200., 0.);
+			Double y = (Double) robot.execute(CommProtocol.Id.ACTUATOR_FIND_PUCK);
+			if(y == null)
+				throw new ActionneurException("No y after actuator find puck ?!", 0);
+			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, y, 180., 0.);
+			robot.avance(75);
+			done = true;
+			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, y, 180., 15., 1023., 300., 900.);
+			success = true;
+			// le script n'est plus faisable
+		}
+		finally
+		{
+			robot.avance(-75);
+			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, 0, 180., 15., 1023., 300., 900.);
+			if(success)
+				robot.addToCargo(TypeAtome.Goldenium);
+		}
 	}
 	
 	@Override

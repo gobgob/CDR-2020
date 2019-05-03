@@ -18,6 +18,7 @@ import pfg.kraken.utils.XYO;
 import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
 import senpai.capteurs.CapteursProcess;
+import senpai.comm.CommProtocol;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.ScriptException;
 import senpai.exceptions.UnableToMoveException;
@@ -32,7 +33,7 @@ import senpai.table.Table;
 
 public class ScriptAccelerateur extends Script
 {
-	private XY_RW positionEntree = new XY_RW(300,1700);
+	private XY_RW positionEntree = new XY_RW(-135,1690);
 	private boolean done = false;
 	
 	public ScriptAccelerateur(Log log, Robot robot, Table table, CapteursProcess cp)
@@ -55,7 +56,19 @@ public class ScriptAccelerateur extends Script
 	@Override
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException, ScriptException
 	{		
-		done = true;
+		try {
+			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, -23.7, 152., 0.);
+			robot.avance(50);
+			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, 23.7, 225., 0., 350., 300., 1023.);
+			// si tout s'est bien passé, alors le script n'est plus faisable
+			done = true;
+		}
+		finally
+		{
+			// dans tous les cas, on recule et on replie l'actionneur
+			robot.avance(-50);
+			robot.execute(CommProtocol.Id.ACTUATOR_GO_HOME);
+		}
 	}
 	
 	@Override
