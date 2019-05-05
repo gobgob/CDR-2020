@@ -40,6 +40,7 @@ public class ThreadLidar extends Thread
 	protected Robot robot;
 	protected Log log;
 	protected LidarEth eth;
+	private double multiplier;
 
 	public ThreadLidar(LidarEth eth, ObstaclesDynamiques dynObs, Robot robot, Log log, Config config)
 	{
@@ -48,6 +49,7 @@ public class ThreadLidar extends Thread
 		this.log = log;
 		this.dynObs = dynObs;
 		this.robot = robot;
+		multiplier = config.getDouble(ConfigInfoSenpai.SLOW_OBSTACLE_RADIUS_MULTIPLIER);
 		setDaemon(true);
 	}
 
@@ -108,12 +110,17 @@ public class ThreadLidar extends Thread
 							int y = Integer.parseInt(m[2]);
 							int rad = Integer.parseInt(m[3]);
 							int id = Integer.parseInt(m[4]);
+							int radSlow = (int) Math.round(multiplier * rad);
 //							int timestamp = Integer.parseInt(m[5]);
 							assert id < 100 : id;
+							
 							CircularObstacle obs = new CircularObstacle(new XY(x, y), rad);
 							dynObs.setLidarObs(obs, id);
-							robot.setLidarObs(obs, id);
-
+							
+							CircularObstacle obsSlow = new CircularObstacle(new XY(x, y), radSlow);
+							robot.setLidarObs(obsSlow, id);
+							
+							eth.sendAck();
 						}
 						else
 							log.write("Message malformé provenant du Lidar: " + message, Severity.CRITICAL, Subject.CAPTEURS);

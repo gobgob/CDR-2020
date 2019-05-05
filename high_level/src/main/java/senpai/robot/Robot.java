@@ -389,8 +389,7 @@ public class Robot extends RobotState
 		
 		log.write("Durée de la recherche : "+(System.currentTimeMillis() - avant), Subject.TRAJECTORY);
 		
-		if(lidarObs != null)
-			path = slowDownTrajectory(path);
+		path = slowDownTrajectory(path);
 		
 		if(!simuleLL)
 		{

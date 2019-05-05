@@ -52,7 +52,6 @@ public class ObstaclesDynamiques extends SmartDynamicObstacles implements Iterat
 	private transient boolean obsTable;
 	private transient CircularObstacle[] lidarObs = new CircularObstacle[100];
 	private transient List<CircularObstacle> lidarTmpObs = new ArrayList<CircularObstacle>(100);
-	private transient boolean useLidarObs;
 	
 	public ObstaclesDynamiques(Log log, Table table, Config config, GraphicDisplay buffer)
 	{
@@ -73,10 +72,9 @@ public class ObstaclesDynamiques extends SmartDynamicObstacles implements Iterat
 		iteratorMemory =  capt.iterator();
 		iteratorTable = table.getCurrentObstaclesIterator();
 		lidarTmpObs.clear();
-		if(useLidarObs)
-			for(CircularObstacle obs : lidarObs)
-				if(obs != null)
-					lidarTmpObs.add(obs);
+		for(CircularObstacle obs : lidarObs)
+			if(obs != null)
+				lidarTmpObs.add(obs);
 		iteratorLidar = lidarTmpObs.iterator();
 		return this;
 	}
@@ -158,8 +156,4 @@ public class ObstaclesDynamiques extends SmartDynamicObstacles implements Iterat
 			lidarObs[i] = null;
 	}
 	
-	public void useLidarObs(boolean use)
-	{
-		this.useLidarObs = use;
-	}
 }

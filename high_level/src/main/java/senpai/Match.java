@@ -12,11 +12,11 @@ import senpai.comm.Ticket;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.ScriptException;
 import senpai.exceptions.UnableToMoveException;
+import senpai.obstacles.ObstaclesDynamiques;
 import senpai.robot.Robot;
 import senpai.robot.RobotColor;
 import senpai.scripts.Script;
 import senpai.scripts.ScriptManager;
-import senpai.table.Table;
 import senpai.threads.comm.ThreadCommProcess;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Subject;
@@ -49,7 +49,7 @@ public class Match
 	private ScriptManager scripts;
 	private Log log;
 	private Config config;
-	private Table table;
+	private ObstaclesDynamiques obs;
 
 	/**
 	 * Gestion des paramètres et de la fermeture du HL, ne pas toucher
@@ -101,7 +101,7 @@ public class Match
 		robot = senpai.getService(Robot.class);
 		scripts = senpai.getService(ScriptManager.class);
 		log = senpai.getService(Log.class);
-		table = senpai.getService(Table.class);
+		obs = senpai.getService(ObstaclesDynamiques.class);
 		
 		RobotColor couleur;
 
@@ -239,6 +239,7 @@ public class Match
 		log.write("Point d'entrée du script "+pointEntree, Subject.SCRIPT);
 		
 		boolean restart;
+
 		do {
 			try {
 				restart = false;
