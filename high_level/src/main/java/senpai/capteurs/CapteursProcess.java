@@ -68,8 +68,6 @@ public class CapteursProcess
 	private Robot robot;
 	private volatile boolean needLast = false;
 	private volatile Integer[] last;
-	private RectangularObstacle departD, departG;
-	private RectangularObstacle deposeD, deposeG;
 	
 //	private List<SensorsData> mesuresScan = new ArrayList<SensorsData>();
 
@@ -98,11 +96,6 @@ public class CapteursProcess
 		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ROBOT_AND_SENSORS))
 			for(Capteur c : capteurs)
 				buffer.addPrintable(c, c.type.couleur, Layer.FOREGROUND.layer);
-		
-		departG = new RectangularObstacle(new XY(1300, 1675), 400, 650);
-		departD = new RectangularObstacle(new XY(-1300, 1675), 400, 650);
-		deposeD = new RectangularObstacle(new XY(-1100+560/2, 2000-180/2), 560, 180);
-		deposeG = new RectangularObstacle(new XY(1100-560/2, 2000-180/2), 560, 180);
 	}
 
 	/**
@@ -165,20 +158,6 @@ public class CapteursProcess
 					positionVue.getY() < distanceBordure)
 			{
 				log.write("Obstacle hors table", Subject.CAPTEURS);				
-				c.isThereObstacle = false;
-				continue;
-			}
-
-			if(departG.isInObstacle(positionVue) || departD.isInObstacle(positionVue))
-			{
-				log.write("Obstacle dans zone de départ ignoré", Subject.CAPTEURS);				
-				c.isThereObstacle = false;
-				continue;
-			}
-
-			if(deposeG.isInObstacle(positionVue) || deposeD.isInObstacle(positionVue))
-			{
-				log.write("Obstacle dans zone de dépose ignoré", Subject.CAPTEURS);				
 				c.isThereObstacle = false;
 				continue;
 			}
