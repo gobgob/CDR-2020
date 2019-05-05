@@ -12,7 +12,6 @@ import senpai.comm.Ticket;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.ScriptException;
 import senpai.exceptions.UnableToMoveException;
-import senpai.obstacles.ObstaclesDynamiques;
 import senpai.robot.Robot;
 import senpai.robot.RobotColor;
 import senpai.scripts.Script;
@@ -49,7 +48,6 @@ public class Match
 	private ScriptManager scripts;
 	private Log log;
 	private Config config;
-	private ObstaclesDynamiques obs;
 
 	/**
 	 * Gestion des paramètres et de la fermeture du HL, ne pas toucher
@@ -101,10 +99,19 @@ public class Match
 		robot = senpai.getService(Robot.class);
 		scripts = senpai.getService(ScriptManager.class);
 		log = senpai.getService(Log.class);
-		obs = senpai.getService(ObstaclesDynamiques.class);
 		
 		RobotColor couleur;
 
+		/**
+		 * Initialisation des actionneurs
+		 */
+
+		try {
+			robot.initActionneurs();
+		} catch (ActionneurException e1) {
+			log.write("Erreur lors de l'initialisation du bras : "+e1, Subject.STATUS);
+		}
+		
 		/*
 		 * Attente de la couleur
 		 */
@@ -146,16 +153,6 @@ public class Match
 		Script recupereGold = scripts.getScriptRecupereGold();
 		Script recupereDistrib = scripts.getScriptRecupereDistrib();
 		Script deposeBalance = scripts.getScriptDeposeBalance();
-		
-		/**
-		 * Initialisation des actionneurs
-		 */
-
-		try {
-			robot.initActionneurs();
-		} catch (ActionneurException e1) {
-			log.write("Erreur lors de l'initialisation du bras : "+e1, Subject.STATUS);
-		}
 
 		/**
 		 * Boucle des scripts

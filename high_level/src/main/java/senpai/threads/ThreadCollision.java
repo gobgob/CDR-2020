@@ -51,6 +51,7 @@ public final class ThreadCollision extends Thread
 	public void run()
 	{
 		Thread.currentThread().setName(getClass().getSimpleName());
+		log.write("Démarrage de " + Thread.currentThread().getName(), Subject.STATUS);
 		try
 		{
 			List<ItineraryPoint> currentPath;

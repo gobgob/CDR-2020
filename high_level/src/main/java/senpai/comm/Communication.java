@@ -182,7 +182,7 @@ public class Communication implements Closeable
 
 					origine.answerReceived();
 					long duree = System.currentTimeMillis() - avant;
-					if(duree >= 8)
+					if(duree >= 20)
 						log.write("Durée création paquet "+origine+" : "+duree, Severity.WARNING, Subject.COMM);
 					
 					return new Paquet(message, origine);
