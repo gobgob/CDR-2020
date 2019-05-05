@@ -18,6 +18,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import pfg.config.Config;
@@ -169,7 +170,7 @@ public class Communication implements Closeable
 					
 					for(int i = 0; i < taille; i++)
 						message.put((byte) read());
-					message.flip();
+					((Buffer)message).flip();
 					
 					Id origine = Id.LUT[origineInt];
 					assert origine != null : "ID inconnu : "+origineInt+", data : "+message;

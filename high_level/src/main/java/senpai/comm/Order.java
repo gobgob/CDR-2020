@@ -14,6 +14,7 @@
 
 package senpai.comm;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import senpai.comm.CommProtocol.Id;
 
@@ -38,7 +39,7 @@ public class Order
 	public Order(ByteBuffer message, Id ordre)
 	{
 		if(message != null)
-			message.flip();
+			((Buffer)message).flip();
 		this.ordre = ordre;
 		update(message);
 	}
