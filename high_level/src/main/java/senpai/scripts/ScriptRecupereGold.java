@@ -83,6 +83,6 @@ public class ScriptRecupereGold extends Script
 	@Override
 	public boolean faisable()
 	{
-		return !done && !robot.isCargoFull();
+		return !done && !robot.isCargoFull(TypeAtome.Goldenium);
 	}
 }

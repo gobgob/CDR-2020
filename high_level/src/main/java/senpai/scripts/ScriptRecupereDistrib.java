@@ -23,6 +23,7 @@ import senpai.exceptions.ScriptException;
 import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
 import senpai.table.Table;
+import senpai.table.TypeAtome;
 
 /**
  * Script de récupération de l'atome du distributeur
@@ -61,6 +62,6 @@ public class ScriptRecupereDistrib extends Script
 	@Override
 	public boolean faisable()
 	{
-		return !done && !robot.isCargoFull();
+		return !done && !robot.isCargoFull(TypeAtome.Blueium);
 	}
 }

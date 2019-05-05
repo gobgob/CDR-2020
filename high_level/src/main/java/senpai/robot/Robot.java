@@ -575,9 +575,17 @@ public class Robot extends RobotState
 		return cargo.isEmpty();
 	}
 	
-	public boolean isCargoFull()
+	private int getCargoSize()
 	{
-		return cargo.size() == tailleCargoMax;
+		int out = 0;
+		for(TypeAtome at: cargo)
+			out += at.taille;
+		return out;
+	}
+	
+	public boolean isCargoFull(TypeAtome type)
+	{
+		return getCargoSize() + type.taille > tailleCargoMax;
 	}
 	
 	public void addToCargo(TypeAtome atome)

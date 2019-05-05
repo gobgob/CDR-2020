@@ -4,7 +4,7 @@ public enum TypeAtome {
 	Redium(4,1),
 	Greenium(8,1),
 	Blueium(12,1),
-	Goldenium(24,1);
+	Goldenium(24,2);
 	
 	public final int nbPoints;
 	public final int taille;
