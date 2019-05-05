@@ -262,6 +262,8 @@ public class Robot extends RobotState
 			if(dt.data != null)
 				throw new UnableToMoveException(dt.data.toString());
 		}
+		else
+			cinematique.updateReel(xFinal, yFinal, cinematique.orientationReelle, 0);
 	}
 	
 	public Object execute(CommProtocol.Id ordre, Object... param) throws InterruptedException, ActionneurException
@@ -401,10 +403,7 @@ public class Robot extends RobotState
 
 		DataTicket out = null;
 		
-		if(!simuleLL)
-			out = followTrajectory();
-		else
-			out = new DataTicket(path, null);
+		out = followTrajectory();
 
 		if(!simuleLL && out.data != null)
 			throw new UnableToMoveException(out.data.toString());
@@ -456,6 +455,7 @@ public class Robot extends RobotState
 		else
 		{
 			dt = new DataTicket(path, CommProtocol.State.OK);
+			cinematique.updateReel(path.get(path.size()-1).x, path.get(path.size()-1).y, path.get(path.size()-1).orientation, 0);
 		}
 		
 		path = null;

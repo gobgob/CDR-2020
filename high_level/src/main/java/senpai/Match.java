@@ -155,6 +155,19 @@ public class Match
 		Script deposeBalance = scripts.getScriptDeposeBalance();
 
 		/**
+		 * Rush initial
+		 */
+		
+		try
+		{
+			robot.avance(1500, config.getDouble(ConfigInfoSenpai.RUSH_SPEED));
+		}
+		catch(NumberFormatException | UnableToMoveException e)
+		{
+			log.write("Erreur : "+e, Subject.SCRIPT);
+		}
+
+		/**
 		 * Boucle des scripts
 		 */
 		
@@ -169,8 +182,8 @@ public class Match
 				log.write("Erreur : "+e, Subject.SCRIPT);
 			}
 			
-			if(config.getBoolean(ConfigInfoSenpai.SIMULE_COMM))
-				throw new InterruptedException("Debug");
+//			if(config.getBoolean(ConfigInfoSenpai.SIMULE_COMM))
+//				throw new InterruptedException("Debug");
 
 			try
 			{

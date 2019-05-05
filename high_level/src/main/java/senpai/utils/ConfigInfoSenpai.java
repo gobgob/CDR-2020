@@ -31,6 +31,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	CHECK_LATENCY(false), // estime la latence de la communication
 	DISABLE_JUMPER(false),
 	ENABLE_LIDAR(false),
+	RUSH_SPEED(0.8),
 	
 	/**
 	 * Position initiale du robot
