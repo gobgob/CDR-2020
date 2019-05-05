@@ -163,9 +163,8 @@ public class Match
 			{
 				log.write("Erreur : "+e, Subject.SCRIPT);
 			}
-			if(true)
-				while(true)
-					Thread.sleep(10000);
+
+
 			try
 			{
 				doScript(recupereDistrib, 3, true);

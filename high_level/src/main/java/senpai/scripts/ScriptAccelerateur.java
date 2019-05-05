@@ -67,7 +67,6 @@ public class ScriptAccelerateur extends Script
 		{
 			// dans tous les cas, on recule et on replie l'actionneur
 			robot.avance(-50);
-			robot.execute(CommProtocol.Id.ACTUATOR_GO_HOME);
 		}
 	}
 	
