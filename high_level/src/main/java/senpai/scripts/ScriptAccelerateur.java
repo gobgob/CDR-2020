@@ -60,6 +60,7 @@ public class ScriptAccelerateur extends Script
 			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, -23.7, 152., 0.);
 			robot.avance(50);
 			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, 23.7, 225., 0., 350., 300., 1023.);
+			robot.updateScore(20);
 			// si tout s'est bien passé, alors le script n'est plus faisable
 			done = true;
 		}

@@ -14,21 +14,11 @@
 
 package senpai.scripts;
 
-import java.util.Comparator;
-import java.util.PriorityQueue;
-
 import pfg.log.Log;
 import senpai.capteurs.CapteursProcess;
-import senpai.obstacles.ObstaclesDynamiques;
 import senpai.robot.Robot;
 import senpai.robot.RobotColor;
-import senpai.table.AtomeParTerre;
 import senpai.table.Table;
-import senpai.utils.ConfigInfoSenpai;
-import senpai.utils.Subject;
-import pfg.config.Config;
-import pfg.kraken.utils.XYO;
-import pfg.kraken.utils.XY_RW;
 
 /**
  * Script manager
@@ -43,25 +33,18 @@ public class ScriptManager
 	private Robot robot;
 	private CapteursProcess cp;
 	private RobotColor couleur;
-	private ObstaclesDynamiques obsDyn;
 	
 	public void setCouleur(RobotColor couleur)
 	{
 		this.couleur = couleur;
 	}
 	
-	public ScriptManager(Log log, Config config, Table table, Robot robot, CapteursProcess cp, ObstaclesDynamiques obsDyn)
+	public ScriptManager(Log log, Table table, Robot robot, CapteursProcess cp)
 	{
-		this.obsDyn = obsDyn;
 		this.log = log;
 		this.table = table;
 		this.robot = robot;
 		this.cp = cp;
-	}
-	
-	public ScriptRecalage getScriptRecalage()
-	{
-		return new ScriptRecalage(log, robot, table, cp, couleur.symmetry, 500);		
 	}
 	
 	public ScriptAccelerateur getScriptAccelerateur()

@@ -84,11 +84,10 @@ public class Robot extends RobotState
 	private int currentIndexTrajectory = 0;
 	private List<TypeAtome> cargo = new ArrayList<TypeAtome>();
 	private int score;
-	private int nbAtomesDansBalance = 0;
 	private int tailleCargoMax;
 	private CircularObstacle slowDown = null;
 	
-	public Robot(Log log, OutgoingOrderBuffer out, Config config, GraphicDisplay buffer, Kraken kraken, /*DynamicPath dpath,*/ KnownPathManager known, RectangularObstacle obstacle)
+	public Robot(Log log, OutgoingOrderBuffer out, Config config, GraphicDisplay buffer, Kraken kraken, /*DynamicPath dpath,*/ /*KnownPathManager known,*/ RectangularObstacle obstacle)
 	{
 		this.log = log;
 		this.out = out;
@@ -584,5 +583,13 @@ public class Robot extends RobotState
 	public void addToCargo(TypeAtome atome)
 	{
 		cargo.add(atome);
+	}
+
+
+	public void emptyCargoOnBalance()
+	{
+		for(TypeAtome at: cargo)
+			updateScore(at.nbPoints);
+		cargo.clear();
 	}
 }

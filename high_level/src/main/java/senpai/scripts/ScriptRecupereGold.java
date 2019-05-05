@@ -67,6 +67,7 @@ public class ScriptRecupereGold extends Script
 			robot.avance(75);
 			done = true;
 			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, y, 180., 15., 1023., 300., 900.);
+			robot.updateScore(20);
 			success = true;
 			// le script n'est plus faisable
 		}

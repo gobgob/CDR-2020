@@ -18,6 +18,7 @@ import pfg.kraken.utils.XYO;
 import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
 import senpai.capteurs.CapteursProcess;
+import senpai.comm.CommProtocol;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.ScriptException;
 import senpai.exceptions.UnableToMoveException;
@@ -32,7 +33,7 @@ import senpai.table.Table;
 
 public class ScriptDeposeBalance extends Script
 {
-	private XY_RW positionEntree = new XY_RW(-150,1700);
+	private XY_RW positionEntree = new XY_RW(-135,700);
 	
 	public ScriptDeposeBalance(Log log, Robot robot, Table table, CapteursProcess cp)
 	{
@@ -53,7 +54,17 @@ public class ScriptDeposeBalance extends Script
 
 	@Override
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException, ScriptException
-	{		
+	{
+		try {
+			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, 0., 200., 15., 1023., 300., 1023.);
+			robot.avance(170);
+			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, 0., 200., -75., 1023., 300., 1023.);
+			robot.emptyCargoOnBalance();
+			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, 0., 200., 0.);
+		}
+		finally {
+			robot.avance(-170);
+		}
 	}
 	
 	@Override

@@ -26,8 +26,6 @@ import pfg.graphic.GraphicPanel;
 import pfg.graphic.printable.Layer;
 import pfg.graphic.printable.Printable;
 import pfg.kraken.obstacles.Obstacle;
-import pfg.kraken.obstacles.RectangularObstacle;
-import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Subject;
