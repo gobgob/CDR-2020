@@ -10,8 +10,8 @@
 #define SCAN_RESOLUTION             (101)     // resolution spaciale selon l'axe Y
 #define SCAN_LEFT_SENSOR_POSITION	(-43.83)  // mm
 #define SCAN_RIGHT_SENSOR_POSITION	(43.83)   // mm
-#define SCAN_EDGE_MIN_HEIGHT        (20.0)    // mm
-#define SCAN_EDGE_MAX_WIDTH         (2)       // index
+#define SCAN_EDGE_MIN_HEIGHT        (15.0)    // mm
+#define SCAN_EDGE_MAX_WIDTH         (5)       // index
 #define SCAN_EDGES_MIN_DIST         (50)      // index
 #define SCAN_EDGES_MAX_DIST         (70)      // index
 
@@ -95,6 +95,11 @@ public:
         for (size_t i = pre_index + 1; i < SCAN_RESOLUTION; i++) {
             scan_data[i] = scan_data[pre_index];
         }
+
+        //Server.printf("index;distance\n");
+        //for(size_t i = 0; i < SCAN_RESOLUTION; i++) {
+        //    Server.printf("%u;%d\n", i, scan_data[i]);
+        //}
 
         /* Edge detection */
         int32_t width = SCAN_EDGE_MAX_WIDTH;
