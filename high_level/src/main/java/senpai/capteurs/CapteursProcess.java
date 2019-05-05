@@ -66,8 +66,8 @@ public class CapteursProcess
 //	private ObstaclesMemory obstacles;
 	private ObstaclesDynamiques dynObs;
 	private Robot robot;
-	private volatile boolean needLast = false;
-	private volatile Integer[] last;
+//	private volatile boolean needLast = false;
+//	private volatile Integer[] last;
 	
 //	private List<SensorsData> mesuresScan = new ArrayList<SensorsData>();
 
@@ -81,7 +81,7 @@ public class CapteursProcess
 		distanceApproximation = config.getInt(ConfigInfoSenpai.DISTANCE_MAX_ENTRE_MESURE_ET_OBJET);
 		distanceBordure = config.getInt(ConfigInfoSenpai.DISTANCE_MAX_BORDURE);
 		nbCapteurs = CapteursRobot.values().length;
-		last = new Integer[nbCapteurs];
+//		last = new Integer[nbCapteurs];
 		
 		this.obstacleRobot = obstacleRobot;
 		
@@ -103,7 +103,7 @@ public class CapteursProcess
 	 */
 	public synchronized void updateObstaclesMobiles(SensorsData data)
 	{
-		if(needLast)
+/*		if(needLast)
 			synchronized(this)
 			{
 				for(int i = 0; i < nbCapteurs; i++)
@@ -113,7 +113,7 @@ public class CapteursProcess
 						last[i] = data.mesures[i];
 				needLast = false;
 				notifyAll();
-			}
+			}*/
 		
 		long avant = System.currentTimeMillis();
 
@@ -635,11 +635,11 @@ public class CapteursProcess
 		return null;
 	}
 	
-	public synchronized Integer[] getLast() throws InterruptedException
+/*	public synchronized Integer[] getLast() throws InterruptedException
 	{
 		needLast = true;
 		while(needLast)
 			wait();
 		return last;
-	}
+	}*/
 }

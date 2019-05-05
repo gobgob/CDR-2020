@@ -171,7 +171,9 @@ public class Match
 			{
 				log.write("Erreur : "+e, Subject.SCRIPT);
 			}
-
+			
+			if(config.getBoolean(ConfigInfoSenpai.SIMULE_COMM))
+				throw new InterruptedException("Debug");
 
 			try
 			{
@@ -273,8 +275,5 @@ public class Match
 
 		if(Thread.currentThread().isInterrupted())
 			throw new InterruptedException();
-		
-		if(config.getBoolean(ConfigInfoSenpai.SIMULE_COMM))
-			Thread.sleep(5000);
 	}
 }
