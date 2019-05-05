@@ -246,18 +246,21 @@ public class Robot extends RobotState
 
 			for(int i = 0; i < nbPoint; i++)
 				ch.addFirst(new ItineraryPoint(xFinal - i * deltaX, yFinal - i * deltaY, cinematique.orientationReelle, 0, marcheAvant, vitesseMax, vitesseMax, i == 0));
-			System.out.println("Trajectoire : "+ch);
+//			System.out.println("Trajectoire : "+ch);
 		}
 
-		out.destroyPointsTrajectoires(0);
-		out.ajoutePointsTrajectoire(ch, true);
-
-		path = ch;
-		setReady();
-
-		DataTicket dt = followTrajectory();
-		if(dt.data != null)
-			throw new UnableToMoveException(dt.data.toString());
+		if(!simuleLL)
+		{
+			out.destroyPointsTrajectoires(0);
+			out.ajoutePointsTrajectoire(ch, true);
+	
+			path = ch;
+			setReady();
+	
+			DataTicket dt = followTrajectory();
+			if(dt.data != null)
+				throw new UnableToMoveException(dt.data.toString());
+		}
 	}
 	
 	public Object execute(CommProtocol.Id ordre, Object... param) throws InterruptedException, ActionneurException

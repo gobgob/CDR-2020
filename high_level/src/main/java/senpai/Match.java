@@ -19,7 +19,6 @@ import senpai.scripts.ScriptManager;
 import senpai.table.Table;
 import senpai.threads.comm.ThreadCommProcess;
 import senpai.utils.ConfigInfoSenpai;
-import senpai.utils.Severity;
 import senpai.utils.Subject;
 
 /*
@@ -53,7 +52,7 @@ public class Match
 	private Table table;
 
 	/**
-	 * Gestion des paramètres et de la fermeture
+	 * Gestion des paramètres et de la fermeture du HL, ne pas toucher
 	 * @param args
 	 */
 	public static void main(String[] args)
@@ -139,12 +138,18 @@ public class Match
 		 */
 		senpai.getService(ThreadCommProcess.class).capteursOn = true;
 
+		/**
+		 * Initialisation des scripts
+		 */
 		
 		Script accelerateur = scripts.getScriptAccelerateur();
 		Script recupereGold = scripts.getScriptRecupereGold();
 		Script recupereDistrib = scripts.getScriptRecupereDistrib();
 		Script deposeBalance = scripts.getScriptDeposeBalance();
 		
+		/**
+		 * Initialisation des actionneurs
+		 */
 
 		try {
 			robot.initActionneurs();
@@ -152,6 +157,10 @@ public class Match
 			log.write("Erreur lors de l'initialisation du bras : "+e1, Subject.STATUS);
 		}
 
+		/**
+		 * Boucle des scripts
+		 */
+		
 		while(true)
 		{
 			try
@@ -205,6 +214,16 @@ public class Match
 
 	}
 	
+	/**
+	 * Exécute un script
+	 * @param s le script à faire
+	 * @param nbEssaiChemin le nombre d'essai de trajet pour y arriver
+	 * @param checkFin doit-on vérifier que le robot est arrivé avec une précision suffisante ?
+	 * @throws PathfindingException pas de chemin
+	 * @throws InterruptedException arrêt de l'utilisateur
+	 * @throws UnableToMoveException problème méca lors du trajet
+	 * @throws ScriptException problème lors de l'exécution du script
+	 */
 	private void doScript(Script s, int nbEssaiChemin, boolean checkFin) throws PathfindingException, InterruptedException, UnableToMoveException, ScriptException
 	{
 		if(Thread.currentThread().isInterrupted())

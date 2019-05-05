@@ -199,7 +199,7 @@ public class CapteursProcess
 			/**
 			 * Sinon, on ajoute
 			 */
-			XY_RW positionEnnemi = new XY_RW(data.mesures[i] + CapteursRobot.profondeur / 2, capteurs[i].orientationRelativeRotate, true);
+			XY_RW positionEnnemi = new XY_RW(mesure + CapteursRobot.profondeur / 2, capteurs[i].orientationRelativeRotate, true);
 			positionEnnemi.plus(capteurs[i].positionRelativeRotate);
 			positionEnnemi.rotate(orientationRobot);
 			positionEnnemi.plus(positionRobot);
