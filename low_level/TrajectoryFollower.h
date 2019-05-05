@@ -120,7 +120,7 @@ public:
         else if (movePhase == MOVE_ENDED)
         {
             // Frein de parking actif
-            if (translationControlled)
+            if (trajectoryControlled)
             {
                 translationPID.compute();	// MAJ movingSpeedSetPoint
             }

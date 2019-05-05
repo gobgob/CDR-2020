@@ -828,43 +828,23 @@ public:
 };
 
 
-class SetSmokeLevel : public OrderImmediate, public Singleton<SetSmokeLevel>
+class SetSmoke : public OrderImmediate, public Singleton<SetSmoke>
 {
 public:
-    SetSmokeLevel() {}
+    SetSmoke() {}
     virtual void execute(std::vector<uint8_t> & io)
     {
         if (io.size() == 1)
         {
             size_t index = 0;
-            uint8_t smokeLevel = Serializer::readEnum(io, index);
-            switch (smokeLevel)
-            {
-            case 0:
-                smokeMgr.setConstantSmoke(SMOKE_OFF);
-                break;
-            case 1:
-                smokeMgr.setConstantSmoke(SMOKE_LOW);
-                break;
-            case 2:
-                smokeMgr.setConstantSmoke(SMOKE_MED);
-                break;
-            case 3:
-                smokeMgr.setConstantSmoke(SMOKE_MAX);
-                break;
-            case 4:
-                smokeMgr.setSpeedDependantSmoke();
-                break;
-            default:
-                smokeMgr.setConstantSmoke(SMOKE_OFF);
-                Server.printf_err("SetSmokeLevel: wrong argument value\n");
-                break;
-            }
+            bool enable = Serializer::readBool(io, index);
+            smokeMgr.enableSmoke(enable);
+            Server.printf(SPY_ORDER, "SetSmoke=%d\n", enable);
             io.clear();
         }
         else
         {
-            Server.printf_err("SetSmokeLevel: wrong number of arguments\n");
+            Server.printf_err("SetSmoke: wrong number of arguments\n");
             io.clear();
         }
     }

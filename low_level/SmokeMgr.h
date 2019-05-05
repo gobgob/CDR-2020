@@ -5,23 +5,20 @@
 #include "Singleton.h"
 #include "Config.h"
 #include "MotionControlSystem.h"
+#include "CommunicationServer.h"
 
-#define SMOKE_MGR_INTERRUPT_PERIOD  2000    // µs
-#define SMOKE_MGR_UPDATE_PRIOD      200     // ms
-#define SMOKE_OFF                   0
-#define SMOKE_LOW                   40
-#define SMOKE_MED                   100
-#define SMOKE_MAX                   255
+#define SMOKE_MGR_UPDATE_PRIOD      1000    // ms
+#define SMOKE_OFF                   0       // pwm
+#define SMOKE_ON                    32762   // pwm
 
 class SmokeMgr : public Singleton<SmokeMgr>
 {
 public:
-    SmokeMgr() :
-        m_mcs(MotionControlSystem::Instance())
+    SmokeMgr()
     {
-        m_pump_pwm = 0;
-        m_smoke_pwm = 0;
-        m_speed_dependent_smoke = false;
+        m_enabled = false;
+        m_smoke_on = false;
+        m_last_update_time = 0;
         pinMode(PIN_SMOKE_PUMP, OUTPUT);
         digitalWrite(PIN_SMOKE_PUMP, LOW);
         pinMode(PIN_SMOKE_RESISTOR, OUTPUT);
@@ -30,70 +27,32 @@ public:
 
     void update()
     {
-        static uint32_t last_update_time = 0;
         uint32_t now = millis();
-        if (now - last_update_time > SMOKE_MGR_UPDATE_PRIOD)
+        if (now - m_last_update_time > SMOKE_MGR_UPDATE_PRIOD)
         {
-            last_update_time = now;
-            if (m_speed_dependent_smoke)
-            {
-                uint8_t smoke_pwm = (float)SMOKE_MAX * min(abs(m_mcs.getMovingSpeed()), 600.0) / 600.0;
-                if (smoke_pwm > 0) {
-                    m_pump_pwm = 255;
-                }
-                else {
-                    m_pump_pwm = 0;
-                }
-                noInterrupts();
-                m_smoke_pwm = smoke_pwm;
-                interrupts();
+            m_last_update_time = now;
+            m_smoke_on = !m_smoke_on;
+            if (m_enabled && m_smoke_on) {
+                analogWrite(PIN_SMOKE_RESISTOR, SMOKE_ON);
             }
-            analogWrite(PIN_SMOKE_PUMP, m_pump_pwm);
+            else {
+                analogWrite(PIN_SMOKE_RESISTOR, SMOKE_OFF);
+            }
+            digitalWrite(PIN_SMOKE_PUMP, m_enabled && m_smoke_on);
         }
     }
 
-    void softPwmInterrupt()
+    void enableSmoke(bool enable)
     {
-        static uint8_t counter = 0;
-        if (counter == 0 && m_smoke_pwm > 0) {
-            digitalWrite(PIN_SMOKE_RESISTOR, HIGH);
-        }
-        else if (counter > m_smoke_pwm) {
-            digitalWrite(PIN_SMOKE_RESISTOR, LOW);
-        }
-        counter += 4;
-    }
-
-    void setConstantSmoke(uint8_t intensity)
-    {
-        intensity = min(intensity, SMOKE_MAX);
-        m_speed_dependent_smoke = false;
-        if (intensity > 0) {
-            m_pump_pwm = 255;
-        }
-        else {
-            m_pump_pwm = 0;
-            analogWrite(PIN_SMOKE_PUMP, 0);
-        }
-        noInterrupts();
-        m_smoke_pwm = intensity;
-        interrupts();
-    }
-
-    void setSpeedDependantSmoke()
-    {
-        m_speed_dependent_smoke = true;
-        m_pump_pwm = 0;
-        noInterrupts();
-        m_smoke_pwm = 0;
-        interrupts();
+        m_enabled = enable;
+        m_last_update_time = 0;
+        m_smoke_on = false;
     }
 
 private:
-    uint8_t m_pump_pwm;
-    volatile uint8_t m_smoke_pwm;
-    bool m_speed_dependent_smoke;
-    const MotionControlSystem &m_mcs;
+    bool m_enabled;
+    bool m_smoke_on;
+    uint32_t m_last_update_time;
 };
 
 #endif

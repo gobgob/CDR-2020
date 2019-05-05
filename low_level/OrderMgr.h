@@ -65,7 +65,7 @@ public:
         immediateOrderList[0x1D] = &SetMaxAcceleration::Instance();
         immediateOrderList[0x1E] = &SetMaxDeceleration::Instance();
         immediateOrderList[0x1F] = &SetMaxCurvature::Instance();
-        immediateOrderList[0x20] = &SetSmokeLevel::Instance();
+        immediateOrderList[0x20] = &SetSmoke::Instance();
 
         // Ordres longs
         longOrderList[0x00] = &FollowTrajectory::Instance();

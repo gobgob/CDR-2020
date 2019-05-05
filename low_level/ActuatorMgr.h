@@ -17,7 +17,7 @@
 
 #define ACT_MGR_INTERRUPT_PERIOD    (100)       // µs
 #define ACT_MGR_POLL_PERIOD         (5000)      // µs
-#define ACT_MGR_MOVE_TIMEOUT        (8000)      // ms
+#define ACT_MGR_MOVE_TIMEOUT        (12000)     // ms
 #define ACT_MGR_Y_TOLERANCE         (1.5)       // mm
 #define ACT_MGR_Z_TOLERANCE         (0.01)      // mm
 #define ACT_MGR_THETA_TOLERANCE     (5)         // deg
@@ -383,6 +383,7 @@ private:
             if (endstopPressed())
             {
                 resetZOrigin();
+                m_z_homed = true;
                 m_aim_position.z = m_current_position.z - 20; // Avoid to stress on the endstop, and it's more esthetic
                 m_aim_position.theta = ACT_MGR_THETA_MIN;
                 sendAimPosition();
@@ -397,7 +398,6 @@ private:
         case 3:
             if (aimPositionReached())
             {
-                m_z_homed = true;
                 finishMove();
             }
             break;
@@ -479,9 +479,12 @@ private:
         dynamixelStatus = m_y_motor.goalPositionDegree(
             m_aim_position.y * ACT_MGR_Y_CONVERTER + ACT_MGR_Y_ORIGIN);
         readDynamixelStatus(dynamixelStatus, ACT_AX12_Y_BLOCKED);
-        dynamixelStatus = m_theta_motor.goalPositionDegree(
-            m_aim_position.theta + ACT_MGR_THETA_ORIGIN);
-        readDynamixelStatus(dynamixelStatus, ACT_AX12_THETA_BLOCKED);
+        if (m_z_homed)
+        {
+            dynamixelStatus = m_theta_motor.goalPositionDegree(
+                m_aim_position.theta + ACT_MGR_THETA_ORIGIN);
+            readDynamixelStatus(dynamixelStatus, ACT_AX12_THETA_BLOCKED);
+        }
         writeZAimPosition();
     }
 

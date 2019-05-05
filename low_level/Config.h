@@ -82,8 +82,8 @@
 #define PIN_EN_TOF_ARD          23
 
 /* Fumigène */
-#define PIN_SMOKE_RESISTOR  17
-#define PIN_SMOKE_PUMP      20
+#define PIN_SMOKE_RESISTOR  20
+#define PIN_SMOKE_PUMP      17
 
 /* Extra */
 #define PIN_EXTRA_1     2

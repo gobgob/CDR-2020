@@ -41,7 +41,6 @@ void loop()
     SmokeMgr &smokeMgr = SmokeMgr::Instance();
     IntervalTimer motionControlTimer;
     IntervalTimer actuatorMgrTimer;
-    IntervalTimer smokeMgrTimer;
     uint32_t odometryReportTimer = 0;
     std::vector<uint8_t> odometryReport;
 
@@ -71,8 +70,6 @@ void loop()
     motionControlTimer.begin(motionControlInterrupt, PERIOD_ASSERV);
     actuatorMgrTimer.priority(252);
     actuatorMgrTimer.begin(actuatorMgrInterrupt, ACT_MGR_INTERRUPT_PERIOD);
-    smokeMgrTimer.priority(254);
-    smokeMgrTimer.begin(smokeMgrInterrupt, SMOKE_MGR_INTERRUPT_PERIOD);
 
     contextualLightning.setNightLight(ContextualLightning::NIGHT_LIGHT_LOW);
 
@@ -152,13 +149,6 @@ void actuatorMgrInterrupt()
 {
     static ActuatorMgr &actuatorMgr = ActuatorMgr::Instance();
     actuatorMgr.interruptControl();
-}
-
-
-void smokeMgrInterrupt()
-{
-    static SmokeMgr &smokeMgr = SmokeMgr::Instance();
-    smokeMgr.softPwmInterrupt();
 }
 
 

@@ -26,7 +26,7 @@ public:
         curvatureK2 = 7.0;
 
         translationKp = 8.0;
-        translationKd = 1.0;
+        translationKd = 0.5;
 	}
 
     size_t printTo(Print& p) const
