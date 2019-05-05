@@ -47,11 +47,11 @@ public class ObstaclesDynamiques extends SmartDynamicObstacles implements Iterat
 	private transient Log log;
 	private static final long serialVersionUID = 1L;
 	private transient Table table;
-	private transient Iterator<Obstacle> iteratorMemory;
-	private transient Iterator<Obstacle> iteratorTable;
+	private transient Iterator<Obstacle> iteratorMemory, iteratorTable;
+	private transient Iterator<CircularObstacle> iteratorLidar;
 	private transient boolean obsTable;
-	private transient CircularObstacle lidarObs;
-	private transient boolean sentLidarObs;
+	private transient CircularObstacle[] lidarObs = new CircularObstacle[100];
+	private transient List<CircularObstacle> lidarTmpObs = new ArrayList<CircularObstacle>(100);
 	private transient boolean useLidarObs;
 	
 	public ObstaclesDynamiques(Log log, Table table, Config config, GraphicDisplay buffer)
@@ -72,28 +72,26 @@ public class ObstaclesDynamiques extends SmartDynamicObstacles implements Iterat
 				capt.add(c.current);
 		iteratorMemory =  capt.iterator();
 		iteratorTable = table.getCurrentObstaclesIterator();
-		sentLidarObs = !(lidarObs != null && useLidarObs);
+		lidarTmpObs.clear();
+		if(useLidarObs)
+			for(CircularObstacle obs : lidarObs)
+				if(obs != null)
+					lidarTmpObs.add(obs);
+		iteratorLidar = lidarTmpObs.iterator();
 		return this;
 	}
 
 	@Override
 	public boolean hasNext()
 	{
-		if(!sentLidarObs)
-			return true;
-		if(iteratorMemory.hasNext())
-			return true;
-		return obsTable && iteratorTable.hasNext();
+		return iteratorLidar.hasNext() || iteratorMemory.hasNext() || (obsTable && iteratorTable.hasNext());
 	}
 
 	@Override
 	public Obstacle next()
 	{
-		if(!sentLidarObs)
-		{
-			sentLidarObs = true;
-			return lidarObs;
-		}
+		if(iteratorLidar.hasNext())
+			return iteratorLidar.next();
 		if(iteratorMemory.hasNext())
 			return iteratorMemory.next();
 		return iteratorTable.next();
@@ -147,14 +145,17 @@ public class ObstaclesDynamiques extends SmartDynamicObstacles implements Iterat
 		return false;
 	}
 
-	public void setLidarObs(CircularObstacle obs)
+	public synchronized void setLidarObs(CircularObstacle obs, int id)
 	{
-		lidarObs = obs;
+		lidarObs[id] = obs;
+		newObs.add(obs);
+		notifyAll();
 	}
 
 	public void clearLidarObs()
 	{
-		lidarObs = null;
+		for(int i = 0; i < lidarObs.length; i++)
+			lidarObs[i] = null;
 	}
 	
 	public void useLidarObs(boolean use)

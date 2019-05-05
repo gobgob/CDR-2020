@@ -71,6 +71,7 @@ public class Robot extends RobotState
 	private RectangularObstacle obstacle;
 	private List<ItineraryPoint> path = null;
 	private long dateDebutMatch, dateFinMatch = Long.MAX_VALUE;
+	private RobotColor c = null;
 	
 	private boolean jumperOK = false;
 	private volatile State etat = State.STANDBY;
@@ -85,7 +86,7 @@ public class Robot extends RobotState
 	private List<TypeAtome> cargo = new ArrayList<TypeAtome>();
 	private int score;
 	private int tailleCargoMax;
-	private CircularObstacle slowDown = null;
+	private CircularObstacle[] lidarObs = new CircularObstacle[100]; // pas plus de cent obstacles
 	
 	public Robot(Log log, OutgoingOrderBuffer out, Config config, GraphicDisplay buffer, Kraken kraken, /*DynamicPath dpath,*/ /*KnownPathManager known,*/ RectangularObstacle obstacle)
 	{
@@ -296,6 +297,7 @@ public class Robot extends RobotState
 
 	public void updateColorAndSendPosition(RobotColor c) throws InterruptedException
 	{
+		this.c = c;
 		assert cinematique != null;
 		symetrie = c.symmetry;
 
@@ -334,21 +336,29 @@ public class Robot extends RobotState
 	{
 		List<ItineraryPoint> out = new ArrayList<ItineraryPoint>();
 		log.write("On ralentit la trajectoire si nécessaire", Subject.TRAJECTORY);
-		assert slowDown != null;
+		int size = path.size();
+		assert lidarObs != null;
 		for(ItineraryPoint ip : path)
 		{
 			tmp.setX(ip.x);
 			tmp.setY(ip.y);
-			if(slowDown.isInObstacle(tmp))
+			boolean changed = false;
+			for(CircularObstacle s: lidarObs)
 			{
-				// TODO: peut-être faire quelque chose de plus progressif
-				double maxSpeed = Math.min(ip.maxSpeed, maxSpeedInEnemy);
-				ItineraryPoint newIp = new ItineraryPoint(ip.x, ip.y, ip.orientation, ip.curvature, ip.goingForward, maxSpeed, ip.possibleSpeed, ip.stop);
-				out.add(newIp);
+				if(s != null && s.isInObstacle(tmp))
+				{
+					// TODO: peut-être faire quelque chose de plus progressif
+					double maxSpeed = Math.min(ip.maxSpeed, maxSpeedInEnemy);
+					ItineraryPoint newIp = new ItineraryPoint(ip.x, ip.y, ip.orientation, ip.curvature, ip.goingForward, maxSpeed, ip.possibleSpeed, ip.stop);
+					out.add(newIp);
+					changed = true;
+					break;
+				}
 			}
-			else
+			if(!changed)
 				out.add(ip);
 		}
+		assert out.size() == size : out.size()+" "+size;
 		return out;	
 	}
 	
@@ -379,7 +389,7 @@ public class Robot extends RobotState
 		
 		log.write("Durée de la recherche : "+(System.currentTimeMillis() - avant), Subject.TRAJECTORY);
 		
-		if(slowDown != null)
+		if(lidarObs != null)
 			path = slowDownTrajectory(path);
 		
 		if(!simuleLL)
@@ -552,14 +562,15 @@ public class Robot extends RobotState
 		out.correctPosition(position, orientation);
 	}
 
-	public void setLidarObs(CircularObstacle obs)
+	public void setLidarObs(CircularObstacle obs, int id)
 	{
-		slowDown = obs;
+		lidarObs[id] = obs;
 	}
 	
 	public void clearLidarObs()
 	{
-		slowDown = null;
+		for(int i = 0; i < lidarObs.length; i++)
+			lidarObs[i] = null;
 	}
 
 	public void initActionneurs() throws ActionneurException, InterruptedException
@@ -603,4 +614,21 @@ public class Robot extends RobotState
 			updateScore(at.nbPoints);
 		cargo.clear();
 	}
+
+
+	public RobotColor getColor()
+	{
+		return c;
+	}
+	
+	public boolean isMatchStarted()
+	{
+		return dateDebutMatch != Long.MAX_VALUE;
+	}
+	
+	public boolean isMatchStopped()
+	{
+		return getTempsRestant() < 0;
+	}
+	
 }

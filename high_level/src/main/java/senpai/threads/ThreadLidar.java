@@ -16,10 +16,12 @@ package senpai.threads;
 
 import pfg.config.Config;
 import pfg.kraken.obstacles.CircularObstacle;
+import pfg.kraken.utils.XY;
 import pfg.log.Log;
 import senpai.comm.LidarEth;
 import senpai.obstacles.ObstaclesDynamiques;
 import senpai.robot.Robot;
+import senpai.robot.RobotColor;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Severity;
 import senpai.utils.Subject;
@@ -52,6 +54,10 @@ public class ThreadLidar extends Thread
 	@Override
 	public void run()
 	{
+		boolean colorSent = false;
+		boolean started = false;
+		boolean stopped = false;
+		
 		Thread.currentThread().setName(getClass().getSimpleName());
 		try
 		{
@@ -67,12 +73,59 @@ public class ThreadLidar extends Thread
 				eth.initialize(config);
 				while(true)
 				{
-					CircularObstacle obs = eth.getObstacle();
-					if(obs != null)
+					String message = eth.getMessage();
+
+					if(message.startsWith("ASK_STATUS"))
 					{
-						dynObs.setLidarObs(obs);
-						robot.setLidarObs(obs);
+						if(!colorSent)
+						{
+							RobotColor c = robot.getColor();
+							if(c != null)
+							{
+								eth.sendInit(c);
+								colorSent = true;
+							}
+						}
+						else if(!started && robot.isMatchStarted())
+						{
+							eth.sendStart();
+							started = true;
+						}
+						else if(!stopped && robot.isMatchStopped())
+						{
+							eth.sendStop();
+							stopped = true;
+						}
+						else
+							eth.sendAck();
 					}
+					else if(message.startsWith("OBSTACLE"))
+					{
+						String[] m = message.split(" ");
+						if(m.length == 6)
+						{
+							int x = Integer.parseInt(m[1]);
+							int y = Integer.parseInt(m[2]);
+							int rad = Integer.parseInt(m[3]);
+							int id = Integer.parseInt(m[4]);
+//							int timestamp = Integer.parseInt(m[5]);
+							assert id < 100 : id;
+							CircularObstacle obs = new CircularObstacle(new XY(x, y), rad);
+							dynObs.setLidarObs(obs, id);
+							robot.setLidarObs(obs, id);
+
+						}
+						else
+							log.write("Message malformé provenant du Lidar: " + message, Severity.CRITICAL, Subject.CAPTEURS);
+							
+
+					}
+					else
+					{
+						assert false : message;
+						log.write("Message inconnu provenant du Lidar: " + message, Severity.CRITICAL, Subject.CAPTEURS);
+					}
+
 				}
 			}
 		}

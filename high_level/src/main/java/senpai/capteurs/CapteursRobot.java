@@ -27,8 +27,6 @@ import pfg.kraken.utils.XY;
 
 public enum CapteursRobot
 {
-	// TODO: largeur
-	
 	ToF_AVANT_GAUCHE(new XY(58, 99), 0, TypeCapteur.ToF_LONG, 200),
 
 	ToF_AVANT_DROIT(new XY(58, -99), 0, TypeCapteur.ToF_LONG, 200),

@@ -14,16 +14,17 @@
 
 package senpai.comm;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import pfg.config.Config;
-import pfg.kraken.obstacles.CircularObstacle;
 import pfg.log.Log;
+import senpai.robot.RobotColor;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Severity;
 import senpai.utils.Subject;
@@ -40,8 +41,8 @@ public class LidarEth
 	private ServerSocket socket = null;
 	private Socket client;
 	
-	private OutputStream output;
-	private InputStream input;
+	private OutputStreamWriter output;
+	private BufferedReader input;
 	
 	public LidarEth(Log log)
 	{
@@ -70,8 +71,8 @@ public class LidarEth
 		client = socket.accept();
 		log.write("Lidar connecté !", Subject.COMM);
 		
-		input = client.getInputStream();
-		output = client.getOutputStream();
+		input = new BufferedReader(new InputStreamReader(client.getInputStream()));
+		output = new OutputStreamWriter(client.getOutputStream());
 		assert input != null && output != null;
 	}
 
@@ -103,12 +104,32 @@ public class LidarEth
 			log.write("Fermeture impossible : carte déjà fermée", Severity.WARNING, Subject.COMM);
 	}
 
-	public CircularObstacle getObstacle() throws InterruptedException, IOException
+	public String getMessage() throws InterruptedException, IOException
 	{
-		if(socket == null)
-			throw new IOException("Lidar plus connecté !");
-		
-		// TODO
-		return null;
+		return input.readLine();
 	}
+	
+	public void sendInit(RobotColor c) throws IOException
+	{
+		if(c == RobotColor.JAUNE)
+			output.write("INIT JAUNE\n");
+		else
+			output.write("INIT VIOLET\n");
+	}
+	
+	public void sendAck() throws IOException
+	{
+		output.write("ACK\n");
+	}
+	
+	public void sendStart() throws IOException
+	{
+		output.write("START\n");
+	}
+		
+	public void sendStop() throws IOException
+	{
+		output.write("STOP\n");
+	}
+	
 }
