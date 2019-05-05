@@ -37,9 +37,11 @@ public class ScriptRecupereGold extends Script
 	private XY_RW positionEntree = new XY_RW(-725,1665);
 	private boolean done = false;
 	
-	public ScriptRecupereGold(Log log, Robot robot, Table table, CapteursProcess cp)
+	public ScriptRecupereGold(Log log, Robot robot, Table table, CapteursProcess cp, boolean symetrie)
 	{
 		super(log, robot, table, cp);
+		if(symetrie)
+			positionEntree.setX(- positionEntree.getX());
 	}
 
 	@Override

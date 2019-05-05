@@ -49,22 +49,22 @@ public class ScriptManager
 	
 	public ScriptAccelerateur getScriptAccelerateur()
 	{
-		return new ScriptAccelerateur(log, robot, table, cp);
+		return new ScriptAccelerateur(log, robot, table, cp, couleur.symmetry);
 	}
 	
 	public ScriptRecupereGold getScriptRecupereGold()
 	{
-		return new ScriptRecupereGold(log, robot, table, cp);
+		return new ScriptRecupereGold(log, robot, table, cp, couleur.symmetry);
 	}
 	
 	public ScriptRecupereDistrib getScriptRecupereDistrib()
 	{
-		return new ScriptRecupereDistrib(log, robot, table, cp);
+		return new ScriptRecupereDistrib(log, robot, table, cp, couleur.symmetry);
 	}
 	
 	public ScriptDeposeBalance getScriptDeposeBalance()
 	{
-		return new ScriptDeposeBalance(log, robot, table, cp);
+		return new ScriptDeposeBalance(log, robot, table, cp, couleur.symmetry);
 	}
 }
 

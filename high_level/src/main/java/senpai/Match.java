@@ -132,6 +132,7 @@ public class Match
 		
 		log.write("Couleur utilisée : "+couleur, Subject.STATUS);
 		robot.updateColorAndSendPosition(couleur);
+		scripts.setCouleur(couleur);
 
 		/*
 		 * Allumage des capteurs
@@ -144,8 +145,6 @@ public class Match
 		Script recupereDistrib = scripts.getScriptRecupereDistrib();
 		Script deposeBalance = scripts.getScriptDeposeBalance();
 		
-
-		scripts.setCouleur(couleur);
 
 		try {
 			robot.initActionneurs();

@@ -36,9 +36,11 @@ public class ScriptRecupereDistrib extends Script
 	private XY_RW positionEntree = new XY_RW(750,1700); // TODO
 	private boolean done = false;
 	
-	public ScriptRecupereDistrib(Log log, Robot robot, Table table, CapteursProcess cp)
+	public ScriptRecupereDistrib(Log log, Robot robot, Table table, CapteursProcess cp, boolean symetrie)
 	{
 		super(log, robot, table, cp);
+		if(symetrie)
+			positionEntree.setX(- positionEntree.getX());
 	}
 
 	@Override

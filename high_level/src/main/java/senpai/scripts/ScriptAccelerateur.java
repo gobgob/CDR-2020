@@ -36,9 +36,11 @@ public class ScriptAccelerateur extends Script
 	private XY_RW positionEntree = new XY_RW(-135,1690);
 	private boolean done = false;
 	
-	public ScriptAccelerateur(Log log, Robot robot, Table table, CapteursProcess cp)
+	public ScriptAccelerateur(Log log, Robot robot, Table table, CapteursProcess cp, boolean symetrie)
 	{
 		super(log, robot, table, cp);
+		if(symetrie)
+			positionEntree.setX(- positionEntree.getX());
 	}
 
 	@Override
