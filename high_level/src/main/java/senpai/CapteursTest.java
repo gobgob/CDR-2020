@@ -41,6 +41,8 @@ public class CapteursTest
 			senpai = new Senpai();
 			senpai.initialize(configfile, "default", "graphic");
 			OutgoingOrderBuffer data = senpai.getService(OutgoingOrderBuffer.class);
+			Robot robot = senpai.getService(Robot.class);
+			robot.updateColorAndSendPosition(RobotColor.VIOLET);
 			senpai.getService(ThreadCommProcess.class).capteursOn = true;
 			while(true)
 				Thread.sleep(10000);
