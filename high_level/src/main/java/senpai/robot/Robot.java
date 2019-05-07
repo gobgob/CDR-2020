@@ -86,6 +86,7 @@ public class Robot extends RobotState
 	private List<TypeAtome> cargo = new ArrayList<TypeAtome>();
 	private int score;
 	private int tailleCargoMax;
+	private boolean goldeniumFree = false; 
 	private CircularObstacle[] lidarObs = new CircularObstacle[100]; // pas plus de cent obstacles
 	
 	public Robot(Log log, OutgoingOrderBuffer out, Config config, GraphicDisplay buffer, Kraken kraken, /*DynamicPath dpath,*/ /*KnownPathManager known,*/ RectangularObstacle obstacle)
@@ -628,6 +629,16 @@ public class Robot extends RobotState
 	public boolean isMatchStopped()
 	{
 		return getTempsRestant() < 0;
+	}
+	
+	public void setGoldeniumFree()
+	{
+		goldeniumFree = true;
+	}
+	
+	public boolean isGoldeniumFree()
+	{
+		return goldeniumFree;
 	}
 	
 }
