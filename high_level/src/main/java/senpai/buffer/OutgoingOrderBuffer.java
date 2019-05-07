@@ -234,27 +234,27 @@ public class OutgoingOrderBuffer implements Plottable
 		return Id.ACTUATOR_FIND_PUCK.ticket;
 	}
 	
-	public Ticket actuatorGoToAtSpeed(double actY, double actZ, double actTheta, double speedY, double speedZ, double speedTheta)
+	public Ticket actuatorGoToAtSpeed(Double actY, Double actZ, Double actTheta, Double speedY, Double speedZ, Double speedTheta)
 	{
 		ByteBuffer data = ByteBuffer.allocate(6*4);
 		data.order(ByteOrder.LITTLE_ENDIAN);
-		data.putFloat((float) actY);
-		data.putFloat((float) actZ);
-		data.putFloat((float) actTheta);
-		data.putFloat((float) speedY);
-		data.putFloat((float) speedZ);
-		data.putFloat((float) speedTheta);
+		data.putFloat((float)((double) actY));
+		data.putFloat((float) ((double)actZ));
+		data.putFloat((float) ((double)actTheta));
+		data.putFloat((float) ((double)speedY));
+		data.putFloat((float) ((double)speedZ));
+		data.putFloat((float) ((double)speedTheta));
 		addToBuffer(new Order(data, Id.ACTUATOR_GO_TO_AT_SPEED));
 		return Id.ACTUATOR_GO_TO_AT_SPEED.ticket;
 	}
 	
-	public Ticket actuatorGoTo(double actY, double actZ, double actTheta)
+	public Ticket actuatorGoTo(Double actY, Double actZ, Double actTheta)
 	{
 		ByteBuffer data = ByteBuffer.allocate(3*4);
 		data.order(ByteOrder.LITTLE_ENDIAN);
-		data.putFloat((float) actY);
-		data.putFloat((float) actZ);
-		data.putFloat((float) actTheta);
+		data.putFloat((float) ((double)actY));
+		data.putFloat((float) ((double)actZ));
+		data.putFloat((float) ((double)actTheta));
 		addToBuffer(new Order(data, Id.ACTUATOR_GO_TO));
 		return Id.ACTUATOR_GO_TO.ticket;
 	}

@@ -76,7 +76,7 @@ public class ScriptRecupereGold extends Script
 		finally
 		{
 			robot.avance(-75);
-			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, 0, 180., 15., 1023., 300., 900.);
+			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, 0., 180., 15., 1023., 300., 900.);
 			if(success)
 				robot.addToCargo(TypeAtome.Goldenium);
 		}
