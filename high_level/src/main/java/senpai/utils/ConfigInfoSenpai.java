@@ -103,9 +103,9 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	 * Log
 	 */
 	PRINT_STATUS(true),
-	PRINT_CAPTEURS(false),
+	PRINT_CAPTEURS(true),
 	PRINT_CORRECTION(false),
-	PRINT_COMM(false),
+	PRINT_COMM(true),
 	PRINT_TRAJECTORY(true),
 	PRINT_SCRIPT(true),
 	PRINT_TABLE(true),

@@ -238,7 +238,7 @@ public class OutgoingOrderBuffer implements Plottable
 	{
 		ByteBuffer data = ByteBuffer.allocate(6*4);
 		data.order(ByteOrder.LITTLE_ENDIAN);
-		data.putFloat((float)((double) actY));
+		data.putFloat((float) ((double) actY));
 		data.putFloat((float) ((double)actZ));
 		data.putFloat((float) ((double)actTheta));
 		data.putFloat((float) ((double)speedY));
