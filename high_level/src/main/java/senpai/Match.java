@@ -183,12 +183,14 @@ public class Match
 		/**
 		 * Boucle des scripts
 		 */
-		
+		boolean none;
 		while(true)
 		{
+			none = true;
 			try
 			{
 				doScript(accelerateur, 3, true);
+				none = false;
 			}
 			catch(PathfindingException | UnableToMoveException | ScriptException e)
 			{
@@ -201,6 +203,7 @@ public class Match
 			try
 			{
 				doScript(recupereDistrib, 3, true);
+				none = false;
 			}
 			catch(PathfindingException | UnableToMoveException | ScriptException e)
 			{
@@ -210,6 +213,7 @@ public class Match
 			try
 			{
 				doScript(deposeBalance, 3, true);
+				none = false;
 			}
 			catch(PathfindingException | UnableToMoveException | ScriptException e)
 			{
@@ -219,6 +223,7 @@ public class Match
 			try
 			{
 				doScript(recupereGold, 3, true);
+				none = false;
 			}
 			catch(PathfindingException | UnableToMoveException | ScriptException e)
 			{
@@ -228,12 +233,17 @@ public class Match
 			try
 			{
 				doScript(deposeBalance, 3, true);
+				none = false;
 			}
 			catch(PathfindingException | UnableToMoveException | ScriptException e)
 			{
 				log.write("Erreur : "+e, Subject.SCRIPT);
 			}
-			
+			if(none)
+			{
+				log.write("Aucun script possible, on attend un peu.", Subject.SCRIPT);
+				Thread.sleep(1000);
+			}
 		}
 		
 
