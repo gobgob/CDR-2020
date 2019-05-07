@@ -157,14 +157,27 @@ public class Match
 		/**
 		 * Rush initial
 		 */
-		
+		double rush_speed = config.getDouble(ConfigInfoSenpai.RUSH_SPEED);
 		try
 		{
-			robot.avance(1500, config.getDouble(ConfigInfoSenpai.RUSH_SPEED));
+			robot.avance(1500, rush_speed);
 		}
-		catch(NumberFormatException | UnableToMoveException e)
+		catch(UnableToMoveException e)
 		{
-			log.write("Erreur : "+e, Subject.SCRIPT);
+			log.write("Erreur lors du rush initial : "+e, Subject.SCRIPT);
+			double currentX = robot.getCinematique().getPosition().getX();
+			while(Math.abs(currentX) > 700)
+			{
+				try
+				{
+					robot.avance(Math.abs(currentX - 700) + 50);
+				}
+				catch(UnableToMoveException e1)
+				{
+					log.write("Erreur lors de la sortie de la zone de départ : "+e, Subject.SCRIPT);
+				}
+				currentX = robot.getCinematique().getPosition().getX();
+			}
 		}
 
 		/**
