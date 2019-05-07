@@ -144,7 +144,7 @@ public class CapteursProcess
 			
 			if(mesure == CommProtocol.EtatCapteur.TROP_PROCHE.ordinal() || (mesure >= CommProtocol.EtatCapteur.values().length && mesure < 30))
 				mesure = 30;
-
+			
 			XY positionVue = getPositionVue(capteurs[i], mesure, data.cinematique);
 			if(positionVue == null)
 			{
@@ -157,7 +157,7 @@ public class CapteursProcess
 					positionVue.getY() > 2000 - distanceBordure ||
 					positionVue.getY() < distanceBordure)
 			{
-				log.write("Obstacle hors table", Subject.CAPTEURS);				
+				log.write("Obstacle hors table : "+positionVue+" "+data.cinematique, Subject.CAPTEURS);				
 				c.isThereObstacle = false;
 				continue;
 			}
