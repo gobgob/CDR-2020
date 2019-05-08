@@ -17,6 +17,7 @@ package senpai.scripts;
 import pfg.kraken.utils.XYO;
 import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
+import senpai.capteurs.CapteursCorrection;
 import senpai.capteurs.CapteursProcess;
 import senpai.comm.CommProtocol;
 import senpai.exceptions.ActionneurException;
@@ -59,6 +60,7 @@ public class ScriptAccelerateur extends Script
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException, ScriptException
 	{		
 		try {
+			cp.doStaticCorrection(500, CapteursCorrection.AVANT);
 			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, -23.7, 152., 0.);
 			robot.avanceTo(new XYO(-135, 1740, Math.PI / 2));
 			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, 23.7, 190., 0., 350., 300., 1023.);
