@@ -202,7 +202,6 @@ public class ThreadCommProcess extends Thread
 					log.write("Fin du Match !", Subject.STATUS);
 					container.interruptWithCodeError(ErrorCode.END_OF_MATCH);
 
-					Thread.sleep(1000);
 					// On attend d'être arrêté
 					while(true)
 						Thread.sleep(1000);

@@ -1,8 +1,6 @@
 package senpai;
 
-import pfg.kraken.utils.XY;
 import senpai.Senpai.ErrorCode;
-import senpai.buffer.OutgoingOrderBuffer;
 import senpai.robot.Robot;
 import senpai.robot.RobotColor;
 import senpai.threads.comm.ThreadCommProcess;
@@ -40,7 +38,6 @@ public class CapteursTest
 		{			
 			senpai = new Senpai();
 			senpai.initialize(configfile, "default", "graphic");
-			OutgoingOrderBuffer data = senpai.getService(OutgoingOrderBuffer.class);
 			Robot robot = senpai.getService(Robot.class);
 			robot.updateColorAndSendPosition(RobotColor.VIOLET);
 			senpai.getService(ThreadCommProcess.class).capteursOn = true;

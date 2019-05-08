@@ -433,7 +433,7 @@ public class Senpai
 									// démarré…
 		}
 	}
-
+	
 	public void interruptWithCodeError(ErrorCode code) throws InterruptedException
 	{
 		errorCode = code;
