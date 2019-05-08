@@ -20,21 +20,21 @@
 #define ACT_MGR_MOVE_TIMEOUT        (12000)     // ms
 #define ACT_MGR_Y_TOLERANCE         (1.5)       // mm
 #define ACT_MGR_Z_TOLERANCE         (0.01)      // mm
-#define ACT_MGR_THETA_TOLERANCE     (5)         // deg
+#define ACT_MGR_THETA_TOLERANCE     (5.0)       // deg
 #define ACT_MGR_Y_MIN               (-23.795)   // mm (47.59 / 2)
 #define ACT_MGR_Y_MAX               (23.795)    // mm
-#define ACT_MGR_Z_MIN               (0)         // mm
-#define ACT_MGR_Z_MAX               (208)       // mm (todo: adjust with the base)
-#define ACT_MGR_THETA_MIN           (-90)       // deg
-#define ACT_MGR_THETA_MAX           (40)        // deg
-#define ACT_MGR_Y_ORIGIN            (160)       // deg (Angle de l'AX12 de l'axe Y pour une fourche centrée)
+#define ACT_MGR_Z_MIN               (0.0)       // mm
+#define ACT_MGR_Z_MAX               (218.0)     // mm (todo: adjust with the base)
+#define ACT_MGR_THETA_MIN           (-90.0)     // deg
+#define ACT_MGR_THETA_MAX           (40.0)      // deg
+#define ACT_MGR_Y_ORIGIN            (160.0)     // deg (Angle de l'AX12 de l'axe Y pour une fourche centrée)
 #define ACT_MGR_Y_CONVERTER         (2.8233)    // deg/mm (Conversion Y <-> Angle d'AX12) (100 deg = 35.42mm)
-#define ACT_MGR_THETA_ORIGIN        (150)       // deg (Angle de l'AX12 theta pour une fourche horizontale)
-#define ACT_MGR_SENSE_MIN_THETA     (-20)       // deg (Angle minimal de l'AX12 theta pour utiliser les capteurs de fourche)
-#define ACT_MGR_SENSE_MAX_THETA     (20)        // deg (Angle maximal de l'AX12 theta pour utiliser les capteurs de fourche)
+#define ACT_MGR_THETA_ORIGIN        (150.0)     // deg (Angle de l'AX12 theta pour une fourche horizontale)
+#define ACT_MGR_SENSE_MIN_THETA     (-20.0)     // deg (Angle minimal de l'AX12 theta pour utiliser les capteurs de fourche)
+#define ACT_MGR_SENSE_MAX_THETA     (20.0)      // deg (Angle maximal de l'AX12 theta pour utiliser les capteurs de fourche)
 #define ACT_MGR_MICROSTEP           (16)
 #define ACT_MGR_STEP_PER_TURN       (200)       // step/turn
-#define ACT_MGR_Z_PER_TURN          (8)         // mm/turn
+#define ACT_MGR_Z_PER_TURN          (8.0)       // mm/turn
 #define ACT_MGR_MAX_SPEED_Y         (1023)      // AX12 speed unit (1023 is max, 1 is min, 0 means non coltrolled)
 #define ACT_MGR_MAX_SPEED_Z         (300)       // rpm
 #define ACT_MGR_MAX_SPEED_THETA     (1023)      // AX12 speed unit
