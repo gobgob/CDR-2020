@@ -328,7 +328,7 @@ public class Robot extends RobotState
 	
 	public Object execute(CommProtocol.Id ordre, Object... param) throws InterruptedException, ActionneurException
 	{
-		deploye = true; // dans le doute…
+		deploye = ordre != CommProtocol.Id.ACTUATOR_GO_HOME; // dans le doute…
 		int nbEssaiMax = 2;
 		boolean retry;
 		do {
@@ -655,7 +655,6 @@ public class Robot extends RobotState
 		if(cargo.isEmpty())
 		{
 			execute(CommProtocol.Id.ACTUATOR_GO_HOME);
-			deploye = false;
 		}
 	}
 	
