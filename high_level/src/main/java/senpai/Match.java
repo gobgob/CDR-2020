@@ -329,6 +329,10 @@ public class Match
 					{
 						restart = true;
 						nbEssaiChemin--;
+						if(nbEssaiChemin > 0)
+							log.write("Erreur trop grande, on retente !", Subject.SCRIPT);
+						else
+							log.write("Erreur trop grande, on abandonne !", Subject.SCRIPT);
 					}
 				}
 
