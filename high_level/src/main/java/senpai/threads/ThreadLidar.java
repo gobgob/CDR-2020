@@ -127,6 +127,9 @@ public class ThreadLidar extends Thread
 							
 
 					}
+					// TODO: correction d'odo
+					// attention : vérifier qu'une correction par capteurs n'est pas déjà en cours
+					// si la correction est trop petite, on l'envoie pas au LL
 					else
 					{
 						assert false : message;

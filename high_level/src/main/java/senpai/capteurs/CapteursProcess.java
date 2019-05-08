@@ -603,7 +603,7 @@ public class CapteursProcess
 				else if(orientationRobot > Math.PI / 4)
 				{
 					// HAUT
-					delta = new XY(0, - cinem.getPosition().getY() + 2000 - distanceRobotMur);
+					delta = new XY(0, - cinem.getPosition().getY() + 2000 - 30 - distanceRobotMur); // TODO: l'obstacle en haut et à 3cm du bord
 				}
 				else if(orientationRobot < -Math.PI / 4)
 				{
