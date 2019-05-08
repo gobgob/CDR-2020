@@ -212,6 +212,62 @@ public class Robot extends RobotState
 		return dt.data;
 	}
 	
+	public void avanceTo(XYO xyo) throws InterruptedException, UnableToMoveException
+	{
+		avanceTo(xyo, defaultSpeed);
+	}
+
+	public void avanceTo(XYO xyo, double vitesseMax) throws InterruptedException, UnableToMoveException
+	{
+		double distance = xyo.position.distance(cinematique.getPosition());
+		if(xyo.position.minusNewVector(cinematique.getPosition()).dot(new XY(100, cinematique.orientationReelle, true)) < 0)
+			distance = -distance;
+		
+		if(distance >= 0)
+			log.write("On avance de "+distance+" mm", Subject.TRAJECTORY);
+		else
+			log.write("On recule de "+(-distance)+" mm", Subject.TRAJECTORY);
+		
+		LinkedList<ItineraryPoint> ch = new LinkedList<ItineraryPoint>();
+		double cos = Math.cos(xyo.orientation);
+		double sin = Math.sin(xyo.orientation);
+		int nbPoint = (int) Math.round(Math.abs(distance) / 20);
+		boolean marcheAvant = distance > 0;
+		if(nbPoint == 0)
+		{
+			// Le point est vraiment tout proche
+			ch.add(new ItineraryPoint(xyo.position.getX(), xyo.position.getY(), xyo.orientation, 0, marcheAvant, vitesseMax, vitesseMax, true));
+		}
+		else
+		{
+			double deltaX = 20 * cos;
+			double deltaY = 20 * sin;
+			if(distance < 0)
+			{
+				deltaX = -deltaX;
+				deltaY = -deltaY;
+			}
+
+			for(int i = 0; i < nbPoint; i++)
+				ch.addFirst(new ItineraryPoint(xyo.position.getX() - i * deltaX, xyo.position.getY() - i * deltaY, xyo.orientation, 0, marcheAvant, vitesseMax, vitesseMax, i == 0));
+		}
+
+		if(!simuleLL)
+		{
+			out.destroyPointsTrajectoires(0);
+			out.ajoutePointsTrajectoire(ch, true);
+	
+			path = ch;
+			setReady();
+	
+			DataTicket dt = followTrajectory();
+			if(dt.data != null)
+				throw new UnableToMoveException(dt.data.toString());
+		}
+		else
+			cinematique.updateReel(xyo.position.getX(), xyo.position.getY(), cinematique.orientationReelle, 0);
+	}
+	
 	public void avance(double distance) throws InterruptedException, UnableToMoveException
 	{
 		avance(distance, defaultSpeed);
@@ -640,5 +696,5 @@ public class Robot extends RobotState
 	{
 		return goldeniumFree;
 	}
-	
+
 }
