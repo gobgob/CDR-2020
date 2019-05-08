@@ -14,9 +14,9 @@ _(Par la suite, on se considère du côté Violet)_
 ## 1. Libération du Goldenium
 Point de départ du script : `x=-135; y=1690; o=pi/2`
 
-* Actuator GoTo : `y=-23.7; z=152; theta=0`
+* Actuator GoTo : `y=-23.7; z=155; theta=0`
 * Robot GoTo : `x=-135; y=1740; o=pi/2`
-* Actuator GoTo at Speed : `y=23.7; z=190; theta=0; s_y=350; s_z=300; s_theta=1023`
+* Actuator GoTo at Speed : `y=23.7; z=170; theta=0; s_y=350; s_z=300; s_theta=1023`
 * Robot GoTo : `x=-135; y=1690; o=pi/2`
 * Actuator GoHome
 
@@ -24,9 +24,9 @@ Point de départ du script : `x=-135; y=1690; o=pi/2`
 ## 2. Prise du Goldenium
 Point de départ du script : `x=-725; y=1665; o=pi/2`
 
-* Actuator GoTo : `y=-23.7; z=170; theta=0`
+* Actuator GoTo : `y=-23.7; z=182; theta=0`
 * Actuator ScanPuck
-* Actuator GoTo : `y=[result from scan]; z=170; theta=0`
+* Actuator GoTo : `y=[result from scan]; z=182; theta=0`
 * Robot GoTo : `x=-725; y=1740; o=pi/2`
 * Actuator GoTo at Speed : `y=[result from scan]; z=180; theta=20; s_y=1023; s_z=300; s_theta=900`
 * Robot GoTo : `x=-725; y=1665; o=pi/2`
