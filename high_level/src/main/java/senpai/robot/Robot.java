@@ -67,7 +67,7 @@ public class Robot extends RobotState
 	protected volatile boolean symetrie;
 	protected Log log;
 	private double defaultSpeed, maxSpeedInEnemy;
-	protected Kraken kraken;
+	protected Kraken krakenDeploye;
 	protected Kraken krakenRange;
 	private RectangularObstacle obstacle;
 	private List<ItineraryPoint> path = null;
@@ -96,7 +96,7 @@ public class Robot extends RobotState
 		this.log = log;
 		this.out = out;
 		this.buffer = buffer;
-		this.kraken = krakens[0];
+		this.krakenDeploye = krakens[0];
 		this.krakenRange = krakens[1];
 //		this.known = known;
 		this.obstacle = obstacle;
@@ -443,9 +443,15 @@ public class Robot extends RobotState
 		long avant = System.currentTimeMillis();
 		Kraken k;
 		if(deploye)
-			k = kraken;
+		{
+			log.write("On utilise le Kraken déployé", Subject.TRAJECTORY);
+			k = krakenDeploye;
+		}
 		else
+		{
+			log.write("On utilise le Kraken non-déployé", Subject.TRAJECTORY);
 			k = krakenRange;
+		}
 		k.initializeNewSearch(sp);
 		log.write("Durée d'initialisation de Kraken : "+(System.currentTimeMillis() - avant), Subject.TRAJECTORY);
 

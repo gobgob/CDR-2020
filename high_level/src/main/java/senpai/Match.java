@@ -183,9 +183,11 @@ public class Match
 		 * Boucle des scripts
 		 */
 		boolean none;
+		boolean pathfindingError;
 		while(true)
 		{
 			none = true;
+			pathfindingError = false;
 			try
 			{
 				doScript(accelerateur, 3, true);
@@ -194,6 +196,8 @@ public class Match
 			catch(PathfindingException | UnableToMoveException | ScriptException e)
 			{
 				log.write("Erreur : "+e, Subject.SCRIPT);
+				if(e instanceof PathfindingException)
+					pathfindingError = true;
 			}
 			
 //			if(config.getBoolean(ConfigInfoSenpai.SIMULE_COMM))
@@ -207,6 +211,8 @@ public class Match
 			catch(PathfindingException | UnableToMoveException | ScriptException e)
 			{
 				log.write("Erreur : "+e, Subject.SCRIPT);
+				if(e instanceof PathfindingException)
+					pathfindingError = true;
 			}
 			
 			try
@@ -217,6 +223,8 @@ public class Match
 			catch(PathfindingException | UnableToMoveException | ScriptException e)
 			{
 				log.write("Erreur : "+e, Subject.SCRIPT);
+				if(e instanceof PathfindingException)
+					pathfindingError = true;
 			}
 			
 			try
@@ -227,11 +235,22 @@ public class Match
 			catch(PathfindingException | UnableToMoveException | ScriptException e)
 			{
 				log.write("Erreur : "+e, Subject.SCRIPT);
+				if(e instanceof PathfindingException)
+					pathfindingError = true;
 			}
+			
 			if(none)
 			{
-				log.write("Aucun script possible, on attend un peu.", Subject.SCRIPT);
-				Thread.sleep(1000);
+				if(pathfindingError)
+				{
+					log.write("Aucun script possible, Kraken semble bloqué. On bouge un peu.", Subject.SCRIPT);
+					
+				}
+				else
+				{
+					log.write("Aucun script possible, on attend un peu.", Subject.SCRIPT);
+					Thread.sleep(1000);
+				}
 			}
 		}
 		
