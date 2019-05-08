@@ -266,6 +266,22 @@ public class Match
 			try {
 				restart = false;
 				robot.goTo(pointEntree);
+				s.correctOdo();
+
+				if(checkFin && !config.getBoolean(ConfigInfoSenpai.SIMULE_COMM))
+				{
+					double toleranceAngle = s.getToleranceAngle(); // en degré
+					double tolerancePosition = s.getTolerancePosition(); // en mm
+					tolerancePosition *= tolerancePosition;
+					if(Math.abs(XYO.angleDifference(robot.getCinematique().orientationReelle, pointEntree.orientation)) > toleranceAngle*Math.PI/180
+							|| robot.getCinematique().getPosition().squaredDistance(pointEntree.position) > tolerancePosition)
+						// on retente
+					{
+						restart = true;
+						nbEssaiChemin--;
+					}
+				}
+
 				if(Thread.currentThread().isInterrupted())
 					throw new InterruptedException();
 			}
@@ -276,8 +292,8 @@ public class Match
 			}
 		} while(restart && nbEssaiChemin > 0);
 		
-		s.correctOdo();
-		
+		//s.correctOdo();
+		/*
 		if(checkFin && !config.getBoolean(ConfigInfoSenpai.SIMULE_COMM))
 		{
 			double toleranceAngle = s.getToleranceAngle(); // en degré
@@ -294,7 +310,7 @@ public class Match
 			if(Math.abs(XYO.angleDifference(robot.getCinematique().orientationReelle, pointEntree.orientation)) > toleranceAngle*Math.PI/180
 					|| robot.getCinematique().getPosition().squaredDistance(pointEntree.position) > tolerancePosition)
 				throw new ScriptException("On n'a pas réussi à se positionner une précision suffisante.");
-		}
+		}*/
 		
 		if(!restart)
 			s.execute();

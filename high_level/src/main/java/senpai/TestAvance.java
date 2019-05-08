@@ -37,9 +37,9 @@ public class TestAvance
 		Senpai senpai = new Senpai();
 		ErrorCode error = ErrorCode.NO_ERROR;
 		try
-		{			
+		{
 			int distance = Integer.parseInt(args[0]);
-			int vitesse = Integer.parseInt(args[1]);
+			double vitesse = Double.parseDouble(args[1]);
 			senpai = new Senpai();
 			senpai.initialize(configfile, "default", "graphic");
 			OutgoingOrderBuffer data = senpai.getService(OutgoingOrderBuffer.class);
