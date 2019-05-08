@@ -488,7 +488,7 @@ public class Robot extends RobotState
 		// non, marche pas avec avancer et reculer
 		assert etat == State.READY_TO_GO || etat == State.STANDBY;
 
-		log.write("Attente de la trajectoire…", Subject.TRAJECTORY);
+		log.write("Attente de la trajectoire...", Subject.TRAJECTORY);
 
 		assert etat == State.READY_TO_GO;
 		synchronized(this)
