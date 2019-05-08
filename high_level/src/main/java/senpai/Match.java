@@ -2,6 +2,7 @@ package senpai;
 
 import pfg.config.Config;
 import pfg.kraken.exceptions.PathfindingException;
+import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XYO;
 import pfg.log.Log;
 import senpai.Senpai.ErrorCode;
@@ -244,7 +245,35 @@ public class Match
 				if(pathfindingError)
 				{
 					log.write("Aucun script possible, Kraken semble bloqué. On bouge un peu.", Subject.SCRIPT);
-					
+					boolean sensAvant = true;
+					try
+					{
+						if(robot.getCinematique().getPosition().minusNewVector(new XY(0,1000)).dot(new XY(100, robot.getCinematique().orientationReelle, false)) < 0)
+						{
+							sensAvant = true;
+							robot.avance(20);
+						}
+						else
+						{
+							sensAvant = false;
+							robot.avance(-20);
+						}
+					}
+					catch(UnableToMoveException e)
+					{
+						log.write("Oups… mauvais côté ^^'.", Subject.SCRIPT);
+						try {
+							if(sensAvant)
+								robot.avance(-40);
+							else
+								robot.avance(40);
+						}
+						catch(UnableToMoveException e1)
+						{
+							log.write("Encore bloqué… on attend un peu.", Subject.SCRIPT);
+							Thread.sleep(1000);
+						}
+					}
 				}
 				else
 				{
