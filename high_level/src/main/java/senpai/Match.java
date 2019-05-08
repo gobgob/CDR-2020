@@ -321,6 +321,9 @@ public class Match
 					double toleranceAngle = s.getToleranceAngle(); // en degré
 					double tolerancePosition = s.getTolerancePosition(); // en mm
 					tolerancePosition *= tolerancePosition;
+					
+					log.write("Erreur en angle: "+Math.abs(XYO.angleDifference(robot.getCinematique().orientationReelle, pointEntree.orientation))*180/Math.PI+", erreur en position: "+robot.getCinematique().getPosition().distance(pointEntree.position), Subject.SCRIPT);
+					
 					if(Math.abs(XYO.angleDifference(robot.getCinematique().orientationReelle, pointEntree.orientation)) > toleranceAngle*Math.PI/180
 							|| robot.getCinematique().getPosition().squaredDistance(pointEntree.position) > tolerancePosition)
 						// on retente
