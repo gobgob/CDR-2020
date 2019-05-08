@@ -277,7 +277,7 @@ public class Senpai
 		assert checkAssert();
 		
 		List<Obstacle> obstaclesFixes = new ArrayList<Obstacle>();
-		if(config.getBoolean(ConfigInfoSenpai.NO_OBSTACLES))
+		if(!config.getBoolean(ConfigInfoSenpai.NO_OBSTACLES))
 			for(ObstaclesFixes o : ObstaclesFixes.values())
 				obstaclesFixes.add(o.obstacle);
 		ObstaclesDynamiques obsDyn = getService(ObstaclesDynamiques.class);
