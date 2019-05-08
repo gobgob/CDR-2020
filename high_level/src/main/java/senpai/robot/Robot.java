@@ -68,10 +68,12 @@ public class Robot extends RobotState
 	protected Log log;
 	private double defaultSpeed, maxSpeedInEnemy;
 	protected Kraken kraken;
+	protected Kraken krakenRange;
 	private RectangularObstacle obstacle;
 	private List<ItineraryPoint> path = null;
 	private long dateDebutMatch, dateFinMatch = Long.MAX_VALUE;
 	private RobotColor c = null;
+	private boolean deploye = false;
 	
 	private boolean jumperOK = false;
 	private volatile State etat = State.STANDBY;
@@ -89,12 +91,13 @@ public class Robot extends RobotState
 	private boolean goldeniumFree = false; 
 	private CircularObstacle[] lidarObs = new CircularObstacle[100]; // pas plus de cent obstacles
 	
-	public Robot(Log log, OutgoingOrderBuffer out, Config config, GraphicDisplay buffer, Kraken kraken, /*DynamicPath dpath,*/ /*KnownPathManager known,*/ RectangularObstacle obstacle)
+	public Robot(Log log, OutgoingOrderBuffer out, Config config, GraphicDisplay buffer, Kraken[] krakens, /*DynamicPath dpath,*/ /*KnownPathManager known,*/ RectangularObstacle obstacle)
 	{
 		this.log = log;
 		this.out = out;
 		this.buffer = buffer;
-		this.kraken = kraken;
+		this.kraken = krakens[0];
+		this.krakenRange = krakens[1];
 //		this.known = known;
 		this.obstacle = obstacle;
 
@@ -325,6 +328,7 @@ public class Robot extends RobotState
 	
 	public Object execute(CommProtocol.Id ordre, Object... param) throws InterruptedException, ActionneurException
 	{
+		deploye = true; // dans le doute…
 		int nbEssaiMax = 2;
 		boolean retry;
 		do {
@@ -432,16 +436,22 @@ public class Robot extends RobotState
 	{
 		return goTo(new SearchParameters(cinematique.getXYO(), destination));
 	}
-	
+
+
 	public DataTicket goTo(SearchParameters sp) throws PathfindingException, InterruptedException, UnableToMoveException
 	{
 		long avant = System.currentTimeMillis();
-		kraken.initializeNewSearch(sp);
+		Kraken k;
+		if(deploye)
+			k = kraken;
+		else
+			k = krakenRange;
+		k.initializeNewSearch(sp);
 		log.write("Durée d'initialisation de Kraken : "+(System.currentTimeMillis() - avant), Subject.TRAJECTORY);
 
 		log.write("On cherche un chemin", Subject.TRAJECTORY);
 		avant = System.currentTimeMillis();
-		path = kraken.search();
+		path = k.search();
 		if(graphicPath)
 			for(ItineraryPoint ip: path)
 				buffer.addPrintable(ip, Color.BLACK, Layer.FOREGROUND.layer);
@@ -637,7 +647,10 @@ public class Robot extends RobotState
 	public void rangeSiPossible() throws InterruptedException, ActionneurException
 	{
 		if(cargo.isEmpty())
+		{
 			execute(CommProtocol.Id.ACTUATOR_GO_HOME);
+			deploye = false;
+		}
 	}
 	
 	public boolean isCargoEmpty()

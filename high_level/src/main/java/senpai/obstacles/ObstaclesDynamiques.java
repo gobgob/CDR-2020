@@ -106,7 +106,7 @@ public class ObstaclesDynamiques extends SmartDynamicObstacles implements Iterat
 		{
 			for(Obstacle o : newObs)
 			{
-				log.write("Vérif "+o+" avec "+ro, Subject.STATUS);
+//				log.write("Vérif "+o+" avec "+ro, Subject.STATUS);
 				if(o.isColliding(ro))
 				{
 					log.write("Collision détectée avec "+o+" depuis "+ro+" : arrêt nécessaire.", Severity.CRITICAL, Subject.STATUS);

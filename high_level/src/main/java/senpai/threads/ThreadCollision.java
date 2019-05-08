@@ -81,19 +81,19 @@ public final class ThreadCollision extends Thread
 				 */
 				synchronized(dynObs)
 				{
-					log.write("Attente obstacles.", Subject.STATUS);
+//					log.write("Attente obstacles.", Subject.STATUS);
 
 					while(!dynObs.needCollisionCheck())
 						dynObs.wait();
 					
-					log.write("Obstacle !", Subject.STATUS);
+//					log.write("Obstacle !", Subject.STATUS);
 
 				}
 
 				synchronized(robot)
 				{
 					int currentIndexTrajectory = robot.getIndexTrajectory();
-					log.write("Vérification collision. Check ? "+robot.needCollisionCheck()+", actuel : "+currentIndexTrajectory, Subject.STATUS);					
+//					log.write("Vérification collision. Check ? "+robot.needCollisionCheck()+", actuel : "+currentIndexTrajectory, Subject.STATUS);					
 
 					int indexMax = Math.min(currentIndexTrajectory + 13, initialObstacles.size());
 					if(indexMax > currentIndexTrajectory)
@@ -106,7 +106,7 @@ public final class ThreadCollision extends Thread
 							out.immobilise();
 						}
 					}
-					log.write("Vérification finie.", Subject.STATUS);
+//					log.write("Vérification finie.", Subject.STATUS);
 
 				}
 			}

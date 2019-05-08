@@ -286,9 +286,12 @@ public class Senpai
 		int demieLargeurNonDeploye = config.getInt(ConfigInfoSenpai.LARGEUR_NON_DEPLOYE) / 2 + marge;
 		int demieLongueurArriere = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
 		int demieLongueurAvant = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_DEPLOYE_AVANT);
+		int demieLongueurAvantRange = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
 
-		RectangularObstacle robotTemplate = new RectangularObstacle(demieLongueurAvant, demieLongueurArriere, demieLargeurNonDeploye, demieLargeurNonDeploye);
-		injector.addService(RectangularObstacle.class, robotTemplate);
+		RectangularObstacle robotTemplateDeploye = new RectangularObstacle(demieLongueurAvant, demieLongueurArriere, demieLargeurNonDeploye, demieLargeurNonDeploye);
+		RectangularObstacle robotTemplateRange = new RectangularObstacle(demieLongueurAvantRange, demieLongueurArriere, demieLargeurNonDeploye, demieLargeurNonDeploye);
+		
+		injector.addService(RectangularObstacle.class, robotTemplateDeploye);
 		
 		if(Thread.currentThread().isInterrupted())
 			throw new InterruptedException();
@@ -298,12 +301,13 @@ public class Senpai
 		 */
 		if(config.getInt(ConfigInfoSenpai.WARM_UP_DURATION) > 0)
 		{
-			ThreadWarmUp warmUp = new ThreadWarmUp(log, new Kraken(robotTemplate, obstaclesFixes, new XY(-1500, 0), new XY(1500, 2000), "warmup.conf", "default"), config);
+			ThreadWarmUp warmUp = new ThreadWarmUp(log, new Kraken(robotTemplateDeploye, obstaclesFixes, new XY(-1500, 0), new XY(1500, 2000), "warmup.conf", "default"), config);
 			warmUp.start();
 		}
 
-		Kraken k = new Kraken(robotTemplate, obstaclesFixes, obsDyn, new XY(-1480, 20), new XY(1480, 1980), configfile, profiles);
-		injector.addService(k);
+		Kraken kDeploye = new Kraken(robotTemplateDeploye, obstaclesFixes, obsDyn, new XY(-1480, 20), new XY(1480, 1980), configfile, profiles);
+		Kraken kRange = new Kraken(robotTemplateRange, obstaclesFixes, obsDyn, new XY(-1480, 20), new XY(1480, 1980), configfile, profiles);
+		injector.addService(new Kraken[]{kDeploye, kRange});
 
 //		injector.addService(k.enableAutoReplanning());
 
@@ -316,7 +320,7 @@ public class Senpai
 		System.out.println("Configuration pour eurobotruck");
 		config.printChangedValues();
 		System.out.println("Configuration pour Kraken");
-		k.displayOverriddenConfigValues();
+		kDeploye.displayOverriddenConfigValues();
 		System.out.println("Configuration pour l'interface graphique");
 		debug.displayOverriddenConfigValues();
 		System.out.println("Configuration pour le log");
