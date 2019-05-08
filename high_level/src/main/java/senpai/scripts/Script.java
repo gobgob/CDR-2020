@@ -58,6 +58,9 @@ public abstract class Script
 		return 40;
 	}
 	
+	public void correctOdo() throws InterruptedException
+	{}
+	
 	public abstract boolean faisable();
 	
 	public abstract XYO getPointEntree();

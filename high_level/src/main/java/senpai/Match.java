@@ -276,6 +276,8 @@ public class Match
 			}
 		} while(restart && nbEssaiChemin > 0);
 		
+		s.correctOdo();
+		
 		if(checkFin && !config.getBoolean(ConfigInfoSenpai.SIMULE_COMM))
 		{
 			double toleranceAngle = s.getToleranceAngle(); // en degré
@@ -284,7 +286,10 @@ public class Match
 			if(Math.abs(XYO.angleDifference(robot.getCinematique().orientationReelle, pointEntree.orientation)) > toleranceAngle*Math.PI/180
 					|| robot.getCinematique().getPosition().squaredDistance(pointEntree.position) > tolerancePosition)
 				// on retente
+			{
 				robot.goTo(pointEntree);
+				s.correctOdo();
+			}
 	
 			if(Math.abs(XYO.angleDifference(robot.getCinematique().orientationReelle, pointEntree.orientation)) > toleranceAngle*Math.PI/180
 					|| robot.getCinematique().getPosition().squaredDistance(pointEntree.position) > tolerancePosition)

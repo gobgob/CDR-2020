@@ -55,12 +55,17 @@ public class ScriptAccelerateur extends Script
 	{
 		return new XYO(positionEntree, Math.PI / 2);
 	}
+	
+	@Override
+	public void correctOdo() throws InterruptedException
+	{
+		cp.doStaticCorrection(500, CapteursCorrection.AVANT);
+	}
 
 	@Override
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException, ScriptException
 	{		
-		try {
-			cp.doStaticCorrection(500, CapteursCorrection.AVANT);
+		try {			
 			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, -23.7, 152., 0.);
 			robot.avanceTo(new XYO(-135, 1740, Math.PI / 2));
 			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, 23.7, 190., 0., 350., 300., 1023.);
