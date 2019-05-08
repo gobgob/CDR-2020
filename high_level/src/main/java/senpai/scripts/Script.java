@@ -48,6 +48,16 @@ public abstract class Script
 		this.cp = cp;
 	}
 	
+	public double getToleranceAngle()
+	{
+		return 5;
+	}
+	
+	public double getTolerancePosition()
+	{
+		return 40;
+	}
+	
 	public abstract boolean faisable();
 	
 	public abstract XYO getPointEntree();

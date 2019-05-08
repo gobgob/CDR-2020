@@ -72,6 +72,7 @@ public class ScriptDeposeBalance extends Script
 	@Override
 	public boolean faisable()
 	{
+//		return true;
 		return !robot.isCargoEmpty();
 	}
 }

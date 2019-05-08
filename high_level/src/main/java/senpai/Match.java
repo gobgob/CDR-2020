@@ -289,8 +289,8 @@ public class Match
 		
 		if(checkFin && !config.getBoolean(ConfigInfoSenpai.SIMULE_COMM))
 		{
-			double toleranceAngle = 5; // en degré
-			double tolerancePosition = 40; // en mm
+			double toleranceAngle = s.getToleranceAngle(); // en degré
+			double tolerancePosition = s.getTolerancePosition(); // en mm
 			tolerancePosition *= tolerancePosition;
 			if(Math.abs(XYO.angleDifference(robot.getCinematique().orientationReelle, pointEntree.orientation)) > toleranceAngle*Math.PI/180
 					|| robot.getCinematique().getPosition().squaredDistance(pointEntree.position) > tolerancePosition)
