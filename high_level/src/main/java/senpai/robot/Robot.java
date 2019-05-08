@@ -647,7 +647,7 @@ public class Robot extends RobotState
 
 	public void initActionneurs() throws ActionneurException, InterruptedException
 	{
-		execute(CommProtocol.Id.ACTUATOR_GO_HOME);
+		rangeSiPossible();
 	}
 
 	public void rangeSiPossible() throws InterruptedException, ActionneurException
