@@ -35,13 +35,16 @@ import senpai.table.Table;
 public class ScriptAccelerateur extends Script
 {
 	private XY_RW positionEntree = new XY_RW(-135,1690);
+	private double act_y = 23.7;
 	private boolean done = false;
 	
 	public ScriptAccelerateur(Log log, Robot robot, Table table, CapteursProcess cp, boolean symetrie)
 	{
 		super(log, robot, table, cp);
-		if(symetrie)
+		if(symetrie) {
 			positionEntree.setX(- positionEntree.getX());
+			act_y = -act_y;
+		}
 	}
 
 	@Override
@@ -64,11 +67,11 @@ public class ScriptAccelerateur extends Script
 
 	@Override
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException, ScriptException
-	{		
-		try {			
-			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, -23.7, 152., 0.);
+	{
+		try {
+			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, act_y, 152., 0.);
 			robot.avanceTo(new XYO(-135, 1740, Math.PI / 2));
-			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, 23.7, 190., 0., 350., 300., 1023.);
+			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, -act_y, 190., 0., 350., 300., 1023.);
 			robot.updateScore(20);
 			robot.setGoldeniumFree();
 			// si tout s'est bien passé, alors le script n'est plus faisable
