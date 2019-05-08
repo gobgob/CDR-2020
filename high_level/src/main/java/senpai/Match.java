@@ -151,7 +151,6 @@ public class Match
 		
 		Script accelerateur = scripts.getScriptAccelerateur();
 		Script recupereGold = scripts.getScriptRecupereGold();
-		Script recupereDistrib = scripts.getScriptRecupereDistrib();
 		Script deposeBalance = scripts.getScriptDeposeBalance();
 
 		/**
@@ -200,16 +199,6 @@ public class Match
 //			if(config.getBoolean(ConfigInfoSenpai.SIMULE_COMM))
 //				throw new InterruptedException("Debug");
 
-			try
-			{
-				doScript(recupereDistrib, 3, true);
-				none = false;
-			}
-			catch(PathfindingException | UnableToMoveException | ScriptException e)
-			{
-				log.write("Erreur : "+e, Subject.SCRIPT);
-			}
-			
 			try
 			{
 				doScript(deposeBalance, 3, true);

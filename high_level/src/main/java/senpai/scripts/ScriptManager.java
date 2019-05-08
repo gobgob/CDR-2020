@@ -57,11 +57,6 @@ public class ScriptManager
 		return new ScriptRecupereGold(log, robot, table, cp, couleur.symmetry);
 	}
 	
-	public ScriptRecupereDistrib getScriptRecupereDistrib()
-	{
-		return new ScriptRecupereDistrib(log, robot, table, cp, couleur.symmetry);
-	}
-	
 	public ScriptDeposeBalance getScriptDeposeBalance()
 	{
 		return new ScriptDeposeBalance(log, robot, table, cp, couleur.symmetry);
