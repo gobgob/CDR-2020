@@ -50,12 +50,12 @@ public abstract class Script
 	
 	public double getToleranceAngle()
 	{
-		return 5;
+		return 3;
 	}
 	
 	public double getTolerancePosition()
 	{
-		return 40;
+		return 20;
 	}
 	
 	public void correctOdo() throws InterruptedException
