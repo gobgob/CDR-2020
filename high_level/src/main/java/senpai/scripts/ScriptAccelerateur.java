@@ -60,9 +60,9 @@ public class ScriptAccelerateur extends Script
 	}
 	
 	@Override
-	public void correctOdo() throws InterruptedException
+	public XYO correctOdo() throws InterruptedException
 	{
-		cp.doStaticCorrection(500, CapteursCorrection.AVANT);
+		return cp.doStaticCorrection(500, CapteursCorrection.AVANT);
 	}
 
 	@Override

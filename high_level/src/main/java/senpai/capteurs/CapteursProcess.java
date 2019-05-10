@@ -628,9 +628,10 @@ public class CapteursProcess
 		{
 			totalDeltaAngle /= nb;
 			XYO correction = new XYO(totalDeltaPos, totalDeltaAngle);
+			XYO corrected = new XYO(correction.position.plusNewVector(robot.getCinematique().getPosition()), correction.orientation+robot.getCinematique().orientationReelle);
 			log.write("Envoi d'une correction XYO statique: " + correction, Subject.STATUS);
 			robot.correctPosition(correction.position, correction.orientation);
-			return correction;
+			return corrected;
 		}
 		return null;
 	}

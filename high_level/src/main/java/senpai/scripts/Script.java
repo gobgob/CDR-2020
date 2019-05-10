@@ -58,8 +58,13 @@ public abstract class Script
 		return 20;
 	}
 	
-	public void correctOdo() throws InterruptedException
-	{}
+	private XYO corrected = new XYO(0,0,0);
+	
+	public XYO correctOdo() throws InterruptedException
+	{
+		robot.getCinematique().getXYO().copy(corrected);
+		return corrected;
+	}
 	
 	public abstract boolean faisable();
 	

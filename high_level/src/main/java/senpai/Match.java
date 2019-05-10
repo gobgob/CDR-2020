@@ -314,17 +314,17 @@ public class Match
 			try {
 				restart = false;
 				robot.goTo(pointEntree);
-				s.correctOdo();
+				XYO corrected = s.correctOdo();
 
 				if(checkFin && !config.getBoolean(ConfigInfoSenpai.SIMULE_COMM))
 				{
 					double toleranceAngle = s.getToleranceAngle(); // en degré
 					double tolerancePosition = s.getTolerancePosition(); // en mm
 					
-					log.write("Erreur en angle: "+Math.abs(XYO.angleDifference(robot.getCinematique().orientationReelle, pointEntree.orientation))*180/Math.PI+", erreur en position: "+robot.getCinematique().getPosition().distance(pointEntree.position), Subject.SCRIPT);
+					log.write("Erreur en angle: "+Math.abs(XYO.angleDifference(corrected.orientation, pointEntree.orientation))*180/Math.PI+", erreur en position: "+corrected.position.distance(pointEntree.position), Subject.SCRIPT);
 					log.write("Erreur autorisée : "+toleranceAngle+"(angle) et "+tolerancePosition+" (position).", Subject.SCRIPT);
-					if(Math.abs(XYO.angleDifference(robot.getCinematique().orientationReelle, pointEntree.orientation)) > toleranceAngle*Math.PI/180
-							|| robot.getCinematique().getPosition().distance(pointEntree.position) > tolerancePosition)
+					if(Math.abs(XYO.angleDifference(corrected.orientation, pointEntree.orientation)) > toleranceAngle*Math.PI/180
+							|| corrected.position.distance(pointEntree.position) > tolerancePosition)
 						// on retente
 					{
 						restart = true;
