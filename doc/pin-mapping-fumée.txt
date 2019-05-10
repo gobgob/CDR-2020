@@ -1,0 +1,7 @@
+Rouge vcc
+Orange pump
+Marron resistance
+
+Gauche : Pompe (pin 17)
+Milieu : VCC
+Droite : Resistance (pin 20)
