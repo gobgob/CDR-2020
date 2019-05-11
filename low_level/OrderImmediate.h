@@ -441,6 +441,28 @@ public:
     }
 };
 
+class EnableHighSpeed : public OrderImmediate, public Singleton<EnableHighSpeed>
+{
+public:
+    EnableHighSpeed() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == 1)
+        {
+            size_t index = 0;
+            bool enable = Serializer::readBool(io, index);
+            motionControlSystem.enableHighSpeed(enable);
+            Server.printf(SPY_ORDER, "EnableHighSpeed=%d\n", enable);
+            io.clear();
+        }
+        else
+        {
+            Server.printf_err("EnableHighSpeed: wrong number of arguments\n");
+            io.clear();
+        }
+    }
+};
+
 
 
 /********************
@@ -705,16 +727,18 @@ public:
     SetTrajectoryTunings() {}
     virtual void execute(std::vector<uint8_t> & io)
     {
-        if (io.size() == 8)
+        if (io.size() == 12)
         {
             size_t index = 0;
             float k1 = Serializer::readFloat(io, index);
             float k2 = Serializer::readFloat(io, index);
+            float dtt = Serializer::readFloat(io, index);
             MotionControlTunings tunings = motionControlSystem.getTunings();
             tunings.curvatureK1 = k1;
             tunings.curvatureK2 = k2;
+            tunings.distanceMaxToTraj = dtt;
             motionControlSystem.setTunings(tunings);
-            Server.printf(SPY_ORDER, "Trajectory K1=%g K2=%g\n", k1, k2);
+            Server.printf(SPY_ORDER, "Trajectory K1=%g K2=%g Dist=%g\n", k1, k2, dtt);
             io.clear();
         }
         else

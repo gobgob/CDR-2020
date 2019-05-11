@@ -14,7 +14,6 @@
 
 
 #define CURVATURE_TOLERANCE		0.3			// Ecart maximal entre la consigne en courbure et la courbure réelle admissible au démarrage. Unité : m^-1
-#define DISTANCE_MAX_TO_TRAJ	50			// Distance (entre notre position et la trajectoire) au delà de laquelle on abandonne la trajectoire. Unité : mm
 #define TIMEOUT_MOVE_INIT		1000		// Durée maximale le la phase "MOVE_INIT" d'une trajectoire. Unité : ms
 #define INFINITE_DISTANCE		INT32_MAX
 #define PARKING_MAX_SPEED       500         // mm/s (vitesse max en mode asservissement sur place)
@@ -326,6 +325,18 @@ public:
         updateTunings();
 	}
 
+    void setDefaultTunings()
+    {
+        motionControlTunings.setDefault();
+        updateTunings();
+    }
+
+    void setHighSpeedTunings()
+    {
+        motionControlTunings.setHighSpeed();
+        updateTunings();
+    }
+
 	MotionControlTunings getTunings() const
 	{
 		return motionControlTunings;
@@ -425,7 +436,7 @@ private:
 	{
 		if (movePhase == MOVING && trajectoryControlled)
 		{
-			if (position.distanceTo(trajectoryPoint.getPosition()) > DISTANCE_MAX_TO_TRAJ)
+			if (position.distanceTo(trajectoryPoint.getPosition()) > distanceMaxToTraj)
 			{
 				movePhase = BREAKING;
 				moveStatus |= FAR_AWAY;
@@ -489,6 +500,7 @@ private:
 
         curvaturePID.setCurvatureLimits(-motionControlTunings.maxCurvature, motionControlTunings.maxCurvature);
         curvaturePID.setTunings(motionControlTunings.curvatureK1, motionControlTunings.curvatureK2);
+        distanceMaxToTraj = motionControlTunings.distanceMaxToTraj;
         interrupts();
     }
 
@@ -535,6 +547,9 @@ private:
 
     /* En dessous de cette vitesse, on considère être à l'arrêt */
     float stoppedSpeed;                 // (mm*s^-1)
+
+    /* Distance (entre notre position et la trajectoire) au delà de laquelle on abandonne la trajectoire. Unité : mm */
+    float distanceMaxToTraj;            // (mm)
 
 	/* Pour le calcul de l'accélération */
 	float previousMovingSpeedSetpoint;	// (mm/s)

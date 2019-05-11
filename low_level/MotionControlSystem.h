@@ -335,6 +335,16 @@ private:
 		trajectoryFollower.setTunings(tunings);
 	}
 
+    void enableHighSpeed(bool enable)
+    {
+        if (enable) {
+            trajectoryFollower.setHighSpeedTunings();
+        }
+        else {
+            trajectoryFollower.setDefaultTunings();
+        }
+    }
+
 	MotionControlTunings getTunings() const
 	{
 		return trajectoryFollower.getTunings();
