@@ -253,12 +253,10 @@ public class CapteursProcess
 		{
 			if(c.enable)
 			{
-				if(data.mesures[c.c1.ordinal()] >= CommProtocol.EtatCapteur.values().length
-						&& data.mesures[c.c2.ordinal()] >= CommProtocol.EtatCapteur.values().length)
-				{
+				if(data.mesures[c.c1.ordinal()] >= CommProtocol.EtatCapteur.values().length)
 					c.valc1.add(data.mesures[c.c1.ordinal()]);
+				if(data.mesures[c.c2.ordinal()] >= CommProtocol.EtatCapteur.values().length)
 					c.valc2.add(data.mesures[c.c2.ordinal()]);
-				}
 			}
 		}
 	}
@@ -515,7 +513,11 @@ public class CapteursProcess
 		{
 			if(c.enable)
 			{
-				if(c.valc1.size() < 10 || c.valc2.size() < 10)
+				c.enable = false;
+				c.valc1.clear();
+				c.valc2.clear();
+
+				if(c.valc1.size() < 10 && c.valc2.size() < 10)
 				{
 					c.enable = false;
 					log.write("Pas assez de valeurs pour "+c+" : "+c.valc1.size()+" "+c.valc2.size(), Subject.CORRECTION);
@@ -524,103 +526,168 @@ public class CapteursProcess
 					continue;
 				}
 
-				Collections.sort(c.valc1);
-				int mesure1 = c.valc1.get(c.valc1.size() / 2);
-	
-				Collections.sort(c.valc2);
-				int mesure2 = c.valc2.get(c.valc2.size() / 2);
+				Integer mesure1 = null, mesure2 = null;
+				if(c.valc1.size() >= 10)
+				{
+					Collections.sort(c.valc1);
+					mesure1 = c.valc1.get(c.valc1.size() / 2);
+					log.write("Distance médiane de "+c.c1+" : "+mesure1+" ("+c.valc1.size()+" valeurs)", Subject.CORRECTION);
+				}
+				else
+					log.write("Pas assez de valeurs pour "+c.c1+" ("+c.valc1.size()+" valeurs)", Subject.CORRECTION);
 				
-				log.write("Distance médiane de "+c.c1+" : "+mesure1+" ("+c.valc1.size()+" valeurs)", Subject.CORRECTION);
-				log.write("Distance médiane de "+c.c2+" : "+mesure2+" ("+c.valc2.size()+" valeurs)", Subject.CORRECTION);
+				if(c.valc2.size() >= 10)
+				{
+					Collections.sort(c.valc2);
+					mesure2 = c.valc2.get(c.valc2.size() / 2);
+					log.write("Distance médiane de "+c.c2+" : "+mesure2+" ("+c.valc2.size()+" valeurs)", Subject.CORRECTION);
+				}
+				else
+					log.write("Pas assez de valeurs pour "+c.c2+" ("+c.valc2.size()+" valeurs)", Subject.CORRECTION);
 				
-				c.enable = false;
-				c.valc1.clear();
-				c.valc2.clear();
-
-				XY_RW pointVu1 = getPositionVue(capteurs[c.c1.ordinal()], mesure1, cinem);
-				if(pointVu1 == null)
-					continue;
+				XY_RW pointVu1 = null;
+				if(mesure1 != null)
+					pointVu1 = getPositionVue(capteurs[c.c1.ordinal()], mesure1, cinem);
+				//if(pointVu1 == null)
+				//	continue;
 		
-				XY_RW pointVu2 = getPositionVue(capteurs[c.c2.ordinal()], mesure2, cinem);
-				if(pointVu2 == null)
-					continue;
+				XY_RW pointVu2 = null;
+				if(mesure2 != null)
+					pointVu2= getPositionVue(capteurs[c.c2.ordinal()], mesure2, cinem);
+				//if(pointVu2 == null)
+				//	continue;
 		
 //				log.write(c+" "+pointVu1+" "+pointVu2, Subject.CORRECTION);
 
-				double deltaOrientation;
-				if(c.c1 == c.c2)
-					deltaOrientation = 0;
-				else
+				/**
+				 * Correction à deux capteurs
+				 */
+				if(pointVu1 != null && pointVu2 != null)
 				{
+					double deltaOrientation;
+					if(c.c1 == c.c2)
+						deltaOrientation = 0;
+					else
+					{
+						
+						XY delta = pointVu1.minusNewVector(pointVu2);
+						deltaOrientation = (-delta.getArgument()) % (Math.PI / 2); // on
+																							// veut
+																							// une
+																							// mesure
+																							// précise,
+																							// donc
+																							// on
+																							// évite
+																							// getFastArgument
+				
+						// le delta d'orientation qu'on cherche est entre -PI/4 et PI/4
+						if(deltaOrientation > Math.PI / 4)
+							deltaOrientation -= Math.PI / 2;
+						else if(deltaOrientation < -Math.PI / 4)
+							deltaOrientation += Math.PI / 2;
+				
+	//					log.write(c+", delta orientation : "+deltaOrientation, Subject.CORRECTION);
+	//					log.write(c+", delta : "+delta, Subject.CORRECTION);
+	
+						// log.debug("Delta orientation : "+deltaOrientation);
+					}
 					
-					XY delta = pointVu1.minusNewVector(pointVu2);
-					deltaOrientation = (-delta.getArgument()) % (Math.PI / 2); // on
-																						// veut
-																						// une
-																						// mesure
-																						// précise,
-																						// donc
-																						// on
-																						// évite
-																						// getFastArgument
-			
-					// le delta d'orientation qu'on cherche est entre -PI/4 et PI/4
-					if(deltaOrientation > Math.PI / 4)
-						deltaOrientation -= Math.PI / 2;
-					else if(deltaOrientation < -Math.PI / 4)
-						deltaOrientation += Math.PI / 2;
-			
-//					log.write(c+", delta orientation : "+deltaOrientation, Subject.CORRECTION);
-//					log.write(c+", delta : "+delta, Subject.CORRECTION);
-
-					// log.debug("Delta orientation : "+deltaOrientation);
+					// orientation corrigée du robot entre -pi/4 et pi/4
+					double orientationRobot = (cinem.orientationReelle + deltaOrientation) % (Math.PI / 2);
+					if(orientationRobot > Math.PI / 4)
+						orientationRobot -= Math.PI / 2;
+					else if(orientationRobot < -Math.PI / 4)
+						orientationRobot += Math.PI / 2;
+					
+					double distanceRobotMur = ((mesure1 + mesure2) / 2 + c.distanceToRobot) * Math.cos(orientationRobot);
+	
+	//				log.write(c+", delta distance "+distanceRobotMur, Subject.CORRECTION);
+					
+					orientationRobot = (c.c1.angle + cinem.orientationReelle + deltaOrientation) % (2 * Math.PI);
+					if(orientationRobot > Math.PI)
+						orientationRobot -= 2 * Math.PI;
+					else if(orientationRobot < -Math.PI)
+						orientationRobot += 2 * Math.PI;
+					
+					XY delta;
+					
+					if(orientationRobot > 3 * Math.PI / 4 || orientationRobot < -3 * Math.PI / 4)
+					{
+						// GAUCHE
+						delta = new XY(distanceRobotMur - cinem.getPosition().getX() - 1500, 0);
+					}
+					else if(orientationRobot > Math.PI / 4)
+					{
+						// HAUT
+						delta = new XY(0, - cinem.getPosition().getY() + 2000 - 30 - distanceRobotMur); // TODO: l'obstacle en haut et à 3cm du bord
+					}
+					else if(orientationRobot < -Math.PI / 4)
+					{
+						// BAS
+						delta = new XY(0, distanceRobotMur - cinem.getPosition().getY());
+					}
+					else
+					{
+						// DROITE
+						delta = new XY(- distanceRobotMur - cinem.getPosition().getX() + 1500, 0);
+					}
+					
+	//				log.write("Correction "+c+" : "+new XYO(delta.getX(), delta.getY(), deltaOrientation), Subject.CORRECTION);
+					
+					totalDeltaPos.plus(delta);
+					totalDeltaAngle += deltaOrientation;				
+					nb++;
 				}
-				
-				// orientation corrigée du robot entre -pi/4 et pi/4
-				double orientationRobot = (cinem.orientationReelle + deltaOrientation) % (Math.PI / 2);
-				if(orientationRobot > Math.PI / 4)
-					orientationRobot -= Math.PI / 2;
-				else if(orientationRobot < -Math.PI / 4)
-					orientationRobot += Math.PI / 2;
-				
-				double distanceRobotMur = ((mesure1 + mesure2) / 2 + c.distanceToRobot) * Math.cos(orientationRobot);
-
-//				log.write(c+", delta distance "+distanceRobotMur, Subject.CORRECTION);
-				
-				orientationRobot = (c.c1.angle + cinem.orientationReelle + deltaOrientation) % (2 * Math.PI);
-				if(orientationRobot > Math.PI)
-					orientationRobot -= 2 * Math.PI;
-				else if(orientationRobot < -Math.PI)
-					orientationRobot += 2 * Math.PI;
-				
-				XY delta;
-				
-				if(orientationRobot > 3 * Math.PI / 4 || orientationRobot < -3 * Math.PI / 4)
+				/**
+				 * Correction à un seul capteur
+				 */
+				else if(mesure1 != null || mesure2 != null)
 				{
-					// GAUCHE
-					delta = new XY(distanceRobotMur - cinem.getPosition().getX() - 1500, 0);
-				}
-				else if(orientationRobot > Math.PI / 4)
-				{
-					// HAUT
-					delta = new XY(0, - cinem.getPosition().getY() + 2000 - 30 - distanceRobotMur); // TODO: l'obstacle en haut et à 3cm du bord
-				}
-				else if(orientationRobot < -Math.PI / 4)
-				{
-					// BAS
-					delta = new XY(0, distanceRobotMur - cinem.getPosition().getY());
+					double orientationRobot = cinem.orientationReelle % (Math.PI / 2);
+					if(orientationRobot > Math.PI / 4)
+						orientationRobot -= Math.PI / 2;
+					else if(orientationRobot < -Math.PI / 4)
+						orientationRobot += Math.PI / 2;
+					
+					int mesure = mesure1 == null ? mesure2 : mesure1;
+					
+					double distanceRobotMur = (mesure + c.distanceToRobot) * Math.cos(orientationRobot);
+					
+					orientationRobot = (c.c1.angle + cinem.orientationReelle) % (2 * Math.PI);
+					if(orientationRobot > Math.PI)
+						orientationRobot -= 2 * Math.PI;
+					else if(orientationRobot < -Math.PI)
+						orientationRobot += 2 * Math.PI;
+					
+					XY delta;
+					
+					if(orientationRobot > 3 * Math.PI / 4 || orientationRobot < -3 * Math.PI / 4)
+					{
+						// GAUCHE
+						delta = new XY(distanceRobotMur - cinem.getPosition().getX() - 1500, 0);
+					}
+					else if(orientationRobot > Math.PI / 4)
+					{
+						// HAUT
+						delta = new XY(0, - cinem.getPosition().getY() + 2000 - 30 - distanceRobotMur); // TODO: l'obstacle en haut et à 3cm du bord
+					}
+					else if(orientationRobot < -Math.PI / 4)
+					{
+						// BAS
+						delta = new XY(0, distanceRobotMur - cinem.getPosition().getY());
+					}
+					else
+					{
+						// DROITE
+						delta = new XY(- distanceRobotMur - cinem.getPosition().getX() + 1500, 0);
+					}
+					
+					totalDeltaPos.plus(delta);
+					nb++;
 				}
 				else
-				{
-					// DROITE
-					delta = new XY(- distanceRobotMur - cinem.getPosition().getX() + 1500, 0);
-				}
-				
-//				log.write("Correction "+c+" : "+new XYO(delta.getX(), delta.getY(), deltaOrientation), Subject.CORRECTION);
-				
-				totalDeltaPos.plus(delta);
-				totalDeltaAngle += deltaOrientation;				
-				nb++;				
+					assert false: mesure1 + " " + mesure2 + " " + pointVu1 + " " + pointVu2;
 			}
 		}
 
