@@ -315,6 +315,8 @@ public class Match
 				restart = false;
 				robot.goTo(pointEntree);
 				XYO corrected = s.correctOdo();
+				if(corrected == null)
+					corrected = robot.getCinematique().getXYO();
 
 				if(checkFin && !config.getBoolean(ConfigInfoSenpai.SIMULE_COMM))
 				{
