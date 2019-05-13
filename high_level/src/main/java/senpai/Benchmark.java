@@ -35,7 +35,7 @@ import senpai.utils.Subject;
 
 public class Benchmark
 {
-	public static void main(String[] args)
+	public static void main(String[] args) throws NumberFormatException, InterruptedException
 	{
 		String configfile = "warmup.conf";
 		Log log = new Log(Severity.INFO, configfile, "default");
@@ -61,7 +61,9 @@ public class Benchmark
 		Kraken kraken = new Kraken(robotTemplate, null, new XY(-1500, 0), new XY(1500, 2000), configfile, "default");
 		ThreadWarmUp warmUp = new ThreadWarmUp(log, kraken, config);
 		warmUp.run();
-		
+		System.out.println("Warm-up");
+		Thread.sleep(config.getInt(ConfigInfoSenpai.WARM_UP_DURATION));
+		System.out.println("Wait 30s");
 		try
 		{
 			double nbIter = 0;

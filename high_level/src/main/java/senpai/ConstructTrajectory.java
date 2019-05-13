@@ -19,7 +19,6 @@ import pfg.log.Log;
 import senpai.obstacles.ObstaclesFixes;
 import senpai.robot.KnownPathManager;
 import senpai.robot.SavedPath;
-import senpai.threads.ThreadWarmUp;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Severity;
 import senpai.utils.Subject;
@@ -96,12 +95,12 @@ public class ConstructTrajectory
 		Log log = new Log(Severity.INFO, configfile, "default");
 
 		RectangularObstacle robotTemplate = new RectangularObstacle(demieLongueurAvant, demieLongueurArriere, demieLargeurNonDeploye, demieLargeurNonDeploye);
-		if(config.getInt(ConfigInfoSenpai.WARM_UP_DURATION) > 0)
+/*		if(config.getInt(ConfigInfoSenpai.WARM_UP_DURATION) > 0)
 		{
 			ThreadWarmUp warmUp = new ThreadWarmUp(log, new Kraken(robotTemplate, obsList, new XY(-1500, 0), new XY(1500, 2000), "warmup.conf", "default"), config);
 			warmUp.start();
 			Thread.sleep(config.getInt(ConfigInfoSenpai.WARM_UP_DURATION) + 500);
-		}
+		}*/
 		
 		Kraken kraken = new Kraken(robotTemplate, obsList, new XY(-1500,0), new XY(1500, 2000), configfile, "default", "graphic");
 		
