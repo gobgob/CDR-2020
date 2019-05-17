@@ -60,12 +60,12 @@ public class ScriptRecupereGold extends Script
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException, ScriptException
 	{		
 		try {
-			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, -23.7, 182., 0.);
+			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, -23.7, 182., 2.);
 			Double y = (Double) robot.execute(CommProtocol.Id.ACTUATOR_FIND_PUCK);
 			if(y == null)
 				throw new ActionneurException("No y after actuator find puck ?!", 0);
-			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, y, 182., 0.);
-			robot.avance(75);
+			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, y, 182., 2.);
+			robot.avance(95); // il faudrait avancer en fonction de la donnée capteur
 			done = true; // le script n'est plus faisable
 			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, y, 182., 20., 1023., 300., 900.);
 			robot.updateScore(20);
@@ -73,7 +73,7 @@ public class ScriptRecupereGold extends Script
 		}
 		finally
 		{
-			robot.avance(-75);
+			robot.avance(-95);
 		}
 	}
 	

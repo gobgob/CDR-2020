@@ -35,7 +35,7 @@ import senpai.table.Table;
 public class ScriptAccelerateur extends Script
 {
 	private XY_RW positionEntree = new XY_RW(-135,1690);
-	private double act_y = 23.7;
+	private double act_y = 23.795;
 	private boolean done = false;
 	
 	public ScriptAccelerateur(Log log, Robot robot, Table table, CapteursProcess cp, boolean symetrie)
@@ -69,7 +69,7 @@ public class ScriptAccelerateur extends Script
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException, ScriptException
 	{
 		try {
-			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, act_y, 152., 0.);
+			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, act_y, 157., 2.);
 			robot.avanceTo(new XYO(-135, 1740, Math.PI / 2));
 			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, -act_y, 180., 0., 350., 300., 1023.);
 			robot.updateScore(20);
