@@ -232,8 +232,8 @@ public:
         }
         else
         {
-            left = (SensorValue)SENSOR_DEAD;
-            right = (SensorValue)SENSOR_DEAD;
+            left = (SensorValue)NO_OBSTACLE;
+            right = (SensorValue)NO_OBSTACLE;
         }
     }
 

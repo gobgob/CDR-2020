@@ -70,17 +70,17 @@ public:
         {
             lastUpdateTime = now;
             if (moving_dir > 0) {
-                sensorsValues[2] = (SensorValue)SENSOR_DEAD;
-                sensorsValues[3] = (SensorValue)SENSOR_DEAD;
-                sensorsValues[4] = (SensorValue)SENSOR_DEAD;
-                sensorsValues[5] = (SensorValue)SENSOR_DEAD;
+                sensorsValues[2] = (SensorValue)NO_OBSTACLE;
+                sensorsValues[3] = (SensorValue)NO_OBSTACLE;
+                sensorsValues[4] = (SensorValue)NO_OBSTACLE;
+                sensorsValues[5] = (SensorValue)NO_OBSTACLE;
                 if (step > 1) {
                     step = 0;
                 }
             }
             else if (moving_dir < 0) {
-                sensorsValues[0] = (SensorValue)SENSOR_DEAD;
-                sensorsValues[1] = (SensorValue)SENSOR_DEAD;
+                sensorsValues[0] = (SensorValue)NO_OBSTACLE;
+                sensorsValues[1] = (SensorValue)NO_OBSTACLE;
                 if (step < 2) {
                     step = 2;
                 }
