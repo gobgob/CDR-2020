@@ -10,10 +10,18 @@
 #define SCAN_RESOLUTION             (101)     // resolution spaciale selon l'axe Y
 #define SCAN_LEFT_SENSOR_POSITION	(-43.83)  // mm
 #define SCAN_RIGHT_SENSOR_POSITION	(43.83)   // mm
+
+/* Detection tuning for standard puck */
 #define SCAN_EDGE_MIN_HEIGHT        (15.0)    // mm
 #define SCAN_EDGE_MAX_WIDTH         (5)       // index
 #define SCAN_EDGES_MIN_DIST         (50)      // index
 #define SCAN_EDGES_MAX_DIST         (70)      // index
+
+/* Detection tuning for Goldenium */
+#define SCAN_EDGE_MIN_HEIGHT_GOLD   (15.0)    // mm
+#define SCAN_EDGE_MAX_WIDTH_GOLD    (5)       // index
+#define SCAN_EDGES_MIN_DIST_GOLD    (50)      // index
+#define SCAN_EDGES_MAX_DIST_GOLD    (70)      // index
 
 
 class PuckScanner
@@ -47,8 +55,10 @@ public:
         registerSensorUpdate(m_right_sensor.getMeasure(), s_val, y + SCAN_RIGHT_SENSOR_POSITION);
     }
 
-    int compute(float& y)
+    int compute(bool goldenium, float& y, int32_t& puck_distance)
     {
+        puck_distance = SCAN_SENSOR_MAX;
+
         /* Index sensing values by their Y-coordinate */
         std::vector<int32_t> preprocess_data[SCAN_RESOLUTION];
         for (size_t i = 0; i < m_raw_scan_data.size(); i++) {
@@ -96,16 +106,31 @@ public:
             scan_data[i] = scan_data[pre_index];
         }
 
+        /* Search for the minimum distance */
+        for (size_t i = 0; i < SCAN_RESOLUTION; i++) {
+            puck_distance = min(scan_data[i], puck_distance);
+        }
+
         Server.printf("index;distance\n");
         for(size_t i = 0; i < SCAN_RESOLUTION; i++) {
             Server.printf("%u;%d\n", i, scan_data[i]);
         }
 
         /* Edge detection */
-        int32_t width = SCAN_EDGE_MAX_WIDTH;
-        int32_t height = SCAN_EDGE_MIN_HEIGHT;
-        int32_t puck_min_size = SCAN_EDGES_MIN_DIST;
-        int32_t puck_max_size = SCAN_EDGES_MAX_DIST;
+        int32_t width, height, puck_min_size, puck_max_size;
+        if (goldenium) {
+            width = SCAN_EDGE_MAX_WIDTH_GOLD;
+            height = SCAN_EDGE_MIN_HEIGHT_GOLD;
+            puck_min_size = SCAN_EDGES_MIN_DIST_GOLD;
+            puck_max_size = SCAN_EDGES_MAX_DIST_GOLD;
+        }
+        else {
+            width = SCAN_EDGE_MAX_WIDTH;
+            height = SCAN_EDGE_MIN_HEIGHT;
+            puck_min_size = SCAN_EDGES_MIN_DIST;
+            puck_max_size = SCAN_EDGES_MAX_DIST;
+        }
+
         int32_t puck_start_pos = 0;
         bool e = false;
         bool foundFallingEdge = false;

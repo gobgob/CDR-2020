@@ -326,10 +326,12 @@ public:
     ActuatorFindPuck() {}
     void _launch(const std::vector<uint8_t> & input)
     {
-        if (input.size() == 0)
+        if (input.size() == 1)
         {
             Server.printf(SPY_ORDER, "ActuatorFindPuck");
-            if (actuatorMgr.scanPuck() != EXIT_SUCCESS)
+            size_t index = 0;
+            bool goldenium = Serializer::readBool(input, index);
+            if (actuatorMgr.scanPuck(goldenium) != EXIT_SUCCESS)
             {
                 finished = true;
                 ret_code = ACT_ALREADY_MOVING;
@@ -354,7 +356,8 @@ public:
     void terminate(std::vector<uint8_t> & output)
     {
         ret_code |= actuatorMgr.getErrorCode();
-        Serializer::writeFloat(actuatorMgr.getLastScanResult(), output);
+        Serializer::writeFloat(actuatorMgr.getLastScanResultY(), output);
+        Serializer::writeInt(actuatorMgr.getLastScanResultD(), output);
         Serializer::writeInt(ret_code, output);
     }
 

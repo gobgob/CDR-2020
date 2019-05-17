@@ -136,7 +136,9 @@ public:
         m_z_homed = false;
         m_composed_move_step = 0;
         m_move_start_time = 0;
-        m_last_scan_result = 0;
+        m_last_scan_result_y = 0;
+        m_last_scan_result_d = SCAN_SENSOR_MAX;
+        m_golden_mode = false;
         setSpeedToMax();
         pinMode(PIN_STEPPER_ENDSTOP, INPUT);
     }
@@ -249,9 +251,14 @@ public:
         }
     }
 
-    float getLastScanResult() const
+    float getLastScanResultY() const
     {
-        return m_last_scan_result;
+        return m_last_scan_result_y;
+    }
+
+    int32_t getLastScanResultD() const
+    {
+        return m_last_scan_result_d;
     }
 
     /* Mouvement control */
@@ -261,9 +268,10 @@ public:
         setSpeedToMax();
         return initMove(STATUS_GOING_HOME, m_current_position);
     }
-    int scanPuck()
+    int scanPuck(bool goldenium)
     {
         setSpeedToMax();
+        m_golden_mode = goldenium;
         return initMove(STATUS_SCANNING, m_current_position);
     }
     int goToPosition(const ActuatorPosition &p)
@@ -428,13 +436,16 @@ private:
         case 2:
             if (aimPositionReached())
             {
-                if (m_puck_scanner.compute(m_aim_position.y) != EXIT_SUCCESS)
+                if (m_puck_scanner.compute(m_golden_mode, m_aim_position.y, m_last_scan_result_d) != EXIT_SUCCESS)
                 {
                     // On failure : set y to zero and raise error flag
                     m_aim_position.y = 0;
                     m_error_code |= ACT_NO_DETECTION;
                 }
-                m_last_scan_result = m_aim_position.y;
+                if (m_last_scan_result_d == SCAN_SENSOR_MAX) {
+                    m_error_code |= ACT_SENSOR_ERROR;
+                }
+                m_last_scan_result_y = m_aim_position.y;
                 m_puck_scanner.enable(false);
                 sendAimPosition();
                 m_composed_move_step++;
@@ -599,7 +610,9 @@ private:
     uint32_t m_composed_move_step;
     uint32_t m_move_start_time; // ms
     PuckScanner m_puck_scanner;
-    float m_last_scan_result; // y coordinate, result of the last scan
+    float m_last_scan_result_y; // y coordinate, result of the last scan
+    int32_t m_last_scan_result_d; // distance to the puck, result of the last scan (unit: mm)
+    bool m_golden_mode;
     uint16_t m_y_speed;
     uint16_t m_theta_speed;
     uint16_t m_z_speed;
