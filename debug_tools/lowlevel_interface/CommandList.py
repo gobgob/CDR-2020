@@ -214,6 +214,12 @@ Command(0x9D, "Set max acceleration",   CommandType.SHORT_ORDER, [Field("Acceler
 Command(0x9E, "Set max deceleration",   CommandType.SHORT_ORDER, [Field("Deceleration", float)], []),
 Command(0x9F, "Set max curvature",      CommandType.SHORT_ORDER, [Field("Curvature", float)], []),
 Command(0xA0, "Enable smoke",           CommandType.SHORT_ORDER, [Field("Enable", bool)], []),
-
+Command(0xA1, "Get sensors last update",CommandType.SHORT_ORDER, [],
+        [Field("AVG", int, description="ms"),
+         Field("AVD", int, description="ms"),
+         Field("FARG", int, description="ms"),
+         Field("FARD", int, description="ms"),
+         Field("ARG", int, description="ms"),
+         Field("ARD", int, description="ms")]),
 ]
 

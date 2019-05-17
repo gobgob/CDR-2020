@@ -10,6 +10,8 @@ tmp/
 regles/
 images/
 mécanique/
+vid/
+affiche/
 
 # Documentation
 *.doc

@@ -96,10 +96,10 @@ public:
             scan_data[i] = scan_data[pre_index];
         }
 
-        //Server.printf("index;distance\n");
-        //for(size_t i = 0; i < SCAN_RESOLUTION; i++) {
-        //    Server.printf("%u;%d\n", i, scan_data[i]);
-        //}
+        Server.printf("index;distance\n");
+        for(size_t i = 0; i < SCAN_RESOLUTION; i++) {
+            Server.printf("%u;%d\n", i, scan_data[i]);
+        }
 
         /* Edge detection */
         int32_t width = SCAN_EDGE_MAX_WIDTH;

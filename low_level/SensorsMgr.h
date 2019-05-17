@@ -37,6 +37,7 @@ public:
         for (size_t i = 0; i < NB_SENSORS; i++)
         {
             sensorsValues[i] = (SensorValue)SENSOR_DEAD;
+            sensorsLastUpdateTime[i] = 0;
             if (sensors[i] == nullptr)
             {
                 members_allocated = false;
@@ -100,7 +101,16 @@ public:
         SensorValue val = sensors[i]->getMeasure();
         if (val != SENSOR_NOT_UPDATED) {
             sensorsValues[i] = val;
+            sensorsLastUpdateTime[i] = millis();
         }
+    }
+
+    uint32_t getLastUpdateTime(size_t i) const
+    {
+        if (i >= NB_SENSORS) {
+            return 0;
+        }
+        return millis() - sensorsLastUpdateTime[i];
     }
 
     void appendValuesToVect(std::vector<uint8_t> & output) const
@@ -150,6 +160,7 @@ public:
 private:
     ToF_sensor *sensors[NB_SENSORS];
     SensorValue sensorsValues[NB_SENSORS];
+    uint32_t sensorsLastUpdateTime[NB_SENSORS];
     bool members_allocated;
 
     enum Index

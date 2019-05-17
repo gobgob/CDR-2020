@@ -16,6 +16,7 @@
 #include "ContextualLightning.h"
 #include "Singleton.h"
 #include "SmokeMgr.h"
+#include "SensorsMgr.h"
 
 
 class OrderImmediate
@@ -27,7 +28,8 @@ public:
         dashboard(Dashboard::Instance()),
         contextualLightning(ContextualLightning::Instance()),
         actuatorMgr(ActuatorMgr::Instance()),
-        smokeMgr(SmokeMgr::Instance())
+        smokeMgr(SmokeMgr::Instance()),
+        sensorMgr(SensorsMgr::Instance())
     {}
 
     /*
@@ -43,6 +45,7 @@ protected:
     ContextualLightning & contextualLightning;
     ActuatorMgr & actuatorMgr;
     SmokeMgr & smokeMgr;
+    const SensorsMgr & sensorMgr;
 };
 
 
@@ -869,6 +872,28 @@ public:
         else
         {
             Server.printf_err("SetSmoke: wrong number of arguments\n");
+            io.clear();
+        }
+    }
+};
+
+
+class GetSensorsLastUpdate : public OrderImmediate, public Singleton<GetSensorsLastUpdate>
+{
+public:
+    GetSensorsLastUpdate() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == 0)
+        {
+            io.clear();
+            for (size_t i = 0; i < NB_SENSORS; i++) {
+                Serializer::writeUInt(sensorMgr.getLastUpdateTime(i), io);
+            }
+        }
+        else
+        {
+            Server.printf_err("GetSensorsLastUpdate: wrong number of arguments\n");
             io.clear();
         }
     }
