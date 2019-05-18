@@ -1,13 +1,17 @@
 package senpai;
 
+import java.util.ArrayList;
+import java.util.List;
 import pfg.config.Config;
 import pfg.kraken.Kraken;
 import pfg.kraken.SearchParameters;
 import pfg.kraken.exceptions.PathfindingException;
+import pfg.kraken.obstacles.Obstacle;
 import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XYO;
 import pfg.log.Log;
+import senpai.obstacles.ObstaclesFixes;
 import senpai.threads.ThreadWarmUp;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Severity;
@@ -55,15 +59,18 @@ public class Benchmark
 		int demieLargeurNonDeploye = config.getInt(ConfigInfoSenpai.LARGEUR_NON_DEPLOYE) / 2;
 		int demieLongueurArriere = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
 		int demieLongueurAvant = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_DEPLOYE_AVANT);
+		List<Obstacle> obstaclesFixes = new ArrayList<Obstacle>();
+		for(ObstaclesFixes o : ObstaclesFixes.values())
+			obstaclesFixes.add(o.obstacle);
 
 		RectangularObstacle robotTemplate = new RectangularObstacle(demieLargeurNonDeploye, demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
 
-		Kraken kraken = new Kraken(robotTemplate, null, new XY(-1500, 0), new XY(1500, 2000), configfile, "default");
+		Kraken kraken = new Kraken(robotTemplate, obstaclesFixes, new XY(-1500, 0), new XY(1500, 2000), configfile, "default");
 		ThreadWarmUp warmUp = new ThreadWarmUp(log, kraken, config);
 		warmUp.run();
 		System.out.println("Warm-up");
 		Thread.sleep(config.getInt(ConfigInfoSenpai.WARM_UP_DURATION));
-		System.out.println("Wait 30s");
+		System.out.println("Wait 2mn");
 		try
 		{
 			double nbIter = 0;
@@ -73,10 +80,10 @@ public class Benchmark
 				if(modeXY)
 					kraken.initializeNewSearch(new SearchParameters(new XYO(-500, 700, 2./3.*Math.PI), new XY(1000, 1300)));
 				else
-					kraken.initializeNewSearch(new SearchParameters(new XYO(-500, 700, 2./3.*Math.PI), new XYO(1000, 1300, 0)));
+					kraken.initializeNewSearch(new SearchParameters(new XYO(1190, 1400, Math.PI), new XYO(-600, 1600, -Math.PI/2)));
 				kraken.search();
 				nbIter++;
-			} while(System.currentTimeMillis() - before < 30000);
+			} while(System.currentTimeMillis() - before < 120000);
 			long after = System.currentTimeMillis();
 			log.write("Durée moyenne d'une recherche : "+(after - before) / nbIter, Subject.STATUS);
 			System.out.println("Durée moyenne d'une recherche : "+(after - before) / nbIter);
