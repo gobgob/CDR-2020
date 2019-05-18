@@ -195,7 +195,7 @@ public class Match
 			pathfindingError = false;
 			try
 			{
-				doScript(accelerateur, 3, true);
+				doScript(accelerateur, 3, 3, true);
 				none = false;
 			}
 			catch(PathfindingException | UnableToMoveException | ScriptException e)
@@ -210,7 +210,7 @@ public class Match
 
 			try
 			{
-				doScript(deposeBalance, 3, true);
+				doScript(deposeBalance, 3, 3, true);
 				none = false;
 			}
 			catch(PathfindingException | UnableToMoveException | ScriptException e)
@@ -222,7 +222,7 @@ public class Match
 			
 			try
 			{
-				doScript(recupereGold, 3, true);
+				doScript(recupereGold, 3, 3, true);
 				none = false;
 			}
 			catch(PathfindingException | UnableToMoveException | ScriptException e)
@@ -234,7 +234,7 @@ public class Match
 			
 			try
 			{
-				doScript(deposeBalance, 3, true);
+				doScript(deposeBalance, 3, 3, true);
 				none = false;
 			}
 			catch(PathfindingException | UnableToMoveException | ScriptException e)
@@ -300,7 +300,7 @@ public class Match
 	 * @throws UnableToMoveException problème méca lors du trajet
 	 * @throws ScriptException problème lors de l'exécution du script
 	 */
-	private void doScript(Script s, int nbEssaiChemin, boolean checkFin) throws PathfindingException, InterruptedException, UnableToMoveException, ScriptException
+	private void doScript(Script s, int nbEssaiChemin, int nbEssaiScript, boolean checkFin) throws PathfindingException, InterruptedException, UnableToMoveException, ScriptException
 	{
 		if(Thread.currentThread().isInterrupted())
 			throw new InterruptedException();
@@ -312,11 +312,11 @@ public class Match
 		XYO pointEntree = s.getPointEntree();
 		log.write("Point d'entrée du script "+pointEntree, Subject.SCRIPT);
 		
-		boolean restart;
+		boolean restartKraken, restartScript;
 
 		do {
 			try {
-				restart = false;
+				restartKraken = false;
 				robot.goTo(pointEntree);
 				XYO corrected = s.correctOdo();
 				if(corrected == null)
@@ -333,7 +333,7 @@ public class Match
 							|| corrected.position.distance(pointEntree.position) > tolerancePosition)
 						// on retente
 					{
-						restart = true;
+						restartKraken = true;
 						nbEssaiChemin--;
 						if(nbEssaiChemin > 0)
 							log.write("Erreur trop grande, on retente !", Subject.SCRIPT);
@@ -347,10 +347,10 @@ public class Match
 			}
 			catch(UnableToMoveException e)
 			{
-				restart = true;
+				restartKraken = true;
 				nbEssaiChemin--;
 			}
-		} while(restart && nbEssaiChemin > 0);
+		} while(restartKraken && nbEssaiChemin > 0);
 		
 		//s.correctOdo();
 		/*
@@ -372,10 +372,31 @@ public class Match
 				throw new ScriptException("On n'a pas réussi à se positionner une précision suffisante.");
 		}*/
 		
-		if(!restart)
-			s.execute();
+		if(!restartKraken)
+		{
+			do {
+				try {
+					if(Thread.currentThread().isInterrupted())
+						throw new InterruptedException();
+					
+					restartScript = false;
+					s.execute();
+				}
+				catch(ScriptException e)
+				{
+					restartScript = true;
+					nbEssaiScript--;
+					if(nbEssaiScript > 0)
+						log.write("Erreur lors de l'exécution du script: "+e.getMessage()+", on retente !", Subject.SCRIPT);
+					else
+						log.write("Erreur lors de l'exécution du script: "+e.getMessage()+", on abandonne !", Subject.SCRIPT);
+				}
+			} while(restartScript && nbEssaiScript > 0);
+			if(restartScript)
+				log.write("Erreur lors de l'exécution du script, on annule "+s, Subject.SCRIPT);
+		}
 		else
-			log.write("On annule l'exécution du script "+s, Subject.SCRIPT);
+			log.write("On n'a pas réussi à atteindre le script, on annule "+s, Subject.SCRIPT);
 
 		if(Thread.currentThread().isInterrupted())
 			throw new InterruptedException();
