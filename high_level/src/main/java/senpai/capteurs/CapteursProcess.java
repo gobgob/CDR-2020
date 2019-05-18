@@ -514,8 +514,6 @@ public class CapteursProcess
 			if(c.enable)
 			{
 				c.enable = false;
-				c.valc1.clear();
-				c.valc2.clear();
 
 				if(c.valc1.size() < 10 && c.valc2.size() < 10)
 				{
@@ -545,20 +543,17 @@ public class CapteursProcess
 				else
 					log.write("Pas assez de valeurs pour "+c.c2+" ("+c.valc2.size()+" valeurs)", Subject.CORRECTION);
 				
+				c.valc1.clear();
+				c.valc2.clear();
+				
 				XY_RW pointVu1 = null;
 				if(mesure1 != null)
 					pointVu1 = getPositionVue(capteurs[c.c1.ordinal()], mesure1, cinem);
-				//if(pointVu1 == null)
-				//	continue;
 		
 				XY_RW pointVu2 = null;
 				if(mesure2 != null)
-					pointVu2= getPositionVue(capteurs[c.c2.ordinal()], mesure2, cinem);
-				//if(pointVu2 == null)
-				//	continue;
+					pointVu2 = getPositionVue(capteurs[c.c2.ordinal()], mesure2, cinem);
 		
-//				log.write(c+" "+pointVu1+" "+pointVu2, Subject.CORRECTION);
-
 				/**
 				 * Correction à deux capteurs
 				 */
