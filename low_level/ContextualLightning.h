@@ -9,10 +9,11 @@
 #include "LedBlinker.h"
 #include "Config.h"
 
-#define CONTEXTUAL_LIGHTNING_UPDATE_PERIOD  50  // ms
+#define CONTEXTUAL_LIGHTNING_UPDATE_PERIOD  50      // ms
 #define NB_NEOPIXELS_FRONT                  16
 #define NB_NEOPIXELS_BACK                   14
-#define TURNING_THRESHOLD                   0.5 // m^-1
+#define TURNING_THRESHOLD                   0.5     // m^-1
+#define SIDE_DISPLAY_DURATION               4000    // ms
 
 /* Color definition */
 #define COLOR_ORANGE                (Adafruit_NeoPixel::Color(102, 25, 0, 0))
@@ -192,14 +193,19 @@ public:
         sideDisplay = SIDE_DISPLAY_OFF;
         movingForward = true;
         breaking = false;
+        sideDisplayStartTime = 0;
     }
 
     void update()
     {
         static uint32_t lastUpdateTime = 0;
-        if (millis() - lastUpdateTime > CONTEXTUAL_LIGHTNING_UPDATE_PERIOD)
+        uint32_t now = millis();
+        if (now - lastUpdateTime > CONTEXTUAL_LIGHTNING_UPDATE_PERIOD)
         {
-            lastUpdateTime = millis();
+            lastUpdateTime = now;
+            if (now - sideDisplayStartTime > SIDE_DISPLAY_DURATION) {
+                sideDisplay = SIDE_DISPLAY_OFF;
+            }
 
             int dir = motionControlSystem.getMovingDirection();
             if (dir > 0) {
@@ -265,6 +271,7 @@ public:
     void setSideDisplay(SideDisplay mode)
     {
         sideDisplay = mode;
+        sideDisplayStartTime = millis();
     }
 
     void enableWarnings(bool enable)
@@ -296,6 +303,7 @@ private:
     SideDisplay sideDisplay;
     bool movingForward;
     bool breaking;
+    uint32_t sideDisplayStartTime;
 };
 
 

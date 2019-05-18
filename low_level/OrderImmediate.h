@@ -39,6 +39,13 @@ public:
     virtual void execute(std::vector<uint8_t> &) = 0;
 
 protected:
+    enum Color
+    {
+        VIOLET = 0x00,
+        JAUNE = 0x01,
+        UNKNOWN = 0x02
+    };
+
     MotionControlSystem & motionControlSystem;
     DirectionController & directionController;
     Dashboard & dashboard;
@@ -112,7 +119,7 @@ public:
         {
             io.clear();
 
-            uint8_t jumperDetected = !digitalRead(PIN_GET_JUMPER);
+            uint8_t jumperDetected = digitalRead(PIN_GET_JUMPER);
             Color color = UNKNOWN;
             if (jumperDetected)
             {
@@ -133,14 +140,6 @@ public:
             io.clear();
         }
     }
-
-private:
-    enum Color
-    {
-        VIOLET = 0x00,
-        JAUNE = 0x01,
-        UNKNOWN = 0x02
-    };
 };
 
 
@@ -461,6 +460,32 @@ public:
         else
         {
             Server.printf_err("EnableHighSpeed: wrong number of arguments\n");
+            io.clear();
+        }
+    }
+};
+
+class DisplayColor : public OrderImmediate, public Singleton<DisplayColor>
+{
+public:
+    DisplayColor() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == 1)
+        {
+            size_t index = 0;
+            Color color = (Color)Serializer::readEnum(io, index);
+            if (color == VIOLET) {
+                contextualLightning.setSideDisplay(ContextualLightning::SIDE_DISPLAY_VIOLET);
+            }
+            else if (color == JAUNE) {
+                contextualLightning.setSideDisplay(ContextualLightning::SIDE_DISPLAY_ORANGE);
+            }
+            io.clear();
+        }
+        else
+        {
+            Server.printf_err("DisplayColor: wrong number of arguments\n");
             io.clear();
         }
     }

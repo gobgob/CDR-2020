@@ -246,8 +246,8 @@ public:
         }
         else
         {
-            Serializer::writeInt((SensorValue)SENSOR_DEAD, output);
-            Serializer::writeInt((SensorValue)SENSOR_DEAD, output);
+            Serializer::writeInt((SensorValue)NO_OBSTACLE, output);
+            Serializer::writeInt((SensorValue)NO_OBSTACLE, output);
         }
     }
 

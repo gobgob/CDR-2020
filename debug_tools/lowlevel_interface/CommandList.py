@@ -192,6 +192,7 @@ Command(0x8B, "Actuator Get Position", CommandType.SHORT_ORDER, [],
 		 Field("theta", float)]),
 Command(0x8C, "Parking break", CommandType.SHORT_ORDER, [Field("Enable", bool)], []),
 Command(0x8D, "Enable high speed", CommandType.SHORT_ORDER, [Field("Enable", bool)], []),
+Command(0x8E, "Display color", CommandType.SHORT_ORDER, [Field("Color", Enum, ["Violet", "Jaune", "Unknown"])], []),
 
 Command(0x90, "Display",        CommandType.SHORT_ORDER, [], []),
 Command(0x91, "Save",           CommandType.SHORT_ORDER, [], []),
