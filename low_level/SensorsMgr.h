@@ -98,10 +98,34 @@ public:
         if (!members_allocated || i >= NB_SENSORS) {
             return;
         }
+        uint32_t update_start = millis();
         SensorValue val = sensors[i]->getMeasure();
+        uint32_t update_end = millis();
+        uint32_t update_duration = update_end - update_start;
+        bool needSensorReset = false;
         if (val != SENSOR_NOT_UPDATED) {
             sensorsValues[i] = val;
-            sensorsLastUpdateTime[i] = millis();
+            sensorsLastUpdateTime[i] = update_end;
+        }
+        else if (update_duration > SENSOR_UPDATE_PERIOD) {
+            Server.printf_err("SensorsMgr::updateNow(%u) took %ums and failed\n", i, update_duration);
+            needSensorReset = true;
+        }
+        else if (update_start - sensorsLastUpdateTime[i] > 100) {
+            Server.printf_err("SensorsMgr::updateNow(%u) sensor didn't perform measurements for more than 100ms\n", i);
+            needSensorReset = true;
+        }
+
+        if (needSensorReset) {
+            Server.printf("Attempting to restart sensor #%u\n", i);
+            sensors[i]->standby();
+            int ret = sensors[i]->powerON();
+            if (ret == EXIT_SUCCESS) {
+                Server.printf("Restarted successfully\n");
+            }
+            else {
+                Server.printf("Restart failed\n");
+            }
         }
     }
 
