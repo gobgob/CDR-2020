@@ -32,6 +32,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	DISABLE_JUMPER(false),
 	ENABLE_LIDAR(false),
 	RUSH_SPEED(0.8),
+	ENABLE_PARKING_BREAK(true),
 	
 	/**
 	 * Position initiale du robot
@@ -43,6 +44,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	DEFAULT_MAX_SPEED(0.8),
 	MAX_SPEED_IN_ENEMY(0.4),
 	SLOW_OBSTACLE_RADIUS_MULTIPLIER(1.5),
+	
 	/**
 	 * Infos sur le robot
 	 */

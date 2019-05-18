@@ -200,7 +200,7 @@ public class OutgoingOrderBuffer implements Plottable
 		ByteBuffer data = ByteBuffer.allocate(1);
 		data.order(ByteOrder.LITTLE_ENDIAN);
 		data.put((byte)mode.ordinal());
-		addToBuffer(new Order(Id.SET_NIGHT_LIGHT));
+		addToBuffer(new Order(data, Id.SET_NIGHT_LIGHT));
 	}
 	
 	public void setWarnings(boolean enable)
@@ -208,7 +208,7 @@ public class OutgoingOrderBuffer implements Plottable
 		ByteBuffer data = ByteBuffer.allocate(1);
 		data.order(ByteOrder.LITTLE_ENDIAN);
 		data.put((byte)(enable ? 1 : 0));
-		addToBuffer(new Order(Id.SET_WARNINGS));
+		addToBuffer(new Order(data, Id.SET_WARNINGS));
 	}
 	
 	public void enableParkingBreak(boolean enable)
@@ -216,7 +216,7 @@ public class OutgoingOrderBuffer implements Plottable
 		ByteBuffer data = ByteBuffer.allocate(1);
 		data.order(ByteOrder.LITTLE_ENDIAN);
 		data.put((byte)(enable ? 1 : 0));
-		addToBuffer(new Order(Id.ENABLE_PARKING_BREAK));
+		addToBuffer(new Order(data, Id.ENABLE_PARKING_BREAK));
 	}
 	
 	public void enableHighSpeedMode(boolean enable)
@@ -224,7 +224,7 @@ public class OutgoingOrderBuffer implements Plottable
 		ByteBuffer data = ByteBuffer.allocate(1);
 		data.order(ByteOrder.LITTLE_ENDIAN);
 		data.put((byte)(enable ? 1 : 0));
-		addToBuffer(new Order(Id.ENABLE_HIGH_SPEED_MODE));
+		addToBuffer(new Order(data, Id.ENABLE_HIGH_SPEED_MODE));
 	}
 	
 	public void actuatorStop()
@@ -244,9 +244,12 @@ public class OutgoingOrderBuffer implements Plottable
 		return Id.ACTUATOR_GO_HOME.ticket;
 	}
 
-	public Ticket actuatorFindPuck()
+	public Ticket actuatorFindPuck(Boolean goldenium)
 	{
-		addToBuffer(new Order(Id.ACTUATOR_FIND_PUCK));
+		ByteBuffer data = ByteBuffer.allocate(1);
+		data.order(ByteOrder.LITTLE_ENDIAN);
+		data.put((byte)(goldenium ? 1 : 0));
+		addToBuffer(new Order(data, Id.ACTUATOR_FIND_PUCK));
 		return Id.ACTUATOR_FIND_PUCK.ticket;
 	}
 	

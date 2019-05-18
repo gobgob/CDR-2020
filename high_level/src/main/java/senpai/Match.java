@@ -44,11 +44,11 @@ import senpai.utils.Subject;
 public class Match
 {
 	private static Senpai senpai;
-	private OutgoingOrderBuffer ll;
-	private Robot robot;
-	private ScriptManager scripts;
-	private Log log;
-	private Config config;
+	private static OutgoingOrderBuffer ll;
+	private static Robot robot;
+	private static ScriptManager scripts;
+	private static Log log;
+	private static Config config;
 
 	/**
 	 * Gestion des paramètres et de la fermeture du HL, ne pas toucher
@@ -101,8 +101,8 @@ public class Match
 		scripts = senpai.getService(ScriptManager.class);
 		log = senpai.getService(Log.class);
 		
-		RobotColor couleur;
-
+		RobotColor couleur;			
+		
 		/**
 		 * Initialisation des actionneurs
 		 */
@@ -135,11 +135,10 @@ public class Match
 			couleur = (RobotColor) etat.data;
 		}
 		
-
-		
 		log.write("Couleur utilisée : "+couleur, Subject.STATUS);
 		robot.updateColorAndSendPosition(couleur);
 		scripts.setCouleur(couleur);
+		ll.enableParkingBreak(config.getBoolean(ConfigInfoSenpai.ENABLE_PARKING_BREAK));
 
 		/*
 		 * Allumage des capteurs
@@ -160,6 +159,7 @@ public class Match
 		double rush_speed = config.getDouble(ConfigInfoSenpai.RUSH_SPEED);
 		try
 		{
+			ll.enableHighSpeedMode(true);
 			robot.avance(1500, rush_speed);
 		}
 		catch(UnableToMoveException e)
@@ -178,6 +178,10 @@ public class Match
 				}
 				currentX = robot.getCinematique().getPosition().getX();
 			}
+		}
+		finally
+		{
+			ll.enableHighSpeedMode(false);
 		}
 
 		/**

@@ -124,6 +124,7 @@ public class Senpai
 		OutgoingOrderBuffer outBuffer = injector.getExistingService(OutgoingOrderBuffer.class);
 		if(outBuffer != null)
 		{
+			outBuffer.enableParkingBreak(false);
 			outBuffer.stopStream(Id.ODO_AND_SENSORS);
 			outBuffer.setCurvature(0);
 			Thread.sleep(1000);
@@ -346,6 +347,7 @@ public class Senpai
 
 			if(config.getBoolean(ConfigInfoSenpai.CHECK_LATENCY))
 				outBuffer.checkLatence();
+			outBuffer.enableParkingBreak(false);
 			outBuffer.destroyPointsTrajectoires(0);
 			outBuffer.startStream(Id.ODO_AND_SENSORS);
 		}
