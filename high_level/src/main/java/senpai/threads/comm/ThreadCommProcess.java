@@ -201,8 +201,7 @@ public class ThreadCommProcess extends Thread
 					}
 					else
 					{
-						// on peut quand même utiliser l'information de distance
-						if(d != null && code == CommProtocol.ActionneurMask.NO_DETECTION.masque)
+						if(d != null)
 							paquet.origine.ticket.set(CommProtocol.State.KO, d);
 						else
 							paquet.origine.ticket.set(CommProtocol.State.KO, code);
