@@ -15,6 +15,7 @@
 package senpai.scripts;
 
 import pfg.log.Log;
+import senpai.buffer.OutgoingOrderBuffer;
 import senpai.capteurs.CapteursProcess;
 import senpai.robot.Robot;
 import senpai.robot.RobotColor;
@@ -33,33 +34,35 @@ public class ScriptManager
 	private Robot robot;
 	private CapteursProcess cp;
 	private RobotColor couleur;
+	private OutgoingOrderBuffer out;
 	
 	public void setCouleur(RobotColor couleur)
 	{
 		this.couleur = couleur;
 	}
 	
-	public ScriptManager(Log log, Table table, Robot robot, CapteursProcess cp)
+	public ScriptManager(Log log, Table table, Robot robot, CapteursProcess cp, OutgoingOrderBuffer out)
 	{
 		this.log = log;
 		this.table = table;
 		this.robot = robot;
 		this.cp = cp;
+		this.out = out;
 	}
 	
 	public ScriptAccelerateur getScriptAccelerateur()
 	{
-		return new ScriptAccelerateur(log, robot, table, cp, couleur.symmetry);
+		return new ScriptAccelerateur(log, robot, table, cp, out, couleur.symmetry);
 	}
 	
 	public ScriptRecupereGold getScriptRecupereGold()
 	{
-		return new ScriptRecupereGold(log, robot, table, cp, couleur.symmetry);
+		return new ScriptRecupereGold(log, robot, table, cp, out, couleur.symmetry);
 	}
 	
 	public ScriptDeposeBalance getScriptDeposeBalance()
 	{
-		return new ScriptDeposeBalance(log, robot, table, cp, couleur.symmetry);
+		return new ScriptDeposeBalance(log, robot, table, cp, out, couleur.symmetry);
 	}
 }
 

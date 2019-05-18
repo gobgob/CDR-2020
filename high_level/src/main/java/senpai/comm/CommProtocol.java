@@ -80,6 +80,8 @@ public class CommProtocol
 		SET_WARNINGS(0x89, false),
 		ACT_STOP(0x8A, false),
 		ACT_GET_POSITION(0x8B, true),
+		ENABLE_PARKING_BREAK(0x8C, false),
+		ENABLE_HIGH_SPEED_MODE(0x8D, false),
 		
 		DISPLAY(0x90, false),
 		SAVE(0x91, false),

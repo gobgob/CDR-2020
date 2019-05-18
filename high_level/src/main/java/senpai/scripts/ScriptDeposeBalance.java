@@ -17,6 +17,7 @@ package senpai.scripts;
 import pfg.kraken.utils.XYO;
 import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
+import senpai.buffer.OutgoingOrderBuffer;
 import senpai.capteurs.CapteursProcess;
 import senpai.comm.CommProtocol;
 import senpai.exceptions.ActionneurException;
@@ -35,9 +36,9 @@ public class ScriptDeposeBalance extends Script
 {
 	private XY_RW positionEntree = new XY_RW(-135,700);
 	
-	public ScriptDeposeBalance(Log log, Robot robot, Table table, CapteursProcess cp, boolean symetrie)
+	public ScriptDeposeBalance(Log log, Robot robot, Table table, CapteursProcess cp, OutgoingOrderBuffer out, boolean symetrie)
 	{
-		super(log, robot, table, cp);
+		super(log, robot, table, cp, out);
 		if(symetrie)
 			positionEntree.setX(- positionEntree.getX());
 	}

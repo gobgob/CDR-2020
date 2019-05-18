@@ -17,6 +17,7 @@ package senpai.scripts;
 
 import pfg.kraken.utils.XYO;
 import pfg.log.Log;
+import senpai.buffer.OutgoingOrderBuffer;
 import senpai.capteurs.CapteursProcess;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.ScriptException;
@@ -39,13 +40,15 @@ public abstract class Script
 	protected Robot robot;
 	protected Table table;
 	protected CapteursProcess cp;
+	protected OutgoingOrderBuffer out;
 	
-	public Script(Log log, Robot robot, Table table, CapteursProcess cp)
+	public Script(Log log, Robot robot, Table table, CapteursProcess cp, OutgoingOrderBuffer out)
 	{
 		this.log = log;
 		this.robot = robot;
 		this.table = table;
 		this.cp = cp;
+		this.out = out;
 	}
 	
 	public double getToleranceAngle()

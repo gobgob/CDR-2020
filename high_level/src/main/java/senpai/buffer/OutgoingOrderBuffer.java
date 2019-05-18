@@ -211,6 +211,22 @@ public class OutgoingOrderBuffer implements Plottable
 		addToBuffer(new Order(Id.SET_WARNINGS));
 	}
 	
+	public void enableParkingBreak(boolean enable)
+	{
+		ByteBuffer data = ByteBuffer.allocate(1);
+		data.order(ByteOrder.LITTLE_ENDIAN);
+		data.put((byte)(enable ? 1 : 0));
+		addToBuffer(new Order(Id.ENABLE_PARKING_BREAK));
+	}
+	
+	public void enableHighSpeedMode(boolean enable)
+	{
+		ByteBuffer data = ByteBuffer.allocate(1);
+		data.order(ByteOrder.LITTLE_ENDIAN);
+		data.put((byte)(enable ? 1 : 0));
+		addToBuffer(new Order(Id.ENABLE_HIGH_SPEED_MODE));
+	}
+	
 	public void actuatorStop()
 	{
 		addToBuffer(new Order(Id.ACT_STOP));
