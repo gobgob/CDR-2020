@@ -64,7 +64,7 @@ public class ScriptRecupereGold extends Script
 	{		
 		try {
 			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, -23.7, 182., 2.);
-			Object[] d = (Object[]) robot.execute(CommProtocol.Id.ACTUATOR_FIND_PUCK);
+			Object[] d = (Object[]) robot.execute(CommProtocol.Id.ACTUATOR_FIND_PUCK, Boolean.TRUE);
 			if(d == null)
 				throw new ActionneurException("No data after actuator find puck ?!", 0);
 			double y = (double) d[0];

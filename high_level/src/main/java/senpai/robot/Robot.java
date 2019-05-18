@@ -212,7 +212,7 @@ public class Robot extends RobotState
 			 dt = t.attendStatus();
 		} catch(InterruptedException e)
 		{
-			log.write("Interruption de l'actionneur", Subject.SCRIPT);
+			log.write("Interruption de l'actionneur", Severity.CRITICAL, Subject.SCRIPT);
 			throw e;
 		}
 		if(dt.status == CommProtocol.State.KO)
