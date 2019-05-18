@@ -178,26 +178,22 @@ public class ThreadCommProcess extends Thread
 
 				else if(paquet.origine.name().startsWith("ACTUATOR_"))
 				{
-					// Exemple
-					Object[] d = null;
-					int code;
 					if(paquet.origine == Id.ACTUATOR_FIND_PUCK)
 					{
-						d = new Object[3];
+						Object[] d = new Object[3];
 						d[0] = (double) data.getFloat();
 						d[1] = (int) data.getInt();
-						code = (int) data.getInt();
-						d[2] = code;
+						d[2] = (int) data.getInt();
+						paquet.origine.ticket.set(CommProtocol.State.OK, d);  // toujours OK, traitement des erreurs à part
 					}
 					else
-						code = (int) data.getInt();; 
-					
-					if(d != null)
-						paquet.origine.ticket.set(CommProtocol.State.OK, d); // toujours OK, traitement des erreurs à part
-					else if(code == 0)
-						paquet.origine.ticket.set(CommProtocol.State.OK);
-					else
-						paquet.origine.ticket.set(CommProtocol.State.KO, code);
+					{
+						int code = (int) data.getInt();
+						if(code == 0)
+							paquet.origine.ticket.set(CommProtocol.State.OK);
+						else
+							paquet.origine.ticket.set(CommProtocol.State.KO, code);
+					}
 				}				
 
 				/**

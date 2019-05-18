@@ -347,9 +347,6 @@ public class Robot extends RobotState
 			catch(ActionneurException e)
 			{
 				int code = e.code;
-				// erreurs à ignorer
-				if(code == CommProtocol.ActionneurMask.NO_DETECTION.masque) // cas particulier
-					break;
 				
 				if(code == CommProtocol.ActionneurMask.AX12_ERR.masque)
 				{
