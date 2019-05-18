@@ -207,7 +207,14 @@ public class Robot extends RobotState
 			e.printStackTrace();
 			throw new ActionneurException("Méthode inconnue : " + nom, -1);
 		}
-		DataTicket dt = t.attendStatus();
+		DataTicket dt;
+		try {
+			 dt = t.attendStatus();
+		} catch(InterruptedException e)
+		{
+			log.write("Interruption de l'actionneur", Subject.SCRIPT);
+			throw e;
+		}
 		if(dt.status == CommProtocol.State.KO)
 			throw new ActionneurException("Problème pour l'actionneur " + nom+" : "+CommProtocol.ActionneurMask.describe((int)dt.data), (int)dt.data);
 

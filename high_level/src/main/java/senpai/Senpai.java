@@ -236,7 +236,7 @@ public class Senpai
 		 * Planification du hook de fermeture (le plus tôt possible)
 		 */
 		log.write("Mise en place du hook d'arrêt", Subject.STATUS);
-		Runtime.getRuntime().addShutdownHook(new ThreadShutdown(this));
+		Runtime.getRuntime().addShutdownHook(new ThreadShutdown(this, log));
 
 		Cinematique positionRobot = new Cinematique(0, 0, 0, true, 0, false);
 		
@@ -438,6 +438,7 @@ public class Senpai
 	
 	public void interruptWithCodeError(ErrorCode code) throws InterruptedException
 	{
+		log.write("Thread principal interrompu avec "+code, Severity.CRITICAL, Subject.STATUS);
 		errorCode = code;
 		mainThread.interrupt();
 	}
@@ -445,9 +446,11 @@ public class Senpai
 	private class ThreadShutdown extends Thread
 	{
 		protected Senpai container;
+		private Log log;
 
-		public ThreadShutdown(Senpai container)
+		public ThreadShutdown(Senpai container, Log log)
 		{
+			this.log = log;
 			this.container = container;
 			setDaemon(true);
 		}
@@ -457,12 +460,15 @@ public class Senpai
 		{
 			try {
 				Thread.currentThread().setName(getClass().getSimpleName());
+				log.write("ThreadShutdown démarré !", Severity.CRITICAL, Subject.STATUS);
 				// c'est le thread principal qui va terminer ce thread
 				if(!shutdown)
 				{
 					container.interruptWithCodeError(ErrorCode.SIGTERM);
 					mainThread.join(); // on attend que le thread principal se termine, car dès que le shutdown hook s'arrête, tout s'arrête !
 				}				
+				else
+					log.write("Déjà en shutdown", Subject.STATUS);
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 			}
