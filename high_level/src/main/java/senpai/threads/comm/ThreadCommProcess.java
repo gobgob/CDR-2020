@@ -192,20 +192,12 @@ public class ThreadCommProcess extends Thread
 					else
 						code = (int) data.getInt();; 
 					
-					if(code == 0)
-					{
-						if(d != null)
-							paquet.origine.ticket.set(CommProtocol.State.OK, d);
-						else
-							paquet.origine.ticket.set(CommProtocol.State.OK);
-					}
+					if(d != null)
+						paquet.origine.ticket.set(CommProtocol.State.OK, d); // toujours OK, traitement des erreurs à part
+					else if(code == 0)
+						paquet.origine.ticket.set(CommProtocol.State.OK);
 					else
-					{
-						if(d != null)
-							paquet.origine.ticket.set(CommProtocol.State.KO, d);
-						else
-							paquet.origine.ticket.set(CommProtocol.State.KO, code);
-					}
+						paquet.origine.ticket.set(CommProtocol.State.KO, code);
 				}				
 
 				/**

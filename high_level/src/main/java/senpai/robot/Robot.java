@@ -212,13 +212,14 @@ public class Robot extends RobotState
 			 dt = t.attendStatus();
 		} catch(InterruptedException e)
 		{
-			log.write("Interruption de l'actionneur", Severity.CRITICAL, Subject.SCRIPT);
+			log.write("Interruption de l'actionneur: "+e, Severity.CRITICAL, Subject.SCRIPT);
 			throw e;
 		}
+		log.write("Temps d'exécution de " + nom + " : " + (System.currentTimeMillis() - avant), Subject.SCRIPT);
+
 		if(dt.status == CommProtocol.State.KO)
 			throw new ActionneurException("Problème pour l'actionneur " + nom+" : "+CommProtocol.ActionneurMask.describe((int)dt.data), (int)dt.data);
 
-		log.write("Temps d'exécution de " + nom + " : " + (System.currentTimeMillis() - avant), Subject.SCRIPT);
 		return dt.data;
 	}
 	
