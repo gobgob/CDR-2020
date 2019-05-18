@@ -60,6 +60,11 @@ public class ScriptManager
 		return new ScriptRecupereGold(log, robot, table, cp, out, couleur.symmetry);
 	}
 	
+	public ScriptRecuperePalet getScriptRecuperePalet()
+	{
+		return new ScriptRecuperePalet(log, robot, table, cp, out, couleur.symmetry);
+	}
+	
 	public ScriptDeposeBalance getScriptDeposeBalance()
 	{
 		return new ScriptDeposeBalance(log, robot, table, cp, out, couleur.symmetry);

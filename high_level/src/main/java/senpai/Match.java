@@ -151,6 +151,7 @@ public class Match
 		
 		Script accelerateur = scripts.getScriptAccelerateur();
 		Script recupereGold = scripts.getScriptRecupereGold();
+		Script recuperePalet = scripts.getScriptRecuperePalet();
 		Script deposeBalance = scripts.getScriptDeposeBalance();
 
 		/**
@@ -241,6 +242,20 @@ public class Match
 				if(e instanceof PathfindingException)
 					pathfindingError = true;
 			}
+			
+			// TODO
+			/*
+			try
+			{
+				doScript(recuperePalet, 3, 3, true);
+				none = false;
+			}
+			catch(PathfindingException | UnableToMoveException | ScriptException e)
+			{
+				log.write("Erreur : "+e, Subject.SCRIPT);
+				if(e instanceof PathfindingException)
+					pathfindingError = true;
+			}*/
 			
 			if(none)
 			{
