@@ -14,11 +14,13 @@
 
 package senpai.scripts;
 
+import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XYO;
 import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.capteurs.CapteursProcess;
+import senpai.capteurs.CapteursRobot;
 import senpai.comm.CommProtocol;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.ScriptException;
@@ -62,11 +64,23 @@ public class ScriptRecupereGold extends Script
 	{		
 		try {
 			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, -23.7, 182., 2.);
-			Double y = (Double) robot.execute(CommProtocol.Id.ACTUATOR_FIND_PUCK);
-			if(y == null)
-				throw new ActionneurException("No y after actuator find puck ?!", 0);
+			Object[] d = (Object[]) robot.execute(CommProtocol.Id.ACTUATOR_FIND_PUCK);
+			if(d == null)
+				throw new ActionneurException("No data after actuator find puck ?!", 0);
+			double y = (double) d[0];
+			int distance = (int) d[1];
+			int code = (int) d[2];
+			if(code == 0 || code == CommProtocol.ActionneurMask.NO_DETECTION.masque)
+			{
+				double distanceRobotMur = (distance + CapteursRobot.ToF_FOURCHE_DROITE.pos.getX()) * Math.cos(robot.getCinematique().orientationReelle - Math.PI/2);
+				XY delta = new XY(0, - robot.getCinematique().getPosition().getY() + 2000 - 50 - distanceRobotMur); // palet à 5cm du bord
+				robot.correctPosition(delta, 0);
+				Thread.sleep(500); // update position LL
+			}
+			if(code != 0)
+				throw new ActionneurException("No detection!", code);
 			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, y, 182., 2.);
-			robot.avance(95); // il faudrait avancer en fonction de la donnée capteur
+			robot.avanceTo(new XYO(-725, 1665+95, Math.PI / 2));
 			done = true; // le script n'est plus faisable
 			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, y, 182., 20., 1023., 300., 900.);
 			robot.updateScore(20);

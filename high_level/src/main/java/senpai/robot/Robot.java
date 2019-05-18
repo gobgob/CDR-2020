@@ -340,6 +340,9 @@ public class Robot extends RobotState
 			{
 				int code = e.code;
 				// erreurs à ignorer
+				if(code == CommProtocol.ActionneurMask.NO_DETECTION.masque) // cas particulier
+					break;
+				
 				if(code == CommProtocol.ActionneurMask.AX12_ERR.masque)
 				{
 					log.write("AX12_ERR ignoré ! "+e, Subject.SCRIPT);
@@ -626,7 +629,7 @@ public class Robot extends RobotState
 		dateFinMatch = dateDebutMatch + 100000;
 	}
 
-	public void correctPosition(XY_RW position, double orientation)
+	public void correctPosition(XY position, double orientation)
 	{
 		cinematique.updateReel(cinematique.getPosition().getX() + position.getX(),
 				cinematique.getPosition().getY() + position.getY(),
