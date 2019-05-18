@@ -159,11 +159,13 @@ public class Match
 		double rush_speed = config.getDouble(ConfigInfoSenpai.RUSH_SPEED);
 		try
 		{
-			ll.enableHighSpeedMode(true);
+			ll.enableHighSpeedMode(rush_speed >= 1);
 			robot.avance(1500, rush_speed);
+			ll.enableHighSpeedMode(false);
 		}
 		catch(UnableToMoveException e)
 		{
+			ll.enableHighSpeedMode(false);
 			log.write("Erreur lors du rush initial : "+e, Subject.SCRIPT);
 			double currentX = robot.getCinematique().getPosition().getX();
 			while(Math.abs(currentX) > 700)
@@ -178,10 +180,6 @@ public class Match
 				}
 				currentX = robot.getCinematique().getPosition().getX();
 			}
-		}
-		finally
-		{
-			ll.enableHighSpeedMode(false);
 		}
 
 		/**
