@@ -71,7 +71,7 @@ public class ScriptAccelerateur extends Script
 	{
 		try {
 			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, act_y, 157., 2.);
-			robot.avanceTo(new XYO(-135, 1740, Math.PI / 2));
+			robot.avanceTo(new XYO(positionEntree.getX(), 1740, Math.PI / 2));
 			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, -act_y, 180., 0., 350., 300., 1023.);
 			robot.updateScore(20);
 			robot.setGoldeniumFree();

@@ -80,7 +80,7 @@ public class ScriptRecupereGold extends Script
 			if(code != 0)
 				throw new ActionneurException("No detection!", code);
 			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, y, 182., 2.);
-			robot.avanceTo(new XYO(-725, 1665+95, Math.PI / 2));
+			robot.avanceTo(new XYO(positionEntree.getX(), 1665+95, Math.PI / 2));
 			done = true; // le script n'est plus faisable
 			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, y, 182., 20., 1023., 300., 900.);
 			robot.updateScore(20);
