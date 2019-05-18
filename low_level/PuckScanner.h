@@ -13,15 +13,15 @@
 
 /* Detection tuning for standard puck */
 #define SCAN_EDGE_MIN_HEIGHT        (15.0)    // mm
-#define SCAN_EDGE_MAX_WIDTH         (5)       // index
-#define SCAN_EDGES_MIN_DIST         (50)      // index
-#define SCAN_EDGES_MAX_DIST         (70)      // index
+#define SCAN_EDGE_MAX_WIDTH         (4)       // index
+#define SCAN_EDGES_MIN_DIST         (45)      // index
+#define SCAN_EDGES_MAX_DIST         (60)      // index
 
 /* Detection tuning for Goldenium */
-#define SCAN_EDGE_MIN_HEIGHT_GOLD   (15.0)    // mm
-#define SCAN_EDGE_MAX_WIDTH_GOLD    (5)       // index
+#define SCAN_EDGE_MIN_HEIGHT_GOLD   (30.0)    // mm
+#define SCAN_EDGE_MAX_WIDTH_GOLD    (4)       // index
 #define SCAN_EDGES_MIN_DIST_GOLD    (50)      // index
-#define SCAN_EDGES_MAX_DIST_GOLD    (70)      // index
+#define SCAN_EDGES_MAX_DIST_GOLD    (60)      // index
 
 
 class PuckScanner
@@ -146,7 +146,7 @@ public:
                     int32_t puck_size = puck_end_pos - puck_start_pos;
                     if (puck_size < puck_max_size && puck_size > puck_min_size) {
                         // Puck found
-                        y = indexToMm((puck_start_pos + puck_end_pos) / 2);
+                        y = (indexToMm(puck_start_pos) + indexToMm(puck_end_pos)) / 2;
                         return EXIT_SUCCESS;
                     }
                 }
