@@ -65,6 +65,11 @@ public class ScriptManager
 		return new ScriptRecuperePalet(log, robot, table, cp, out, couleur.symmetry);
 	}
 	
+	public ScriptMonteRampe getScriptMonteRampe()
+	{
+		return new ScriptMonteRampe(log, robot, table, cp, out, couleur.symmetry);
+	}
+	
 	public ScriptDeposeBalance getScriptDeposeBalance()
 	{
 		return new ScriptDeposeBalance(log, robot, table, cp, out, couleur.symmetry);

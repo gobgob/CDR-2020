@@ -153,6 +153,7 @@ public class Match
 		Script recupereGold = scripts.getScriptRecupereGold();
 		Script recuperePalet = scripts.getScriptRecuperePalet();
 		Script deposeBalance = scripts.getScriptDeposeBalance();
+		Script monteRampe = scripts.getScriptMonteRampe();
 
 		/**
 		 * Rush initial
