@@ -71,6 +71,7 @@ public class Senpai
 	private volatile boolean shutdown = false;
 	private boolean simuleComm;
 	private boolean threadsDemarres = false;
+	private Thread shutdownThread;
 	
 	public enum ErrorCode
 	{
@@ -115,6 +116,8 @@ public class Senpai
 			this.errorCode = error;
 		
 		assert Thread.currentThread().getId() == mainThread.getId() : "Appel au destructeur depuis un thread !";
+		
+		Runtime.getRuntime().removeShutdownHook(shutdownThread);
 		
 		log.write("Arrêt : "+errorCode, errorCode.normal ? Severity.INFO : Severity.CRITICAL, Subject.STATUS);
 		
@@ -236,7 +239,8 @@ public class Senpai
 		 * Planification du hook de fermeture (le plus tôt possible)
 		 */
 		log.write("Mise en place du hook d'arrêt", Subject.STATUS);
-		Runtime.getRuntime().addShutdownHook(new ThreadShutdown(this, log));
+		shutdownThread = new ThreadShutdown(this, log);
+		Runtime.getRuntime().addShutdownHook(shutdownThread);
 
 		Cinematique positionRobot = new Cinematique(0, 0, 0, true, 0, false);
 		
