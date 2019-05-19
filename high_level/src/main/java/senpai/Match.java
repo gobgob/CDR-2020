@@ -157,7 +157,6 @@ public class Match
 		Script monteRampe = scripts.getScriptMonteRampe();
 		Script pousseAtomeHaut = scripts.getScriptPousseAtomeHaut();
 		Script pousseAtomeMilieu = scripts.getScriptPousseAtomeMilieu();
-		Script pousseAtomeBas = scripts.getScriptPousseAtomeBas();
 
 		/**
 		 * Rush initial

@@ -75,11 +75,6 @@ public class ScriptManager
 		return new ScriptPousseAtomeHaut(log, robot, table, cp, out, couleur.symmetry);
 	}
 
-	public ScriptPousseAtomeBas getScriptPousseAtomeBas()
-	{
-		return new ScriptPousseAtomeBas(log, robot, table, cp, out, couleur.symmetry);
-	}
-
 	public ScriptPousseAtomeMilieu getScriptPousseAtomeMilieu()
 	{
 		return new ScriptPousseAtomeMilieu(log, robot, table, cp, out, couleur.symmetry);
