@@ -28,6 +28,7 @@ import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
 import senpai.table.Table;
 import senpai.table.TypeAtome;
+import senpai.utils.Subject;
 
 /**
  * Script de récupération du goldenium
@@ -74,6 +75,7 @@ public class ScriptRecupereGold extends Script
 			{
 				double distanceRobotMur = (distance + CapteursRobot.ToF_FOURCHE_DROITE.pos.getX()) * Math.cos(robot.getCinematique().orientationReelle - Math.PI/2);
 				XY delta = new XY(0, - robot.getCinematique().getPosition().getY() + 2000 - 50 - distanceRobotMur); // palet à 5cm du bord
+				log.write("Envoi d'une correction Y: " + delta.getY(), Subject.STATUS);
 				robot.correctPosition(delta, 0);
 				Thread.sleep(500); // update position LL
 			}
@@ -88,7 +90,9 @@ public class ScriptRecupereGold extends Script
 		}
 		finally
 		{
-			robot.avance(-95);
+			// on ne recule que si on a avancé
+			if(done)
+				robot.avance(-95);
 		}
 	}
 	
