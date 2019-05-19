@@ -681,7 +681,7 @@ public class Robot extends RobotState
 
 	public void rangeSiPossible() throws InterruptedException, ActionneurException
 	{
-		if(cargo.isEmpty())
+		if(cargo.isEmpty() && deploye)
 		{
 			execute(CommProtocol.Id.ACTUATOR_GO_HOME);
 		}
