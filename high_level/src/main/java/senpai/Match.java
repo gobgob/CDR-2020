@@ -20,6 +20,7 @@ import senpai.robot.RobotColor;
 import senpai.scripts.Script;
 import senpai.scripts.ScriptManager;
 import senpai.table.Table;
+import senpai.table.TypeAtome;
 import senpai.threads.comm.ThreadCommProcess;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Severity;
@@ -161,7 +162,8 @@ public class Match
 		 */
 		Script accelerateur = scripts.getScriptAccelerateur();
 		Script recupereGold = scripts.getScriptRecupereGold();
-		Script recuperePalet = scripts.getScriptRecuperePalet();
+		Script recuperePaletBlueium = scripts.getScriptRecuperePalet(new XY_RW(1375,285), TypeAtome.Blueium);
+		Script recuperePaletGreenium = scripts.getScriptRecuperePalet(new XY_RW(1275,285), TypeAtome.Greenium);
 		Script deposeBalance = scripts.getScriptDeposeBalance();
 		Script monteRampe = scripts.getScriptMonteRampe();
 		Script pousseAtomeHaut = scripts.getScriptPousseAtomeHaut();
@@ -219,18 +221,6 @@ public class Match
 			
 //			if(config.getBoolean(ConfigInfoSenpai.SIMULE_COMM))
 //				throw new InterruptedException("Debug");
-
-			try
-			{
-				doScript(deposeBalance, 3, 3, true);
-				none = false;
-			}
-			catch(PathfindingException | UnableToMoveException | ScriptException e)
-			{
-				log.write("Erreur : "+e, Subject.SCRIPT);
-				if(e instanceof PathfindingException)
-					pathfindingError = true;
-			}
 			
 			try
 			{
@@ -255,12 +245,59 @@ public class Match
 				if(e instanceof PathfindingException)
 					pathfindingError = true;
 			}
-			
-			// TODO
+
+			try
+			{
+				doScript(pousseAtomeMilieu, 3, 3, true);
+				none = false;
+			}
+			catch(PathfindingException | UnableToMoveException | ScriptException e)
+			{
+				log.write("Erreur : "+e, Subject.SCRIPT);
+				if(e instanceof PathfindingException)
+					pathfindingError = true;
+			}
+
+			try
+			{
+				doScript(pousseAtomeHaut, 3, 3, true);
+				none = false;
+			}
+			catch(PathfindingException | UnableToMoveException | ScriptException e)
+			{
+				log.write("Erreur : "+e, Subject.SCRIPT);
+				if(e instanceof PathfindingException)
+					pathfindingError = true;
+			}
+
+			try
+			{
+				doScript(recuperePaletBlueium, 3, 3, true);
+				none = false;
+			}
+			catch(PathfindingException | UnableToMoveException | ScriptException e)
+			{
+				log.write("Erreur : "+e, Subject.SCRIPT);
+				if(e instanceof PathfindingException)
+					pathfindingError = true;
+			}
+
+			try
+			{
+				doScript(recuperePaletGreenium, 3, 3, true);
+				none = false;
+			}
+			catch(PathfindingException | UnableToMoveException | ScriptException e)
+			{
+				log.write("Erreur : "+e, Subject.SCRIPT);
+				if(e instanceof PathfindingException)
+					pathfindingError = true;
+			}
+
 			/*
 			try
 			{
-				doScript(recuperePalet, 3, 3, true);
+				doScript(monteRampe, 3, 3, true);
 				none = false;
 			}
 			catch(PathfindingException | UnableToMoveException | ScriptException e)

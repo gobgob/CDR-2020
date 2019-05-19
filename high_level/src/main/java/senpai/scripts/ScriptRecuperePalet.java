@@ -14,13 +14,11 @@
 
 package senpai.scripts;
 
-import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XYO;
 import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.capteurs.CapteursProcess;
-import senpai.capteurs.CapteursRobot;
 import senpai.capteurs.CapteursCorrection;
 import senpai.comm.CommProtocol;
 import senpai.exceptions.ActionneurException;
@@ -31,19 +29,23 @@ import senpai.table.Table;
 import senpai.table.TypeAtome;
 
 /**
- * Script de récupération d'un palet TODO
+ * Script de récupération d'un palet
  * @author pf
  *
  */
 
 public class ScriptRecuperePalet extends Script
 {
-	private XY_RW positionEntree = new XY_RW(1375,285);
+	private XY_RW positionEntree;
+	private TypeAtome atome;
 	private boolean done = false;
 	
-	public ScriptRecuperePalet(Log log, Robot robot, Table table, CapteursProcess cp, OutgoingOrderBuffer out, boolean symetrie)
+	public ScriptRecuperePalet(Log log, Robot robot, Table table, CapteursProcess cp, OutgoingOrderBuffer out,
+		boolean symetrie, XY_RW entryPoint, TypeAtome tAtome)
 	{
 		super(log, robot, table, cp, out);
+		positionEntree = entryPoint;
+		atome = tAtome;
 		if(symetrie)
 			positionEntree.setX(- positionEntree.getX());
 	}
@@ -69,40 +71,30 @@ public class ScriptRecuperePalet extends Script
 	@Override
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException, ScriptException
 	{
-		// À FAIRE !!
 		try {
-			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, -23.7, 102., 2.);
+			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, -23.7, 102., 2., 1023., 300., 300.);
 			Object[] d = (Object[]) robot.execute(CommProtocol.Id.ACTUATOR_FIND_PUCK, Boolean.FALSE);
 			if(d == null)
 				throw new ActionneurException("No data after actuator find puck ?!", 0);
 			double y = (double) d[0];
-			int distance = (int) d[1];
 			int code = (int) d[2];
-			if(code == 0 || code == CommProtocol.ActionneurMask.NO_DETECTION.masque)
-			{
-				double distanceRobotMur = (distance + CapteursRobot.ToF_FOURCHE_DROITE.pos.getX()) * Math.cos(robot.getCinematique().orientationReelle + Math.PI/2);
-				XY delta = new XY(0, - robot.getCinematique().getPosition().getY() + distanceRobotMur); // palet sur le bord de table
-				robot.correctPosition(delta, 0);
-				Thread.sleep(500); // update position LL
-			}
 			if(code != 0)
 				throw new ActionneurException("No detection!", code);
-			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, y, 182., 2.);
-			robot.avanceTo(new XYO(positionEntree.getX(), 1665+95, Math.PI / 2));
+			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, y, 102., 2., 1023., 300., 300.);
+			robot.avanceTo(new XYO(positionEntree.getX(), positionEntree.getY() - 50, Math.PI / 2));
+			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, y, 120., 20., 1023., 300., 300.);
+			robot.addToCargo(atome);
 			done = true; // le script n'est plus faisable
-			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, y, 182., 20., 1023., 300., 900.);
-			robot.updateScore(20);
-			robot.addToCargo(TypeAtome.Goldenium);
 		}
 		finally
 		{
-			robot.avance(-95);
+			robot.avance(-100);
 		}
 	}
 	
 	@Override
 	public boolean faisable()
 	{
-		return !done && !robot.isCargoFull(TypeAtome.Goldenium) && robot.isGoldeniumFree() && robot.isScriptPousseAtomeHautFait();
+		return !done && !robot.isCargoFull(atome) && robot.isScriptPousseAtomeHautFait();
 	}
 }

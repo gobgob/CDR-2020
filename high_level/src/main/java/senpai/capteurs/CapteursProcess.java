@@ -615,12 +615,12 @@ public class CapteursProcess
 					else if(orientationRobot > Math.PI / 4)
 					{
 						// HAUT
-						delta = new XY(0, - cinem.getPosition().getY() + 2000 - 30 - distanceRobotMur); // TODO: l'obstacle en haut et à 3cm du bord
+						delta = new XY(0, - cinem.getPosition().getY() + 2000 - 30 - distanceRobotMur); // l'obstacle en haut et à 3cm du bord
 					}
 					else if(orientationRobot < -Math.PI / 4)
 					{
 						// BAS
-						delta = new XY(0, distanceRobotMur - cinem.getPosition().getY() + 422); // TODO: recalage sur la balance !
+						delta = new XY(0, distanceRobotMur - cinem.getPosition().getY() + 422); // recalage sur la balance !
 					}
 					else
 					{
@@ -665,12 +665,12 @@ public class CapteursProcess
 					else if(orientationRobot > Math.PI / 4)
 					{
 						// HAUT
-						delta = new XY(0, - cinem.getPosition().getY() + 2000 - 30 - distanceRobotMur); // TODO: l'obstacle en haut et à 3cm du bord
+						delta = new XY(0, - cinem.getPosition().getY() + 2000 - 30 - distanceRobotMur); // l'obstacle en haut et à 3cm du bord
 					}
 					else if(orientationRobot < -Math.PI / 4)
 					{
 						// BAS
-						delta = new XY(0, distanceRobotMur - cinem.getPosition().getY() + 422); // TODO: recalage sur la balance !
+						delta = new XY(0, distanceRobotMur - cinem.getPosition().getY() + 422); // recalage sur la balance !
 					}
 					else
 					{

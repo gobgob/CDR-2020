@@ -14,12 +14,14 @@
 
 package senpai.scripts;
 
+import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.capteurs.CapteursProcess;
 import senpai.robot.Robot;
 import senpai.robot.RobotColor;
 import senpai.table.Table;
+import senpai.table.TypeAtome;
 
 /**
  * Script manager
@@ -60,9 +62,9 @@ public class ScriptManager
 		return new ScriptRecupereGold(log, robot, table, cp, out, couleur.symmetry);
 	}
 	
-	public ScriptRecuperePalet getScriptRecuperePalet()
+	public ScriptRecuperePalet getScriptRecuperePalet(XY_RW entryPoint, TypeAtome tAtome)
 	{
-		return new ScriptRecuperePalet(log, robot, table, cp, out, couleur.symmetry);
+		return new ScriptRecuperePalet(log, robot, table, cp, out, couleur.symmetry, entryPoint, tAtome);
 	}
 	
 	public ScriptMonteRampe getScriptMonteRampe()
