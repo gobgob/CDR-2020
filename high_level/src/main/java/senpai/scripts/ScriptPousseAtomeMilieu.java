@@ -34,8 +34,10 @@ import senpai.table.Table;
 
 public class ScriptPousseAtomeMilieu extends Script
 {
-	private XY_RW positionEntree = new XY_RW(1200,1250); // point d'entrée du script
+	private XY_RW positionEntree = new XY_RW(904,1250); // point d'entrée du script
 	private double angleEntree = 0; // angle d'entrée
+	private XY_RW positionFin = new XY_RW(1363, 1359);
+	private double angleFin = 0.2915;
 	private boolean done = false;
 	private AtomeParTerre at;
 	
@@ -48,6 +50,7 @@ public class ScriptPousseAtomeMilieu extends Script
 			at = AtomeParTerre.MILIEU_GAUCHE;
 			positionEntree.setX(- positionEntree.getX());
 			angleEntree = Math.PI - angleEntree;
+			angleFin = Math.PI - angleFin;
 		}
 		else
 			at = AtomeParTerre.MILIEU_DROITE;
@@ -69,8 +72,8 @@ public class ScriptPousseAtomeMilieu extends Script
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException, ScriptException
 	{
 		try {
-			robot.avance(300);
-			robot.updateScore(20);
+			robot.avanceTo(new XYO(positionFin, angleFin));
+			robot.updateScore(6);
 			// si tout s'est bien passé, alors le script n'est plus faisable
 			table.setDone(at);
 			done = true;
@@ -78,7 +81,7 @@ public class ScriptPousseAtomeMilieu extends Script
 		finally
 		{
 			// dans tous les cas, on recule
-			robot.avance(-300);
+			robot.avance(-200);
 		}
 	}
 	

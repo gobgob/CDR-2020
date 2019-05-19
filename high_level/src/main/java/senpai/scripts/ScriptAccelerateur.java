@@ -81,7 +81,7 @@ public class ScriptAccelerateur extends Script
 		finally
 		{
 			// dans tous les cas, on recule et on replie l'actionneur
-			robot.avance(-50);
+			robot.avance(-100);
 		}
 	}
 	

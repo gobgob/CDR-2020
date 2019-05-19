@@ -21,6 +21,7 @@ import pfg.log.Log;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.capteurs.CapteursProcess;
 import senpai.capteurs.CapteursRobot;
+import senpai.capteurs.CapteursCorrection;
 import senpai.comm.CommProtocol;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.ScriptException;
@@ -37,7 +38,7 @@ import senpai.table.TypeAtome;
 
 public class ScriptRecuperePalet extends Script
 {
-	private XY_RW positionEntree = new XY_RW(-725,1665);
+	private XY_RW positionEntree = new XY_RW(1375,285);
 	private boolean done = false;
 	
 	public ScriptRecuperePalet(Log log, Robot robot, Table table, CapteursProcess cp, OutgoingOrderBuffer out, boolean symetrie)
@@ -56,15 +57,21 @@ public class ScriptRecuperePalet extends Script
 	@Override
 	public XYO getPointEntree()
 	{
-		return new XYO(positionEntree, Math.PI / 2);
+		return new XYO(positionEntree, -Math.PI / 2);
+	}
+
+	@Override
+	public XYO correctOdo() throws InterruptedException
+	{
+		return cp.doStaticCorrection(500, CapteursCorrection.AVANT);
 	}
 
 	@Override
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException, ScriptException
-	{		
+	{
 		// À FAIRE !!
 		try {
-			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, -23.7, 182., 2.);
+			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, -23.7, 102., 2.);
 			Object[] d = (Object[]) robot.execute(CommProtocol.Id.ACTUATOR_FIND_PUCK, Boolean.FALSE);
 			if(d == null)
 				throw new ActionneurException("No data after actuator find puck ?!", 0);
@@ -73,8 +80,8 @@ public class ScriptRecuperePalet extends Script
 			int code = (int) d[2];
 			if(code == 0 || code == CommProtocol.ActionneurMask.NO_DETECTION.masque)
 			{
-				double distanceRobotMur = (distance + CapteursRobot.ToF_FOURCHE_DROITE.pos.getX()) * Math.cos(robot.getCinematique().orientationReelle - Math.PI/2);
-				XY delta = new XY(0, - robot.getCinematique().getPosition().getY() + 2000 - 50 - distanceRobotMur); // palet à 5cm du bord
+				double distanceRobotMur = (distance + CapteursRobot.ToF_FOURCHE_DROITE.pos.getX()) * Math.cos(robot.getCinematique().orientationReelle + Math.PI/2);
+				XY delta = new XY(0, - robot.getCinematique().getPosition().getY() + distanceRobotMur); // palet sur le bord de table
 				robot.correctPosition(delta, 0);
 				Thread.sleep(500); // update position LL
 			}

@@ -25,7 +25,7 @@ import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
 import senpai.table.AtomeParTerre;
 import senpai.table.Table;
-
+// TODO delete this script
 /**
  * Script pour pousser un atome dans la zone de départ
  * @author pf

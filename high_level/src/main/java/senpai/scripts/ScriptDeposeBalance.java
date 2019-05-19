@@ -35,7 +35,7 @@ import senpai.table.Table;
 
 public class ScriptDeposeBalance extends Script
 {
-	private XY_RW positionEntree = new XY_RW(-135,700);
+	private XY_RW positionEntree = new XY_RW(135,700);
 	
 	public ScriptDeposeBalance(Log log, Robot robot, Table table, CapteursProcess cp, OutgoingOrderBuffer out, boolean symetrie)
 	{
@@ -66,7 +66,7 @@ public class ScriptDeposeBalance extends Script
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException, ScriptException
 	{
 		try {
-			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, 0., 200., 15., 1023., 300., 1023.);
+			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, 0., 200., 20., 1023., 300., 1023.);
 			robot.avance(170);
 			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, 0., 200., -75., 1023., 300., 1023.);
 			robot.emptyCargoOnBalance();
