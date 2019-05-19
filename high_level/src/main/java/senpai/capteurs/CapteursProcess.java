@@ -620,7 +620,7 @@ public class CapteursProcess
 					else if(orientationRobot < -Math.PI / 4)
 					{
 						// BAS
-						delta = new XY(0, distanceRobotMur - cinem.getPosition().getY());
+						delta = new XY(0, distanceRobotMur - cinem.getPosition().getY() + 422); // TODO: recalage sur la balance !
 					}
 					else
 					{
@@ -670,7 +670,7 @@ public class CapteursProcess
 					else if(orientationRobot < -Math.PI / 4)
 					{
 						// BAS
-						delta = new XY(0, distanceRobotMur - cinem.getPosition().getY());
+						delta = new XY(0, distanceRobotMur - cinem.getPosition().getY() + 422); // TODO: recalage sur la balance !
 					}
 					else
 					{

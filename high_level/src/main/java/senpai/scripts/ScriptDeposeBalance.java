@@ -18,6 +18,7 @@ import pfg.kraken.utils.XYO;
 import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
 import senpai.buffer.OutgoingOrderBuffer;
+import senpai.capteurs.CapteursCorrection;
 import senpai.capteurs.CapteursProcess;
 import senpai.comm.CommProtocol;
 import senpai.exceptions.ActionneurException;
@@ -53,6 +54,12 @@ public class ScriptDeposeBalance extends Script
 	public XYO getPointEntree()
 	{
 		return new XYO(positionEntree, -Math.PI / 2);
+	}
+	
+	@Override
+	public XYO correctOdo() throws InterruptedException
+	{
+		return cp.doStaticCorrection(500, CapteursCorrection.AVANT);
 	}
 
 	@Override
