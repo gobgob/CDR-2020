@@ -330,29 +330,42 @@ public class Match
 	 */
 	private void doScript(Script s, int nbEssaiChemin, int nbEssaiScript, boolean checkFin) throws PathfindingException, InterruptedException, UnableToMoveException, ScriptException
 	{
-		// Méthode qui s'occupe de retenter le script
-		boolean restartScript;
-		do {
-			try {
-				if(Thread.currentThread().isInterrupted())
-					throw new InterruptedException();
-
-				restartScript = false;
-				doScript(s, nbEssaiChemin, checkFin);
-			}
-			catch(PathfindingException | UnableToMoveException | ScriptException e)
-			{
-				nbEssaiScript--;
-				if(nbEssaiScript > 0)
-					log.write("Erreur lors de l'exécution du script: "+e.getMessage()+", on retente !", Severity.WARNING, Subject.SCRIPT);
-				else
-				{
-					log.write("Erreur lors de l'exécution du script: "+e.getMessage()+", on abandonne !", Severity.WARNING, Subject.SCRIPT);
-					throw e;
+		try {
+			// Méthode qui s'occupe de retenter le script
+			boolean restartScript;
+			do {
+				try {
+					if(Thread.currentThread().isInterrupted())
+						throw new InterruptedException();
+	
+					restartScript = false;
+					doScript(s, nbEssaiChemin, checkFin);
 				}
-				restartScript = true;
+				catch(PathfindingException | UnableToMoveException | ScriptException e)
+				{
+					nbEssaiScript--;
+					if(nbEssaiScript > 0)
+						log.write("Erreur lors de l'exécution du script: "+e.getMessage()+", on retente !", Severity.WARNING, Subject.SCRIPT);
+					else
+					{
+						log.write("Erreur lors de l'exécution du script: "+e.getMessage()+", on abandonne !", Severity.WARNING, Subject.SCRIPT);
+						throw e;
+					}
+					restartScript = true;
+				}
+			} while(restartScript && nbEssaiScript > 0);
+		} finally // dans tous les cas, quand on a terminé les tentatives, on replie le bras (si c'est possible)
+		{
+			try
+			{
+				robot.rangeSiPossible();
 			}
-		} while(restartScript && nbEssaiScript > 0);
+			catch(ActionneurException e)
+			{
+				log.write("Erreur lors du repliage final lors du script " + s + " : " + e, Severity.CRITICAL, Subject.SCRIPT);
+				e.printStackTrace();
+			}
+		}
 	}
 		
 	/**

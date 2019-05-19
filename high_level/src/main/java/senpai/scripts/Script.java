@@ -103,18 +103,6 @@ public abstract class Script
 			}*/
 			throw new ScriptException(e.getMessage());
 		}
-		finally
-		{
-			try
-			{
-				robot.rangeSiPossible();
-			}
-			catch(ActionneurException e)
-			{
-				log.write("Erreur lors du repliage final lors du script " + this + " : " + e, Severity.CRITICAL, Subject.SCRIPT);
-				e.printStackTrace();
-			}
-		}
 	}
 
 	@Override
