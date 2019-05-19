@@ -434,7 +434,7 @@ public class Match
 		// si on est déjà bien positionné, on ne fait rien !
 		boolean restartKraken = tooFar(robot.getCinematique().getXYO(), pointEntree, tolerancePosition, toleranceAngle, toleranceX, toleranceY);
 
-		while(restartKraken);
+		while(restartKraken)
 		{
 			try {
 				restartKraken = false;
