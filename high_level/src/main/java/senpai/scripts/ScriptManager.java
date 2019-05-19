@@ -70,6 +70,21 @@ public class ScriptManager
 		return new ScriptMonteRampe(log, robot, table, cp, out, couleur.symmetry);
 	}
 	
+	public ScriptPousseAtomeHaut getScriptPousseAtomeHaut()
+	{
+		return new ScriptPousseAtomeHaut(log, robot, table, cp, out, couleur.symmetry);
+	}
+
+	public ScriptPousseAtomeBas getScriptPousseAtomeBas()
+	{
+		return new ScriptPousseAtomeBas(log, robot, table, cp, out, couleur.symmetry);
+	}
+
+	public ScriptPousseAtomeMilieu getScriptPousseAtomeMilieu()
+	{
+		return new ScriptPousseAtomeMilieu(log, robot, table, cp, out, couleur.symmetry);
+	}
+
 	public ScriptDeposeBalance getScriptDeposeBalance()
 	{
 		return new ScriptDeposeBalance(log, robot, table, cp, out, couleur.symmetry);
