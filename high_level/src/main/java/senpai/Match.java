@@ -2,8 +2,10 @@ package senpai;
 
 import pfg.config.Config;
 import pfg.kraken.exceptions.PathfindingException;
+import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XYO;
+import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
 import senpai.Senpai.ErrorCode;
 import senpai.buffer.OutgoingOrderBuffer;
@@ -17,6 +19,7 @@ import senpai.robot.Robot;
 import senpai.robot.RobotColor;
 import senpai.scripts.Script;
 import senpai.scripts.ScriptManager;
+import senpai.table.Table;
 import senpai.threads.comm.ThreadCommProcess;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Severity;
@@ -50,6 +53,7 @@ public class Match
 	private static ScriptManager scripts;
 	private static Log log;
 	private static Config config;
+	private static Table table;
 
 	/**
 	 * Gestion des paramètres et de la fermeture du HL, ne pas toucher
@@ -99,6 +103,7 @@ public class Match
 		config = senpai.getService(Config.class);
 		ll = senpai.getService(OutgoingOrderBuffer.class);
 		robot = senpai.getService(Robot.class);
+		table = senpai.getService(Table.class);
 		scripts = senpai.getService(ScriptManager.class);
 		log = senpai.getService(Log.class);
 		
@@ -136,6 +141,11 @@ public class Match
 			couleur = (RobotColor) etat.data;
 		}
 		
+		XY_RW posZoneDepartAdverse = new XY_RW(-1500+550/2, 1250);
+		if(couleur.symmetry)
+			posZoneDepartAdverse.setX(- posZoneDepartAdverse.getX());
+		table.addOtherObstacle(new RectangularObstacle(posZoneDepartAdverse, 550, 900));
+		
 		log.write("Couleur utilisée : "+couleur, Subject.STATUS);
 		robot.updateColorAndSendPosition(couleur);
 		scripts.setCouleur(couleur);
@@ -149,7 +159,6 @@ public class Match
 		/**
 		 * Initialisation des scripts
 		 */
-		
 		Script accelerateur = scripts.getScriptAccelerateur();
 		Script recupereGold = scripts.getScriptRecupereGold();
 		Script recuperePalet = scripts.getScriptRecuperePalet();
@@ -187,7 +196,7 @@ public class Match
 				currentX = robot.getCinematique().getPosition().getX();
 			}
 		}
-
+		
 		/**
 		 * Boucle des scripts
 		 */
