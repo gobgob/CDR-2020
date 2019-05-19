@@ -103,6 +103,6 @@ public class ScriptRecuperePalet extends Script
 	@Override
 	public boolean faisable()
 	{
-		return !done && !robot.isCargoFull(TypeAtome.Goldenium) && robot.isGoldeniumFree();
+		return !done && !robot.isCargoFull(TypeAtome.Goldenium) && robot.isGoldeniumFree() && robot.isScriptPousseAtomeHautFait();
 	}
 }

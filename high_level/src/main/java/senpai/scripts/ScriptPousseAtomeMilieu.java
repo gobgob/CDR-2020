@@ -77,6 +77,7 @@ public class ScriptPousseAtomeMilieu extends Script
 			// si tout s'est bien passé, alors le script n'est plus faisable
 			table.setDone(at);
 			done = true;
+			robot.setScriptPousseAtomeMilieuFait();
 		}
 		finally
 		{

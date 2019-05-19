@@ -77,6 +77,7 @@ public class ScriptPousseAtomeHaut extends Script
 			// si tout s'est bien passé, alors le script n'est plus faisable
 			table.setDone(at);
 			done = true;
+			robot.setScriptPousseAtomeHautFait();
 		}
 		finally
 		{
@@ -88,7 +89,7 @@ public class ScriptPousseAtomeHaut extends Script
 	@Override
 	public boolean faisable()
 	{
-		return !done;
+		return !done && robot.isScriptPousseAtomeMilieuFait();
 	}
 	
 }

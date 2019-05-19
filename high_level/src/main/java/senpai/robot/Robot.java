@@ -74,6 +74,7 @@ public class Robot extends RobotState
 	private long dateDebutMatch, dateFinMatch = Long.MAX_VALUE;
 	private RobotColor c = null;
 	private boolean deploye = false;
+	private boolean scriptPousseAtomeMilieuFait = false, scriptPousseAtomeHautFait = false;
 	
 	private boolean jumperOK = false;
 	private volatile State etat = State.STANDBY;
@@ -131,6 +132,26 @@ public class Robot extends RobotState
 	public void setEnMarcheAvance(boolean enMarcheAvant)
 	{
 		cinematique.enMarcheAvant = enMarcheAvant;
+	}
+	
+	public void setScriptPousseAtomeMilieuFait()
+	{
+		scriptPousseAtomeMilieuFait = true;
+	}
+	
+	public boolean isScriptPousseAtomeMilieuFait()
+	{
+		return scriptPousseAtomeMilieuFait;
+	}
+	
+	public void setScriptPousseAtomeHautFait()
+	{
+		scriptPousseAtomeHautFait = true;
+	}
+	
+	public boolean isScriptPousseAtomeHautFait()
+	{
+		return scriptPousseAtomeHautFait;
 	}
 
 	@Override
