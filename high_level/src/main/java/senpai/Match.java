@@ -368,9 +368,16 @@ public class Match
 		XYO pointEntree = s.getPointEntree();
 		log.write("Point d'entrée du script "+pointEntree, Subject.SCRIPT);
 		
-		boolean restartKraken;
+		double toleranceAngle = s.getToleranceAngle(); // en degré
+		double tolerancePosition = s.getTolerancePosition(); // en mm
+		double toleranceX = s.getToleranceX();
+		double toleranceY = s.getToleranceY();
+		
+		// si on est déjà bien positionné, on ne fait rien !
+		boolean restartKraken = tooFar(robot.getCinematique().getXYO(), pointEntree, tolerancePosition, toleranceAngle, toleranceX, toleranceY);
 
-		do {
+		while(restartKraken);
+		{
 			try {
 				restartKraken = false;
 				robot.goTo(pointEntree);
@@ -380,25 +387,18 @@ public class Match
 
 				if(checkFin && !config.getBoolean(ConfigInfoSenpai.SIMULE_COMM))
 				{
-					double toleranceAngle = s.getToleranceAngle(); // en degré
-					double tolerancePosition = s.getTolerancePosition(); // en mm
-					double toleranceX = s.getToleranceX();
-					double toleranceY = s.getToleranceY();
-					
-					log.write("Erreur en angle: "+Math.abs(XYO.angleDifference(corrected.orientation, pointEntree.orientation))*180/Math.PI+", erreur en position: "+corrected.position.distance(pointEntree.position)+", erreur en X: "+Math.abs(corrected.position.getX() - pointEntree.position.getX())+", erreur en Y: "+Math.abs(corrected.position.getY() - pointEntree.position.getY()), Subject.SCRIPT);
-					log.write("Erreur autorisée : "+toleranceAngle+" (angle), "+tolerancePosition+" (position), "+toleranceX+" (X), "+toleranceY+" (Y)", Subject.SCRIPT);
-					if(Math.abs(XYO.angleDifference(corrected.orientation, pointEntree.orientation)) > toleranceAngle*Math.PI/180
-							|| corrected.position.distance(pointEntree.position) > tolerancePosition
-							|| Math.abs(corrected.position.getX() - pointEntree.position.getX()) > toleranceX
-							|| Math.abs(corrected.position.getY() - pointEntree.position.getY()) > toleranceY)
-						// on retente
+					// on retente
+					if(tooFar(corrected, pointEntree, tolerancePosition, toleranceAngle, toleranceX, toleranceY))
 					{
 						restartKraken = true;
 						nbEssaiChemin--;
 						if(nbEssaiChemin > 0)
 							log.write("Erreur trop grande, on retente !", Severity.WARNING, Subject.SCRIPT);
 						else
+						{
 							log.write("Erreur trop grande, on abandonne !", Severity.WARNING, Subject.SCRIPT);
+							throw new ScriptException("Erreur à l'arrivée trop grande !");
+						}
 					}
 				}
 
@@ -407,39 +407,27 @@ public class Match
 			}
 			catch(UnableToMoveException e)
 			{
+				log.write("Erreur durant de trajet : "+e, Severity.WARNING, Subject.SCRIPT);
 				restartKraken = true;
 				nbEssaiChemin--;
 				if(nbEssaiChemin == 0)
 					throw e;
 			}
-		} while(restartKraken && nbEssaiChemin > 0);
+		}
 		
-		//s.correctOdo();
-		/*
-		if(checkFin && !config.getBoolean(ConfigInfoSenpai.SIMULE_COMM))
-		{
-			double toleranceAngle = s.getToleranceAngle(); // en degré
-			double tolerancePosition = s.getTolerancePosition(); // en mm
-			tolerancePosition *= tolerancePosition;
-			if(Math.abs(XYO.angleDifference(robot.getCinematique().orientationReelle, pointEntree.orientation)) > toleranceAngle*Math.PI/180
-					|| robot.getCinematique().getPosition().squaredDistance(pointEntree.position) > tolerancePosition)
-				// on retente
-			{
-				robot.goTo(pointEntree);
-				s.correctOdo();
-			}
-	
-			if(Math.abs(XYO.angleDifference(robot.getCinematique().orientationReelle, pointEntree.orientation)) > toleranceAngle*Math.PI/180
-					|| robot.getCinematique().getPosition().squaredDistance(pointEntree.position) > tolerancePosition)
-				throw new ScriptException("On n'a pas réussi à se positionner une précision suffisante.");
-		}*/
-		
-		if(!restartKraken)
-			s.execute();
-		else
-			log.write("On n'a pas réussi à atteindre le script, on annule "+s, Subject.SCRIPT);
+		s.execute();
 
 		if(Thread.currentThread().isInterrupted())
 			throw new InterruptedException();
+	}
+	
+	private boolean tooFar(XYO corrected, XYO pointEntree, double tolerancePosition, double toleranceAngle, double toleranceX, double toleranceY)
+	{
+		log.write("Erreur en angle: "+Math.abs(XYO.angleDifference(corrected.orientation, pointEntree.orientation))*180/Math.PI+", erreur en position: "+corrected.position.distance(pointEntree.position)+", erreur en X: "+Math.abs(corrected.position.getX() - pointEntree.position.getX())+", erreur en Y: "+Math.abs(corrected.position.getY() - pointEntree.position.getY()), Subject.SCRIPT);
+		log.write("Erreur autorisée : "+toleranceAngle+" (angle), "+tolerancePosition+" (position), "+toleranceX+" (X), "+toleranceY+" (Y)", Subject.SCRIPT);
+		return (Math.abs(XYO.angleDifference(corrected.orientation, pointEntree.orientation)) > toleranceAngle*Math.PI/180
+				|| corrected.position.distance(pointEntree.position) > tolerancePosition
+				|| Math.abs(corrected.position.getX() - pointEntree.position.getX()) > toleranceX
+				|| Math.abs(corrected.position.getY() - pointEntree.position.getY()) > toleranceY);
 	}
 }
