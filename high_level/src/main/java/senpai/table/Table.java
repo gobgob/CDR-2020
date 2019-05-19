@@ -46,6 +46,7 @@ public class Table implements Printable
 
 	private HashMap<AtomeParTerre, Boolean> etat = new HashMap<AtomeParTerre, Boolean>();
 	private List<Obstacle> currentObstacles = new ArrayList<Obstacle>();
+	private List<Obstacle> otherObstacles = new ArrayList<Obstacle>();
 	
 	public Table(Log log, Config config, GraphicDisplay buffer)
 	{
@@ -54,6 +55,11 @@ public class Table implements Printable
 			buffer.addPrintable(this, Color.BLACK, Layer.BACKGROUND.layer);
 		for(AtomeParTerre n : AtomeParTerre.values())
 			etat.put(n, false);
+	}
+	
+	public void addOtherObstacle(Obstacle o)
+	{
+		otherObstacles.add(o);
 	}
 	
 	/**
@@ -85,6 +91,7 @@ public class Table implements Printable
 		for(AtomeParTerre n : AtomeParTerre.values())
 			if(!etat.get(n))
 				currentObstacles.add(n.obstacle);
+		currentObstacles.addAll(otherObstacles);
 		return currentObstacles.iterator();
 	}
 	

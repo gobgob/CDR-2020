@@ -2,8 +2,10 @@ package senpai;
 
 import pfg.config.Config;
 import pfg.kraken.exceptions.PathfindingException;
+import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XYO;
+import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
 import senpai.Senpai.ErrorCode;
 import senpai.buffer.OutgoingOrderBuffer;
@@ -17,6 +19,7 @@ import senpai.robot.Robot;
 import senpai.robot.RobotColor;
 import senpai.scripts.Script;
 import senpai.scripts.ScriptManager;
+import senpai.table.Table;
 import senpai.threads.comm.ThreadCommProcess;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Severity;
@@ -50,6 +53,7 @@ public class Match
 	private static ScriptManager scripts;
 	private static Log log;
 	private static Config config;
+	private static Table table;
 
 	/**
 	 * Gestion des paramètres et de la fermeture du HL, ne pas toucher
@@ -99,6 +103,7 @@ public class Match
 		config = senpai.getService(Config.class);
 		ll = senpai.getService(OutgoingOrderBuffer.class);
 		robot = senpai.getService(Robot.class);
+		table = senpai.getService(Table.class);
 		scripts = senpai.getService(ScriptManager.class);
 		log = senpai.getService(Log.class);
 		
@@ -136,6 +141,11 @@ public class Match
 			couleur = (RobotColor) etat.data;
 		}
 		
+		XY_RW posZoneDepartAdverse = new XY_RW(-1500+550/2, 1250);
+		if(couleur.symmetry)
+			posZoneDepartAdverse.setX(- posZoneDepartAdverse.getX());
+		table.addOtherObstacle(new RectangularObstacle(posZoneDepartAdverse, 550, 900));
+		
 		log.write("Couleur utilisée : "+couleur, Subject.STATUS);
 		robot.updateColorAndSendPosition(couleur);
 		scripts.setCouleur(couleur);
@@ -149,7 +159,6 @@ public class Match
 		/**
 		 * Initialisation des scripts
 		 */
-		
 		Script accelerateur = scripts.getScriptAccelerateur();
 		Script recupereGold = scripts.getScriptRecupereGold();
 		Script recuperePalet = scripts.getScriptRecuperePalet();
@@ -186,7 +195,7 @@ public class Match
 				currentX = robot.getCinematique().getPosition().getX();
 			}
 		}
-
+		
 		/**
 		 * Boucle des scripts
 		 */
@@ -320,29 +329,42 @@ public class Match
 	 */
 	private void doScript(Script s, int nbEssaiChemin, int nbEssaiScript, boolean checkFin) throws PathfindingException, InterruptedException, UnableToMoveException, ScriptException
 	{
-		// Méthode qui s'occupe de retenter le script
-		boolean restartScript;
-		do {
-			try {
-				if(Thread.currentThread().isInterrupted())
-					throw new InterruptedException();
-
-				restartScript = false;
-				doScript(s, nbEssaiChemin, checkFin);
-			}
-			catch(PathfindingException | UnableToMoveException | ScriptException e)
-			{
-				nbEssaiScript--;
-				if(nbEssaiScript > 0)
-					log.write("Erreur lors de l'exécution du script: "+e.getMessage()+", on retente !", Severity.WARNING, Subject.SCRIPT);
-				else
-				{
-					log.write("Erreur lors de l'exécution du script: "+e.getMessage()+", on abandonne !", Severity.WARNING, Subject.SCRIPT);
-					throw e;
+		try {
+			// Méthode qui s'occupe de retenter le script
+			boolean restartScript;
+			do {
+				try {
+					if(Thread.currentThread().isInterrupted())
+						throw new InterruptedException();
+	
+					restartScript = false;
+					doScript(s, nbEssaiChemin, checkFin);
 				}
-				restartScript = true;
+				catch(PathfindingException | UnableToMoveException | ScriptException e)
+				{
+					nbEssaiScript--;
+					if(nbEssaiScript > 0)
+						log.write("Erreur lors de l'exécution du script: "+e.getMessage()+", on retente !", Severity.WARNING, Subject.SCRIPT);
+					else
+					{
+						log.write("Erreur lors de l'exécution du script: "+e.getMessage()+", on abandonne !", Severity.WARNING, Subject.SCRIPT);
+						throw e;
+					}
+					restartScript = true;
+				}
+			} while(restartScript && nbEssaiScript > 0);
+		} finally // dans tous les cas, quand on a terminé les tentatives, on replie le bras (si c'est possible)
+		{
+			try
+			{
+				robot.rangeSiPossible();
 			}
-		} while(restartScript && nbEssaiScript > 0);
+			catch(ActionneurException e)
+			{
+				log.write("Erreur lors du repliage final lors du script " + s + " : " + e, Severity.CRITICAL, Subject.SCRIPT);
+				e.printStackTrace();
+			}
+		}
 	}
 		
 	/**

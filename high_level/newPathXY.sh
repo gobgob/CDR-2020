@@ -1,2 +1,2 @@
 #!/bin/sh
-java -cp target/chariot-hl.jar senpai.ConstructTrajectory XY $@
+java -cp target/chariot-hl.jar senpai.ConstructTrajectoryAllObstacles XY $@
