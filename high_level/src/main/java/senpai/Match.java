@@ -19,6 +19,7 @@ import senpai.scripts.Script;
 import senpai.scripts.ScriptManager;
 import senpai.threads.comm.ThreadCommProcess;
 import senpai.utils.ConfigInfoSenpai;
+import senpai.utils.Severity;
 import senpai.utils.Subject;
 
 /*
@@ -334,10 +335,10 @@ public class Match
 			{
 				nbEssaiScript--;
 				if(nbEssaiScript > 0)
-					log.write("Erreur lors de l'exécution du script: "+e.getMessage()+", on retente !", Subject.SCRIPT);
+					log.write("Erreur lors de l'exécution du script: "+e.getMessage()+", on retente !", Severity.WARNING, Subject.SCRIPT);
 				else
 				{
-					log.write("Erreur lors de l'exécution du script: "+e.getMessage()+", on abandonne !", Subject.SCRIPT);
+					log.write("Erreur lors de l'exécution du script: "+e.getMessage()+", on abandonne !", Severity.WARNING, Subject.SCRIPT);
 					throw e;
 				}
 				restartScript = true;
@@ -381,19 +382,23 @@ public class Match
 				{
 					double toleranceAngle = s.getToleranceAngle(); // en degré
 					double tolerancePosition = s.getTolerancePosition(); // en mm
+					double toleranceX = s.getToleranceX();
+					double toleranceY = s.getToleranceY();
 					
-					log.write("Erreur en angle: "+Math.abs(XYO.angleDifference(corrected.orientation, pointEntree.orientation))*180/Math.PI+", erreur en position: "+corrected.position.distance(pointEntree.position), Subject.SCRIPT);
-					log.write("Erreur autorisée : "+toleranceAngle+"(angle) et "+tolerancePosition+" (position).", Subject.SCRIPT);
+					log.write("Erreur en angle: "+Math.abs(XYO.angleDifference(corrected.orientation, pointEntree.orientation))*180/Math.PI+", erreur en position: "+corrected.position.distance(pointEntree.position)+", erreur en X: "+Math.abs(corrected.position.getX() - pointEntree.position.getX())+", erreur en Y: "+Math.abs(corrected.position.getY() - pointEntree.position.getY()), Subject.SCRIPT);
+					log.write("Erreur autorisée : "+toleranceAngle+" (angle), "+tolerancePosition+" (position), "+toleranceX+" (X), "+toleranceY+" (Y)", Subject.SCRIPT);
 					if(Math.abs(XYO.angleDifference(corrected.orientation, pointEntree.orientation)) > toleranceAngle*Math.PI/180
-							|| corrected.position.distance(pointEntree.position) > tolerancePosition)
+							|| corrected.position.distance(pointEntree.position) > tolerancePosition
+							|| Math.abs(corrected.position.getX() - pointEntree.position.getX()) > toleranceX
+							|| Math.abs(corrected.position.getY() - pointEntree.position.getY()) > toleranceY)
 						// on retente
 					{
 						restartKraken = true;
 						nbEssaiChemin--;
 						if(nbEssaiChemin > 0)
-							log.write("Erreur trop grande, on retente !", Subject.SCRIPT);
+							log.write("Erreur trop grande, on retente !", Severity.WARNING, Subject.SCRIPT);
 						else
-							log.write("Erreur trop grande, on abandonne !", Subject.SCRIPT);
+							log.write("Erreur trop grande, on abandonne !", Severity.WARNING, Subject.SCRIPT);
 					}
 				}
 

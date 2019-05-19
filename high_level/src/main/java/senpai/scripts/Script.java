@@ -61,6 +61,16 @@ public abstract class Script
 		return 20;
 	}
 	
+	public double getToleranceX()
+	{
+		return 20;
+	}
+	
+	public double getToleranceY()
+	{
+		return 20;
+	}
+	
 	private XYO corrected = new XYO(0,0,0);
 	
 	public XYO correctOdo() throws InterruptedException

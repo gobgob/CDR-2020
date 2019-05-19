@@ -101,4 +101,20 @@ public class ScriptRecupereGold extends Script
 	{
 		return !done && !robot.isCargoFull(TypeAtome.Goldenium) && robot.isGoldeniumFree();
 	}
+	
+	// Tolérance en position volontairement très grande : ce n'est pas elle qui sera limitante
+	public double getTolerancePosition()
+	{
+		return 100;
+	}
+	
+	public double getToleranceX()
+	{
+		return 15;
+	}
+	
+	public double getToleranceY()
+	{
+		return 50;
+	}
 }
