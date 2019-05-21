@@ -15,13 +15,13 @@
 #define SCAN_EDGE_MIN_HEIGHT        (15.0)    // mm
 #define SCAN_EDGE_MAX_WIDTH         (4)       // index
 #define SCAN_EDGES_MIN_DIST         (45)      // index
-#define SCAN_EDGES_MAX_DIST         (60)      // index
+#define SCAN_EDGES_MAX_DIST         (65)      // index
 
 /* Detection tuning for Goldenium */
 #define SCAN_EDGE_MIN_HEIGHT_GOLD   (30.0)    // mm
 #define SCAN_EDGE_MAX_WIDTH_GOLD    (4)       // index
 #define SCAN_EDGES_MIN_DIST_GOLD    (50)      // index
-#define SCAN_EDGES_MAX_DIST_GOLD    (60)      // index
+#define SCAN_EDGES_MAX_DIST_GOLD    (70)      // index
 
 
 class PuckScanner
@@ -111,6 +111,7 @@ public:
             puck_distance = min(scan_data[i], puck_distance);
         }
 
+        Server.printf("min dist = %d\n", puck_distance);
         Server.printf("index;distance\n");
         for(size_t i = 0; i < SCAN_RESOLUTION; i++) {
             Server.printf("%u;%d\n", i, scan_data[i]);
@@ -147,6 +148,7 @@ public:
                     if (puck_size < puck_max_size && puck_size > puck_min_size) {
                         // Puck found
                         y = (indexToMm(puck_start_pos) + indexToMm(puck_end_pos)) / 2;
+                        Server.printf("Scan success, y = %g\n", y);
                         return EXIT_SUCCESS;
                     }
                 }
@@ -161,6 +163,7 @@ public:
             }
         }
         // Puck not found
+        Server.printf("Scan failure\n");
         return EXIT_FAILURE;
     }
 

@@ -110,6 +110,17 @@ void loop()
 
             motionControlSystem.sendLogs();
         }
+
+        //static uint32_t dbg = 0;
+        //if (millis() - dbg > 200) {
+        //    dbg = millis();
+        //    int32_t leftTicks, rightTicks;
+        //    motionControlSystem.getRawTicks(leftTicks, rightTicks);
+        //    Position p = motionControlSystem.getPosition();
+        //    Server.printf("g=%d\td=%d\n", leftTicks, rightTicks);
+        //    Server.print(p);
+        //}
+
         //t8 = micros();
 
         //if (t8 - t1 > 3000) {

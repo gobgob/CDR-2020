@@ -434,6 +434,11 @@ private:
         return trajectoryFollower.parkingBreakEnabled();
     }
 
+    void getRawTicks(int32_t &leftTicks, int32_t &rightTicks) const
+    {
+        trajectoryFollower.getRawTicks(leftTicks, rightTicks);
+    }
+
 private:
 	TrajectoryFollower trajectoryFollower;
 	volatile Position position;

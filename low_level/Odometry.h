@@ -82,6 +82,14 @@ public:
 		translationSpeed = averageTranslationSpeed.value();
 	}
 
+    void getRawTicks(int32_t &leftTicks, int32_t &rightTicks) const
+    {
+        noInterrupts();
+        leftTicks = leftOdometryTicks;
+        rightTicks = rightOdometryTicks;
+        interrupts();
+    }
+
 private:
 	const float freqAsserv;	// Fréquence d'appel de la méthode 'compute'. Utilisée pour le calcul des vitesses.
 
@@ -92,7 +100,7 @@ private:
 	volatile float & currentTranslation;	// Distance parcourue par le robot en translation (avant-arrière). Unité : mm
 	volatile float & translationSpeed;		// Vitesse moyennée du robot selon son axe avant-arrière. Unité : mm/s
 
-	int32_t
+	volatile int32_t
 		leftOdometryTicks,
 		rightOdometryTicks;
 	int32_t
