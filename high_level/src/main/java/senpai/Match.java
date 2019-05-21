@@ -209,7 +209,7 @@ public class Match
 			pathfindingError = false;
 			try
 			{
-				doScript(accelerateur, 3, 3, true);
+				doScript(accelerateur, 4, 2, true);
 				none = false;
 			}
 			catch(PathfindingException | UnableToMoveException | ScriptException e)
@@ -224,7 +224,7 @@ public class Match
 			
 			try
 			{
-				doScript(recupereGold, 3, 3, true);
+				doScript(recupereGold, 4, 2, true);
 				none = false;
 			}
 			catch(PathfindingException | UnableToMoveException | ScriptException e)
@@ -236,7 +236,7 @@ public class Match
 			
 			try
 			{
-				doScript(deposeBalance, 3, 3, true);
+				doScript(deposeBalance, 4, 2, true);
 				none = false;
 			}
 			catch(PathfindingException | UnableToMoveException | ScriptException e)
@@ -248,7 +248,7 @@ public class Match
 
 			try
 			{
-				doScript(pousseAtomeMilieu, 3, 3, true);
+				doScript(pousseAtomeMilieu, 3, 2, true);
 				none = false;
 			}
 			catch(PathfindingException | UnableToMoveException | ScriptException e)
@@ -260,7 +260,7 @@ public class Match
 
 			try
 			{
-				doScript(pousseAtomeHaut, 3, 3, true);
+				doScript(pousseAtomeHaut, 3, 2, true);
 				none = false;
 			}
 			catch(PathfindingException | UnableToMoveException | ScriptException e)
@@ -272,7 +272,7 @@ public class Match
 
 			try
 			{
-				doScript(recuperePaletBlueium, 3, 3, true);
+				doScript(recuperePaletBlueium, 4, 2, true);
 				none = false;
 			}
 			catch(PathfindingException | UnableToMoveException | ScriptException e)
@@ -284,7 +284,7 @@ public class Match
 
 			try
 			{
-				doScript(recuperePaletGreenium, 3, 3, true);
+				doScript(recuperePaletGreenium, 4, 2, true);
 				none = false;
 			}
 			catch(PathfindingException | UnableToMoveException | ScriptException e)
@@ -297,7 +297,7 @@ public class Match
 			/*
 			try
 			{
-				doScript(monteRampe, 3, 3, true);
+				doScript(monteRampe, 4, 3, true);
 				none = false;
 			}
 			catch(PathfindingException | UnableToMoveException | ScriptException e)

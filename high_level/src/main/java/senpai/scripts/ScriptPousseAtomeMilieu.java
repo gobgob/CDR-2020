@@ -34,7 +34,7 @@ import senpai.table.Table;
 
 public class ScriptPousseAtomeMilieu extends Script
 {
-	private XY_RW positionEntree = new XY_RW(904,1250); // point d'entrée du script
+	private XY_RW positionEntree = new XY_RW(860,1250); // point d'entrée du script
 	private double angleEntree = 0; // angle d'entrée
 	private XY_RW positionFin = new XY_RW(1363, 1359);
 	private double angleFin = 0.2915;
