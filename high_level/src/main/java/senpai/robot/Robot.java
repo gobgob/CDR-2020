@@ -699,6 +699,11 @@ public class Robot extends RobotState
 	{
 		rangeSiPossible();
 	}
+	
+	public void HACK_setRobotNonDeploye()
+	{
+		deploye = false;
+	}
 
 	public void rangeSiPossible() throws InterruptedException, ActionneurException
 	{

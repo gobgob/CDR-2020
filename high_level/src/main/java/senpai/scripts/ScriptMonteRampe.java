@@ -80,6 +80,10 @@ public class ScriptMonteRampe extends Script
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException, ScriptException
 	{
 		try {
+			// méthodès à utiliser
+			//robot.HACK_setRobotNonDeploye();
+			//robot.goTo(destination, reverse)
+			
 			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, 0., 210., 20., 1023., 300., 300.);
 			robot.avanceTo(new XYO(positionAvance, angleEntree));
 			table.setDone(at);
