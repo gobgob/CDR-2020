@@ -478,6 +478,12 @@ public class Robot extends RobotState
 
 	private DataTicket goTo(SearchParameters sp, boolean reverse) throws PathfindingException, InterruptedException, UnableToMoveException
 	{
+		if(graphicPath)
+		{
+			RectangularObstacle arrival = obstacle.clone();
+			arrival.update(sp.arrival.getPosition(), sp.arrival.orientationReelle);
+			buffer.addPrintable(arrival, Color.BLUE, Layer.FOREGROUND.layer);
+		}
 		long avant = System.currentTimeMillis();
 		Kraken k;
 		if(deploye)

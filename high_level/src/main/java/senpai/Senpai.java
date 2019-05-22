@@ -313,8 +313,8 @@ public class Senpai
 			warmUp.start();
 		}
 
-		Kraken kDeploye = new Kraken(robotTemplateDeploye, obstaclesFixes, obsDyn, new XY(-1480, 20), new XY(1480, 1980), configfile, profiles);
-		Kraken kRange = new Kraken(robotTemplateRange, obstaclesFixes, obsDyn, new XY(-1480, 20), new XY(1480, 1980), configfile, profiles);
+		Kraken kDeploye = new Kraken(robotTemplateDeploye, obstaclesFixes, obsDyn, new XY(-1500, 0), new XY(1500, 2000), configfile, profiles);
+		Kraken kRange = new Kraken(robotTemplateRange, obstaclesFixes, obsDyn, new XY(-1500, 0), new XY(1500, 2000), configfile, profiles);
 		injector.addService(new Kraken[]{kDeploye, kRange});
 
 //		injector.addService(k.enableAutoReplanning());
