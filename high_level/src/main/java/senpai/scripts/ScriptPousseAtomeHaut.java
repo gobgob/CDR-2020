@@ -14,6 +14,7 @@
 
 package senpai.scripts;
 
+import pfg.kraken.exceptions.PathfindingException;
 import pfg.kraken.utils.XYO;
 import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
@@ -25,6 +26,7 @@ import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
 import senpai.table.AtomeParTerre;
 import senpai.table.Table;
+import senpai.utils.Subject;
 
 /**
  * Script pour pousser un atome dans la zone de départ
@@ -72,18 +74,34 @@ public class ScriptPousseAtomeHaut extends Script
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException, ScriptException
 	{
 		try {
-			robot.avanceTo(new XYO(positionFin, angleFin));
+			robot.goTo(new XYO(positionFin, angleFin));
 			robot.updateScore(6);
 			// si tout s'est bien passé, alors le script n'est plus faisable
 			table.setDone(at);
 			done = true;
 			robot.setScriptPousseAtomeHautFait();
 		}
+		catch (PathfindingException e) {
+			log.write("Pathfinding exception lors du goTo", Subject.SCRIPT);
+			throw new ScriptException();
+		}
 		finally
 		{
 			// dans tous les cas, on recule
 			robot.avance(-200);
 		}
+	}
+
+	@Override
+	public double getToleranceAngle()
+	{
+		return 5;
+	}
+	
+	@Override
+	public double getTolerancePosition()
+	{
+		return 20;
 	}
 	
 	@Override
