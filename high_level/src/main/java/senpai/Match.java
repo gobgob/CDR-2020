@@ -438,7 +438,7 @@ public class Match
 		{
 			try {
 				restartKraken = false;
-				robot.goTo(pointEntree);
+				robot.goTo(pointEntree, s.reverseSearch());
 				XYO corrected = s.correctOdo();
 				if(corrected == null)
 					corrected = robot.getCinematique().getXYO();

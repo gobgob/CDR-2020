@@ -42,6 +42,11 @@ public abstract class Script
 	protected CapteursProcess cp;
 	protected OutgoingOrderBuffer out;
 	
+	public boolean reverseSearch()
+	{
+		return false;
+	}
+	
 	public Script(Log log, Robot robot, Table table, CapteursProcess cp, OutgoingOrderBuffer out)
 	{
 		this.log = log;

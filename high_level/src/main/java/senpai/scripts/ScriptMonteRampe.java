@@ -36,8 +36,8 @@ import senpai.table.Table;
 public class ScriptMonteRampe extends Script
 {
 	// TODO à compléter
-	private XY_RW positionEntree = new XY_RW(-1000,200); // point d'entrée du script
-	private XY_RW positionAvance = new XY_RW(-400,200); // jusqu'où le robot doit-il avancer
+	private XY_RW positionEntree = new XY_RW(1000,200); // point d'entrée du script
+	private XY_RW positionAvance = new XY_RW(400,200); // jusqu'où le robot doit-il avancer
 	private double angleEntree = 0; // angle d'entrée
 	private boolean done = false;
 	private AtomeParTerre at;
@@ -98,4 +98,9 @@ public class ScriptMonteRampe extends Script
 		return !done;
 	}
 	
+	public boolean reverseSearch()
+	{
+		return true;
+	}
+
 }

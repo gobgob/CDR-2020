@@ -461,13 +461,22 @@ public class Robot extends RobotState
 		notifyAll();
 	}
 	
+	public DataTicket goTo(XYO destination, boolean reverse) throws PathfindingException, InterruptedException, UnableToMoveException
+	{
+		if(reverse)
+			return goTo(new SearchParameters(destination, cinematique.getXYO()), true);
+		else
+			return goTo(new SearchParameters(cinematique.getXYO(), destination), false);
+	}
+
+	
 	public DataTicket goTo(XYO destination) throws PathfindingException, InterruptedException, UnableToMoveException
 	{
-		return goTo(new SearchParameters(cinematique.getXYO(), destination));
+		return goTo(destination, false);
 	}
 
 
-	public DataTicket goTo(SearchParameters sp) throws PathfindingException, InterruptedException, UnableToMoveException
+	private DataTicket goTo(SearchParameters sp, boolean reverse) throws PathfindingException, InterruptedException, UnableToMoveException
 	{
 		long avant = System.currentTimeMillis();
 		Kraken k;
@@ -487,10 +496,22 @@ public class Robot extends RobotState
 		log.write("On cherche un chemin", Subject.TRAJECTORY);
 		avant = System.currentTimeMillis();
 		path = k.search();
+		if(reverse)
+		{
+			List<ItineraryPoint> tmp = new ArrayList<ItineraryPoint>();
+			for(int i = path.size()-2; i >= 0; i--)
+			{
+				ItineraryPoint ip = path.get(i);
+				tmp.add(new ItineraryPoint(ip.x, ip.y, ip.orientation, ip.curvature, !ip.goingForward, ip.maxSpeed, ip.possibleSpeed, ip.stop));
+			}
+			tmp.add(new ItineraryPoint(sp.start.getPosition().getX(), sp.start.getPosition().getY(), sp.start.orientationReelle, tmp.get(tmp.size()-1).curvature,
+					tmp.get(tmp.size()-1).goingForward, tmp.get(tmp.size()-1).maxSpeed, 0, true));
+			path = tmp;
+		}
 		if(graphicPath)
 			for(ItineraryPoint ip: path)
 				buffer.addPrintable(ip, Color.BLACK, Layer.FOREGROUND.layer);
-		
+		System.out.println(path.get(0));
 		log.write("Durée de la recherche : "+(System.currentTimeMillis() - avant), Subject.TRAJECTORY);
 		
 		path = slowDownTrajectory(path);

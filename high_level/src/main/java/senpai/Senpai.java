@@ -117,7 +117,10 @@ public class Senpai
 		
 		assert Thread.currentThread().getId() == mainThread.getId() : "Appel au destructeur depuis un thread !";
 		
-		Runtime.getRuntime().removeShutdownHook(shutdownThread);
+		try {
+			Runtime.getRuntime().removeShutdownHook(shutdownThread);
+		} catch(IllegalStateException e)
+		{}
 		
 		log.write("Arrêt : "+errorCode, errorCode.normal ? Severity.INFO : Severity.CRITICAL, Subject.STATUS);
 		
