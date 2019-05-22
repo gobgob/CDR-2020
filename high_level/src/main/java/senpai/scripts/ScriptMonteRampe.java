@@ -26,6 +26,8 @@ import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
 import senpai.table.AtomeParTerre;
 import senpai.table.Table;
+import senpai.table.TypeAtome;
+import senpai.comm.CommProtocol;
 
 /**
  * Script de la montée de la rampe
@@ -35,10 +37,9 @@ import senpai.table.Table;
 
 public class ScriptMonteRampe extends Script
 {
-	// TODO à compléter
 	private XY_RW positionEntree = new XY_RW(1000,200); // point d'entrée du script
-	private XY_RW positionAvance = new XY_RW(400,200); // jusqu'où le robot doit-il avancer
-	private double angleEntree = 0; // angle d'entrée
+	private XY_RW positionAvance = new XY_RW(350,200); // jusqu'où le robot doit-il avancer
+	private double angleEntree = Math.PI; // angle d'entrée
 	private boolean done = false;
 	private AtomeParTerre at;
 	
@@ -79,16 +80,25 @@ public class ScriptMonteRampe extends Script
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException, ScriptException
 	{
 		try {
+			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, 0., 210., 20., 1023., 300., 300.);
 			robot.avanceTo(new XYO(positionAvance, angleEntree));
-			robot.updateScore(20);
-			// si tout s'est bien passé, alors le script n'est plus faisable
 			table.setDone(at);
+			if (!robot.isCargoEmpty()) {	
+				robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, 0., 210., -75., 1023., 300., 1023.);
+				robot.emptyCargoOnBalance();
+				robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, 0., 210., 0.);
+			}
+			robot.avance(-250);
+			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, 0., 0., 0.);
+			robot.avance(250);
+			robot.updateScore(TypeAtome.Greenium.nbPoints);
+			// si tout s'est bien passé, alors le script n'est plus faisable
 			done = true;
 		}
 		finally
 		{
 			// dans tous les cas, on recule
-			robot.avance(-50);
+			robot.avance(-250);
 		}
 	}
 	

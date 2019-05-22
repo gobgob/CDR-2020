@@ -103,16 +103,19 @@ public class ScriptRecupereGold extends Script
 	}
 	
 	// Tolérance en position volontairement très grande : ce n'est pas elle qui sera limitante
+	@Override
 	public double getTolerancePosition()
 	{
 		return 100;
 	}
 	
+	@Override
 	public double getToleranceX()
 	{
 		return 15;
 	}
 	
+	@Override
 	public double getToleranceY()
 	{
 		return 50;

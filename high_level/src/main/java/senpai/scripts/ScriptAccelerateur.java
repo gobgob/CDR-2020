@@ -35,7 +35,7 @@ import senpai.table.Table;
 
 public class ScriptAccelerateur extends Script
 {
-	private XY_RW positionEntree = new XY_RW(-135,1690);
+	private XY_RW positionEntree = new XY_RW(-145,1690);
 	private double act_y = 23.795;
 	private boolean done = false;
 	
@@ -94,7 +94,7 @@ public class ScriptAccelerateur extends Script
 	@Override
 	public double getToleranceAngle()
 	{
-		return 3;
+		return 5;
 	}
 	
 	@Override

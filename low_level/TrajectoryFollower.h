@@ -369,6 +369,11 @@ public:
         return ret;
     }
 
+    void getRawTicks(int32_t &leftTicks, int32_t &rightTicks) const
+    {
+        odometry.getRawTicks(leftTicks, rightTicks);
+    }
+
     void sendLogs()
     {
         static MoveStatus lastMoveStatus = MOVE_OK;

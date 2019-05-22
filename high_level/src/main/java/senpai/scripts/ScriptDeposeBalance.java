@@ -35,7 +35,7 @@ import senpai.table.Table;
 
 public class ScriptDeposeBalance extends Script
 {
-	private XY_RW positionEntree = new XY_RW(135,700);
+	private XY_RW positionEntree = new XY_RW(145,850);
 	
 	public ScriptDeposeBalance(Log log, Robot robot, Table table, CapteursProcess cp, OutgoingOrderBuffer out, boolean symetrie)
 	{
@@ -55,32 +55,38 @@ public class ScriptDeposeBalance extends Script
 	{
 		return new XYO(positionEntree, -Math.PI / 2);
 	}
-	
+
+	/*
 	@Override
 	public XYO correctOdo() throws InterruptedException
 	{
 		return cp.doStaticCorrection(500, CapteursCorrection.AVANT);
 	}
+	*/
 
 	@Override
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException, ScriptException
 	{
 		try {
 			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, 0., 210., 20., 1023., 300., 1023.);
-			robot.avance(170);
+			robot.avanceTo(new XYO(new XY_RW(145, 600), -Math.PI / 2));
+			try{
+				robot.avanceTo(new XYO(new XY_RW(145, 500), -Math.PI / 2));
+			} catch (UnableToMoveException e) {
+
+			}
 			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, 0., 210., -75., 1023., 300., 1023.);
 			robot.emptyCargoOnBalance();
 			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, 0., 210., 0.);
 		}
 		finally {
-			robot.avance(-170);
+			robot.avance(-322);
 		}
 	}
 	
 	@Override
 	public boolean faisable()
 	{
-//		return true;
 		return !robot.isCargoEmpty();
 	}
 }

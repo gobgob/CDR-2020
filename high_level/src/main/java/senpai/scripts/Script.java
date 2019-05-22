@@ -58,7 +58,7 @@ public abstract class Script
 	
 	public double getToleranceAngle()
 	{
-		return 3;
+		return 5;
 	}
 	
 	public double getTolerancePosition()

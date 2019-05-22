@@ -422,6 +422,7 @@ private:
             m_y_speed = ACT_MGR_SCANNING_SPEED; // Scanning speed to optimize the scan quality
             m_puck_scanner.enable(true);
             m_aim_position.y = ACT_MGR_Y_MIN;
+            m_aim_position.theta = 2; // to make sure the fork is parallel to the ground
             sendAimPosition();
             m_composed_move_step++;
             break;
