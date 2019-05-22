@@ -118,6 +118,6 @@ public class ScriptRecupereGold extends Script
 	@Override
 	public double getToleranceY()
 	{
-		return 50;
+		return 15;
 	}
 }

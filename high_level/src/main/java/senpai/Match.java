@@ -162,7 +162,7 @@ public class Match
 		 */
 		Script accelerateur = scripts.getScriptAccelerateur();
 		Script recupereGold = scripts.getScriptRecupereGold();
-		Script recuperePaletBlueium = scripts.getScriptRecuperePalet(new XY_RW(1375,285), TypeAtome.Blueium);
+		Script recuperePaletBlueium = scripts.getScriptRecuperePalet(new XY_RW(1360,285), TypeAtome.Blueium);
 		Script recuperePaletGreenium = scripts.getScriptRecuperePalet(new XY_RW(1275,285), TypeAtome.Greenium);
 		Script deposeBalance = scripts.getScriptDeposeBalance();
 		Script monteRampe = scripts.getScriptMonteRampe();
@@ -224,7 +224,7 @@ public class Match
 			
 			try
 			{
-				doScript(recupereGold, 4, 2, true);
+				doScript(recupereGold, 8, 3, true);
 				none = false;
 			}
 			catch(PathfindingException | UnableToMoveException | ScriptException e)
