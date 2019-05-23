@@ -6,28 +6,38 @@ Le HL est serveur. Il ouvre le port 8765.
 
 = Messages HL vers Lidar =
 
-Message de démarrage du lidar depuis le HL avec la couleur du robot.
-
 INIT VIOLET
 INIT JAUNE
 
-Message de début de match
+Message de démarrage du lidar depuis le HL avec la couleur du robot.
 
 START
 
-Message d'arrêt complet du lidar
+Message de début de match
 
 STOP
 
-Message d'acquittement, qui signale juste que l'ordre a bien été reçu.
+Message d'arrêt complet du lidar
+
+CORRECTION_ODO
+
+Le HL demande une correction d'odo
 
 ACK
+
+Message d'acquittement, qui signale juste que l'ordre a bien été reçu.
 
 = Messages Lidar vers HL =
 
 ASK_STATUS
 
 Demande le status actuel. Le HL doit répondre par INIT, START, STOP ou ACK.
+
+DECALAGE x y theta
+
+Décalage (relatif) à appliquer en x, y et theta.
+
+Le HL doit répondre par ACK.
 
 OBSTACLE x y radius id timestamp
 
