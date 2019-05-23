@@ -31,10 +31,18 @@ Message d'acquittement, qui signale juste que l'ordre a bien été reçu.
 
 ASK_STATUS
 
-Demande le status actuel. Le HL doit répondre par INIT, START, STOP ou ACK.
+Demande le status actuel. Le HL doit répondre par INIT, START, STOP, CORRECTION_ODO ou ACK.
+
+DECALAGE_ERREUR
+
+Aucune information de décalage n'est disponible.
+
+Le HL doit répondre par ACK.
 
 DECALAGE x y theta
 
+x et y sont des entiers, unité: mm
+theta est un float, unité: rad
 Décalage (relatif) à appliquer en x, y et theta.
 
 Le HL doit répondre par ACK.
