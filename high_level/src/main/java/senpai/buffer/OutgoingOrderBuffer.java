@@ -227,6 +227,11 @@ public class OutgoingOrderBuffer implements Plottable
 		addToBuffer(new Order(data, Id.ENABLE_HIGH_SPEED_MODE));
 	}
 	
+	public void displayColor()
+	{
+		addToBuffer(new Order(Id.DISPLAY_COLOR));
+	}
+	
 	public void actuatorStop()
 	{
 		addToBuffer(new Order(Id.ACT_STOP));

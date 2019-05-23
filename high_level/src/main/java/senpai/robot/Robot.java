@@ -408,6 +408,7 @@ public class Robot extends RobotState
 		out.setPosition(cinematique.getPosition(), cinematique.orientationReelle);
 		Thread.sleep(100);
 		cinematiqueInitialised = true;
+		out.displayColor();
 	}
 
 	/*
