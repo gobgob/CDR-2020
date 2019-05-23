@@ -311,36 +311,7 @@ public class Match
 			{
 				if(pathfindingError)
 				{
-					log.write("Aucun script possible, Kraken semble bloqué. On bouge un peu.", Subject.SCRIPT);
-					boolean sensAvant = true;
-					try
-					{
-						if(robot.getCinematique().getPosition().minusNewVector(new XY(0,1000)).dot(new XY(100, robot.getCinematique().orientationReelle, false)) < 0)
-						{
-							sensAvant = true;
-							robot.avance(20);
-						}
-						else
-						{
-							sensAvant = false;
-							robot.avance(-20);
-						}
-					}
-					catch(UnableToMoveException e)
-					{
-						log.write("Oups… mauvais côté ^^'.", Subject.SCRIPT);
-						try {
-							if(sensAvant)
-								robot.avance(-40);
-							else
-								robot.avance(40);
-						}
-						catch(UnableToMoveException e1)
-						{
-							log.write("Encore bloqué… on attend un peu.", Subject.SCRIPT);
-							Thread.sleep(1000);
-						}
-					}
+					helpKraken();
 				}
 				else
 				{
@@ -471,6 +442,14 @@ public class Match
 				if(nbEssaiChemin == 0)
 					throw e;
 			}
+			catch(PathfindingException e)
+			{
+				helpKraken();
+				restartKraken = true;
+				nbEssaiChemin--;
+				if(nbEssaiChemin == 0)
+					throw e;
+			}
 		}
 		
 		s.execute();
@@ -487,5 +466,39 @@ public class Match
 				|| corrected.position.distance(pointEntree.position) > tolerancePosition
 				|| Math.abs(corrected.position.getX() - pointEntree.position.getX()) > toleranceX
 				|| Math.abs(corrected.position.getY() - pointEntree.position.getY()) > toleranceY);
+	}
+
+	private void helpKraken() throws InterruptedException
+	{
+		log.write("Aucun script possible, Kraken semble bloqué. On bouge un peu.", Subject.SCRIPT);
+		boolean sensAvant = true;
+		try
+		{
+			if(robot.getCinematique().getPosition().minusNewVector(new XY(0,1000)).dot(new XY(100, robot.getCinematique().orientationReelle, false)) < 0)
+			{
+				sensAvant = true;
+				robot.avance(20);
+			}
+			else
+			{
+				sensAvant = false;
+				robot.avance(-20);
+			}
+		}
+		catch(UnableToMoveException e)
+		{
+			log.write("Oups… mauvais côté ^^'.", Subject.SCRIPT);
+			try {
+				if(sensAvant)
+					robot.avance(-40);
+				else
+					robot.avance(40);
+			}
+			catch(UnableToMoveException e1)
+			{
+				log.write("Encore bloqué… on attend un peu.", Subject.SCRIPT);
+				Thread.sleep(1000);
+			}
+		}
 	}
 }

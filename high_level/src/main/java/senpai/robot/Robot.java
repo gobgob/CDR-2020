@@ -712,6 +712,16 @@ public class Robot extends RobotState
 		deploye = false;
 	}
 
+	public void HACK_setRobotDeploye()
+	{
+		deploye = true;
+	}
+
+	public boolean isRobotDeploye()
+	{
+		return deploye;
+	}
+
 	public void rangeSiPossible() throws InterruptedException, ActionneurException
 	{
 		if(cargo.isEmpty() && deploye)

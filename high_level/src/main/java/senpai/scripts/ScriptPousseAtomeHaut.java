@@ -15,6 +15,9 @@
 package senpai.scripts;
 
 import pfg.kraken.exceptions.PathfindingException;
+import pfg.kraken.obstacles.CircularObstacle;
+import pfg.kraken.obstacles.Obstacle;
+import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XYO;
 import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
@@ -36,12 +39,15 @@ import senpai.utils.Subject;
 
 public class ScriptPousseAtomeHaut extends Script
 {
-	private XY_RW positionEntree = new XY_RW(860,1550); // point d'entrée du script
+	private XY_RW positionEntree = new XY_RW(700,1550); // point d'entrée du script
 	private double angleEntree = 0; // angle d'entrée
-	private XY_RW positionFin = new XY_RW(1294, 1449);
-	private double angleFin = -0.3316;
+	private XY_RW positionDebut = new XY_RW(860,1550);
+	private double angleDebut = 0;
+	private XY_RW positionFin = new XY_RW(1206, 1461);
+	private double angleFin = -0.5009;
 	private boolean done = false;
 	private AtomeParTerre at;
+	private Obstacle obstacle;
 	
 	public ScriptPousseAtomeHaut(Log log, Robot robot, Table table, CapteursProcess cp, OutgoingOrderBuffer out, boolean symetrie)
 	{
@@ -50,11 +56,19 @@ public class ScriptPousseAtomeHaut extends Script
 		if(symetrie)
 		{
 			at = AtomeParTerre.HAUT_GAUCHE;
+			obstacle = new CircularObstacle(new XY(-1186, 1410), 38);
 			positionEntree.setX(- positionEntree.getX());
+			positionDebut.setX(- positionDebut.getX());
+			positionFin.setX(- positionFin.getX());
 			angleEntree = Math.PI - angleEntree;
+			angleDebut = Math.PI - angleDebut;
+			angleFin = Math.PI - angleFin;
 		}
 		else
+		{
 			at = AtomeParTerre.HAUT_DROITE;
+			obstacle = new CircularObstacle(new XY(1186, 1410), 38);
+		}
 
 	}
 
@@ -73,13 +87,20 @@ public class ScriptPousseAtomeHaut extends Script
 	@Override
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException, ScriptException
 	{
+		boolean hack_used = false;
 		try {
+			if (robot.isRobotDeploye()) {
+				robot.HACK_setRobotNonDeploye();
+				hack_used = true;
+			}
+			robot.avanceTo(new XYO(positionDebut, angleDebut));
+			table.setDone(at);
 			robot.goTo(new XYO(positionFin, angleFin));
 			robot.updateScore(6);
 			// si tout s'est bien passé, alors le script n'est plus faisable
-			table.setDone(at);
 			done = true;
 			robot.setScriptPousseAtomeHautFait();
+			table.addOtherObstacle(obstacle);
 		}
 		catch (PathfindingException e) {
 			log.write("Pathfinding exception lors du goTo", Subject.SCRIPT);
@@ -87,6 +108,9 @@ public class ScriptPousseAtomeHaut extends Script
 		}
 		finally
 		{
+			if (hack_used) {
+				robot.HACK_setRobotDeploye();
+			}
 			// dans tous les cas, on recule
 			robot.avance(-200);
 		}

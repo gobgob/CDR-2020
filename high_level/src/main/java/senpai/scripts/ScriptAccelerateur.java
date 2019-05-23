@@ -94,7 +94,7 @@ public class ScriptAccelerateur extends Script
 	@Override
 	public double getToleranceAngle()
 	{
-		return 5;
+		return 4;
 	}
 	
 	@Override
