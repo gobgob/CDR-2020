@@ -39,12 +39,11 @@ Décalage (relatif) à appliquer en x, y et theta.
 
 Le HL doit répondre par ACK.
 
-OBSTACLE x y radius id timestamp
+OBSTACLE x y id timestamp
 
-x, y, radius, id et timestamp sont des entiers.
+x, y, id et timestamp sont des entiers.
 
 (x,y) est la position de l'obstacle dans le repère d'INTech (en mm)
-radius est le rayon estimé du robot adversaire (en mm)
 id le numéro du robot associé
 timestamp est la date de la lecture en ms
 
