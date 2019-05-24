@@ -14,18 +14,13 @@
 
 package senpai.comm;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.UnknownHostException;
 import pfg.config.Config;
 import pfg.log.Log;
 import senpai.utils.ConfigInfoSenpai;
-import senpai.utils.Severity;
 import senpai.utils.Subject;
 
 /**

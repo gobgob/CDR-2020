@@ -64,6 +64,7 @@ public class Robot extends RobotState
 		MOVING; // le robot se déplace
 	}
 	
+	private volatile boolean needLidarCorrection;
 	protected volatile boolean symetrie;
 	protected Log log;
 	private double defaultSpeed, maxSpeedInEnemy;
@@ -588,6 +589,7 @@ public class Robot extends RobotState
 			cinematique.updateReel(path.get(path.size()-1).x, path.get(path.size()-1).y, path.get(path.size()-1).orientation, 0);
 		}
 		
+		needLidarCorrection = true;
 		path = null;
 		etat = State.STANDBY;
 		return dt;
@@ -653,7 +655,6 @@ public class Robot extends RobotState
 	public void updateScore()
 	{
 		updateScore(0);
-		
 	}
 	
 	public void updateScore(int increment)
@@ -785,6 +786,16 @@ public class Robot extends RobotState
 	public boolean isGoldeniumFree()
 	{
 		return goldeniumFree;
+	}
+
+	public boolean needLidarCorrection()
+	{
+		if(needLidarCorrection)
+		{
+			needLidarCorrection = false;
+			return true;
+		}
+		return false;
 	}
 
 }

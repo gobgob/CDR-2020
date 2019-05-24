@@ -115,21 +115,31 @@ public class LidarEth
 			output.write("INIT JAUNE\n");
 		else
 			output.write("INIT VIOLET\n");
+		output.flush();
+	}
+	
+	public void sendOdo() throws IOException
+	{
+		output.write("CORRECTION_ODO\n");
+		output.flush();
 	}
 	
 	public void sendAck() throws IOException
 	{
 		output.write("ACK\n");
+		output.flush();
 	}
 	
 	public void sendStart() throws IOException
 	{
 		output.write("START\n");
+		output.flush();
 	}
-		
+
 	public void sendStop() throws IOException
 	{
 		output.write("STOP\n");
+		output.flush();
 	}
 	
 }

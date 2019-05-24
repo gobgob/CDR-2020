@@ -14,9 +14,11 @@
 
 package senpai.threads;
 
+import java.io.IOException;
 import pfg.config.Config;
 import pfg.kraken.obstacles.CircularObstacle;
 import pfg.kraken.utils.XY;
+import pfg.kraken.utils.XYO;
 import pfg.log.Log;
 import senpai.comm.LidarEth;
 import senpai.obstacles.ObstaclesDynamiques;
@@ -41,6 +43,7 @@ public class ThreadLidar extends Thread
 	protected Log log;
 	protected LidarEth eth;
 	private double multiplier;
+	private int radius;
 
 	public ThreadLidar(LidarEth eth, ObstaclesDynamiques dynObs, Robot robot, Log log, Config config)
 	{
@@ -50,6 +53,7 @@ public class ThreadLidar extends Thread
 		this.dynObs = dynObs;
 		this.robot = robot;
 		multiplier = config.getDouble(ConfigInfoSenpai.SLOW_OBSTACLE_RADIUS_MULTIPLIER);
+		radius = config.getInt(ConfigInfoSenpai.LIDAR_OBSTACLE_RADIUS);
 		setDaemon(true);
 	}
 
@@ -76,8 +80,13 @@ public class ThreadLidar extends Thread
 				while(true)
 				{
 					String message = eth.getMessage();
-
-					if(message.startsWith("ASK_STATUS"))
+					
+					if(message != null)
+						log.write("Message lidar : "+message, Subject.COMM);	
+					
+					if(message == null)
+						throw new IOException("Déconnexion prématurée du lidar");
+					else if(message.startsWith("ASK_STATUS"))
 					{
 						if(!colorSent)
 						{
@@ -87,6 +96,8 @@ public class ThreadLidar extends Thread
 								eth.sendInit(c);
 								colorSent = true;
 							}
+							else
+								eth.sendAck(); // rien à dire
 						}
 						else if(!started && robot.isMatchStarted())
 						{
@@ -98,23 +109,24 @@ public class ThreadLidar extends Thread
 							eth.sendStop();
 							stopped = true;
 						}
+						else if(robot.needLidarCorrection())
+							eth.sendOdo();
 						else
 							eth.sendAck();
 					}
 					else if(message.startsWith("OBSTACLE"))
 					{
 						String[] m = message.split(" ");
-						if(m.length == 6)
+						if(m.length == 5)
 						{
 							int x = Integer.parseInt(m[1]);
 							int y = Integer.parseInt(m[2]);
-							int rad = Integer.parseInt(m[3]);
-							int id = Integer.parseInt(m[4]);
-							int radSlow = (int) Math.round(multiplier * rad);
+							int id = Integer.parseInt(m[3]);
+//							int timestamp = Integer.parseInt(m[4]);
+							int radSlow = (int) Math.round(multiplier * radius);
 //							int timestamp = Integer.parseInt(m[5]);
 							assert id < 100 : id;
-							
-							CircularObstacle obs = new CircularObstacle(new XY(x, y), rad);
+							CircularObstacle obs = new CircularObstacle(new XY(x, y), radius);
 							dynObs.setLidarObs(obs, id);
 							
 							CircularObstacle obsSlow = new CircularObstacle(new XY(x, y), radSlow);
@@ -124,12 +136,25 @@ public class ThreadLidar extends Thread
 						}
 						else
 							log.write("Message malformé provenant du Lidar: " + message, Severity.CRITICAL, Subject.CAPTEURS);
-							
-
 					}
-					// TODO: correction d'odo
-					// attention : vérifier qu'une correction par capteurs n'est pas déjà en cours
-					// si la correction est trop petite, on l'envoie pas au LL
+					else if(message.startsWith("DECALAGE_ERREUR"))
+					{
+						log.write("Erreur dans le recalage du lidar ! " + message, Severity.CRITICAL, Subject.CAPTEURS);
+						eth.sendAck();
+					}
+					else if(message.startsWith("DECALAGE"))
+					{
+						String[] m = message.split(" ");
+						if(m.length == 4)
+						{
+							XYO correction = new XYO(Integer.parseInt(m[1]), Integer.parseInt(m[2]), Double.parseDouble(m[3]));
+							log.write("Envoi d'une correction XYO lidar: " + correction, Subject.STATUS);
+							robot.correctPosition(correction.position, correction.orientation);
+							eth.sendAck();
+						}
+						else
+							log.write("Message malformé provenant du Lidar: " + message, Severity.CRITICAL, Subject.CAPTEURS);
+					}
 					else
 					{
 						assert false : message;

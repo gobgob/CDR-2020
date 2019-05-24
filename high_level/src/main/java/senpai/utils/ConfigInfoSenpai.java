@@ -45,6 +45,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	DEFAULT_MAX_SPEED(0.8),
 	MAX_SPEED_IN_ENEMY(0.4),
 	SLOW_OBSTACLE_RADIUS_MULTIPLIER(1.5),
+	LIDAR_OBSTACLE_RADIUS(100),
 	
 	/**
 	 * Infos sur le robot
