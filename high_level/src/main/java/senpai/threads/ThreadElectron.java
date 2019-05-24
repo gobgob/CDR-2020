@@ -55,28 +55,25 @@ public class ThreadElectron extends Thread
 			{
 				log.write("Démarrage de " + Thread.currentThread().getName()+" annulé !", Severity.WARNING, Subject.STATUS);
 				while(true)
-					Thread.sleep(10);
+					Thread.sleep(100);
 			}
 			else
 			{
 				log.write("Démarrage de " + Thread.currentThread().getName(), Subject.STATUS);	
-				eth.initialize(config);
 				while(!robot.isMatchStarted())
 					Thread.sleep(100);
-				eth.sendStart();
+				eth.previensElectron(config);
 				while(true)
-					Thread.sleep(10);
+					Thread.sleep(100);
 			}
 		}
 		catch(InterruptedException e)
 		{
-			eth.close();
 			log.write("Arrêt de " + Thread.currentThread().getName(), Subject.STATUS);
 			Thread.currentThread().interrupt();
 		}
 		catch(Exception e)
 		{
-			eth.close();
 			log.write("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e, Severity.CRITICAL, Subject.STATUS);
 			e.printStackTrace();
 			Thread.currentThread().interrupt();

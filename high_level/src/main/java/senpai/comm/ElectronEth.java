@@ -37,11 +37,6 @@ import senpai.utils.Subject;
 public class ElectronEth
 {
 	private Log log;
-	private ServerSocket socket = null;
-	private Socket client;
-	
-	private OutputStreamWriter output;
-	private BufferedReader input;
 	
 	public ElectronEth(Log log)
 	{
@@ -54,58 +49,21 @@ public class ElectronEth
 	 * @param log
 	 * @throws IOException 
 	 */
-	public void initialize(Config config) throws IOException
+	public void previensElectron(Config config) throws IOException
 	{
 		int port = config.getInt(ConfigInfoSenpai.ETH_ELECTRON_PORT_NUMBER);
 		String hostname = config.getString(ConfigInfoSenpai.ETH_HL_HOSTNAME_SERVER);
+		ServerSocket socket = null;
 		try {
-			// on accepte une connexion max à la fois			
-			socket = new ServerSocket(port, 1, InetAddress.getByName(hostname));
+			socket = new ServerSocket(port, 200, InetAddress.getByName(hostname));
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 		    e.printStackTrace();
 		}
-		log.write("Attente de la connexion de l'électron...", Subject.COMM);
-		client = socket.accept();
+		log.write("Prêt à ouvrir le socket de l'électron", Subject.COMM);
+		socket.accept();
+		socket.close();
 		log.write("Électron connecté !", Subject.COMM);
-		
-		input = new BufferedReader(new InputStreamReader(client.getInputStream()));
-		output = new OutputStreamWriter(client.getOutputStream());
-		assert input != null && output != null;
-	}
-
-	/**
-	 * Doit être appelé quand on arrête de se servir de la communication
-	 */
-	public synchronized void close()
-	{		
-		if(socket == null)
-			return;
-		
-		assert !socket.isClosed() : "État du socket : "+socket.isClosed();
-		
-		if(!socket.isClosed())
-		{
-			try
-			{
-				log.write("Fermeture de la communication", Subject.COMM);
-				client.close();
-				socket.close();
-				output.close();
-			}
-			catch(IOException e)
-			{
-				log.write(e, Severity.WARNING, Subject.COMM);
-			}
-		}
-		else if(socket.isClosed())
-			log.write("Fermeture impossible : carte déjà fermée", Severity.WARNING, Subject.COMM);
-	}
-
-	public void sendStart() throws IOException
-	{
-		output.write("START\n");
-		output.flush();
 	}
 }
