@@ -30,7 +30,8 @@ public enum ConfigInfoSenpai implements ConfigInfo
 //	AFFICHAGE_TIMEOUT(5000), // timeout sur l'affichage (0 pour infini)
 	CHECK_LATENCY(false), // estime la latence de la communication
 	DISABLE_JUMPER(false),
-	ENABLE_LIDAR(false),
+	ENABLE_LIDAR(true),
+	ENABLE_ELECTRON(true),
 	RUSH_SPEED(0.8),
 	ENABLE_PARKING_BREAK(true),
 	
@@ -86,6 +87,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	
 	ETH_HL_HOSTNAME_SERVER("127.0.0.1"),
 	ETH_LIDAR_PORT_NUMBER(8765), // port socket HL
+	ETH_ELECTRON_PORT_NUMBER(8766), // port socket HL
 	/**
 	 * Paramètres du traitement des capteurs
 	 */

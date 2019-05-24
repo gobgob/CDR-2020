@@ -71,7 +71,7 @@ public class Robot extends RobotState
 	protected Kraken krakenRange;
 	private RectangularObstacle obstacle;
 	private List<ItineraryPoint> path = null;
-	private long dateDebutMatch, dateFinMatch = Long.MAX_VALUE;
+	private volatile long dateDebutMatch = Long.MAX_VALUE, dateFinMatch = Long.MAX_VALUE;
 	private RobotColor c = null;
 	private boolean deploye = false;
 	private boolean scriptPousseAtomeMilieuFait = false, scriptPousseAtomeHautFait = false;

@@ -24,18 +24,17 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import pfg.config.Config;
 import pfg.log.Log;
-import senpai.robot.RobotColor;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Severity;
 import senpai.utils.Subject;
 
 /**
- * Une connexion Ethernet pour le lidar
+ * Une connexion Ethernet l'électron
  * @author pf
  *
  */
 
-public class LidarEth
+public class ElectronEth
 {
 	private Log log;
 	private ServerSocket socket = null;
@@ -44,7 +43,7 @@ public class LidarEth
 	private OutputStreamWriter output;
 	private BufferedReader input;
 	
-	public LidarEth(Log log)
+	public ElectronEth(Log log)
 	{
 		this.log = log;
 	}
@@ -57,7 +56,7 @@ public class LidarEth
 	 */
 	public void initialize(Config config) throws IOException
 	{
-		int port = config.getInt(ConfigInfoSenpai.ETH_LIDAR_PORT_NUMBER);
+		int port = config.getInt(ConfigInfoSenpai.ETH_ELECTRON_PORT_NUMBER);
 		String hostname = config.getString(ConfigInfoSenpai.ETH_HL_HOSTNAME_SERVER);
 		try {
 			// on accepte une connexion max à la fois			
@@ -67,9 +66,9 @@ public class LidarEth
 		} catch (IOException e) {
 		    e.printStackTrace();
 		}
-		log.write("Attente de la connexion du lidar...", Subject.COMM);
+		log.write("Attente de la connexion de l'électron...", Subject.COMM);
 		client = socket.accept();
-		log.write("Lidar connecté !", Subject.COMM);
+		log.write("Électron connecté !", Subject.COMM);
 		
 		input = new BufferedReader(new InputStreamReader(client.getInputStream()));
 		output = new OutputStreamWriter(client.getOutputStream());
@@ -104,32 +103,9 @@ public class LidarEth
 			log.write("Fermeture impossible : carte déjà fermée", Severity.WARNING, Subject.COMM);
 	}
 
-	public String getMessage() throws InterruptedException, IOException
-	{
-		return input.readLine();
-	}
-	
-	public void sendInit(RobotColor c) throws IOException
-	{
-		if(c == RobotColor.JAUNE)
-			output.write("INIT JAUNE\n");
-		else
-			output.write("INIT VIOLET\n");
-	}
-	
-	public void sendAck() throws IOException
-	{
-		output.write("ACK\n");
-	}
-	
 	public void sendStart() throws IOException
 	{
 		output.write("START\n");
+		output.flush();
 	}
-		
-	public void sendStop() throws IOException
-	{
-		output.write("STOP\n");
-	}
-	
 }
