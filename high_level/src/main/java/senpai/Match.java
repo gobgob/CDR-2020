@@ -2,6 +2,7 @@ package senpai;
 
 import pfg.config.Config;
 import pfg.kraken.exceptions.PathfindingException;
+import pfg.kraken.exceptions.TimeoutException;
 import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XYO;
@@ -434,9 +435,10 @@ public class Match
 				if(Thread.currentThread().isInterrupted())
 					throw new InterruptedException();
 			}
-			catch(UnableToMoveException e)
+			catch(TimeoutException e)
 			{
-				log.write("Erreur durant de trajet : "+e, Severity.WARNING, Subject.SCRIPT);
+				log.write("Timeout de Kraken : "+e, Severity.WARNING, Subject.SCRIPT);
+				helpKraken();
 				restartKraken = true;
 				nbEssaiChemin--;
 				if(nbEssaiChemin == 0)
@@ -444,7 +446,15 @@ public class Match
 			}
 			catch(PathfindingException e)
 			{
-				helpKraken();
+				log.write("Exception de Kraken : "+e, Severity.WARNING, Subject.SCRIPT);
+				restartKraken = true;
+				nbEssaiChemin--;
+				if(nbEssaiChemin == 0)
+					throw e;
+			}
+			catch(UnableToMoveException e)
+			{
+				log.write("Exception durant le trajet : "+e, Severity.WARNING, Subject.SCRIPT);
 				restartKraken = true;
 				nbEssaiChemin--;
 				if(nbEssaiChemin == 0)
