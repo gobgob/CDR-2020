@@ -65,6 +65,7 @@ public class Robot extends RobotState
 	}
 	
 	private volatile boolean needLidarCorrection;
+	private volatile long lastCorrectionDate = Long.MIN_VALUE;
 	protected volatile boolean symetrie;
 	protected Log log;
 	private double defaultSpeed, maxSpeedInEnemy;
@@ -788,6 +789,11 @@ public class Robot extends RobotState
 		return goldeniumFree;
 	}
 
+	public boolean isLidarCorrectionAllowed()
+	{
+		return System.currentTimeMillis() - lastCorrectionDate > 3000; // pas de correction lidar moins de 3s apprès une correction par capteurs
+	}
+	
 	public boolean needLidarCorrection()
 	{
 		if(needLidarCorrection)
@@ -796,6 +802,12 @@ public class Robot extends RobotState
 			return true;
 		}
 		return false;
+	}
+
+
+	public void setLastCorrectionDate()
+	{
+		lastCorrectionDate = System.currentTimeMillis();
 	}
 
 }

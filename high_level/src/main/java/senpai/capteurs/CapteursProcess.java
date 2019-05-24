@@ -478,6 +478,7 @@ public class CapteursProcess
 			cc.valc1.clear();
 			cc.valc2.clear();
 		}
+		robot.setLastCorrectionDate();
 		ongoingStaticCorrection = true;		
 	}
 	
