@@ -24,6 +24,7 @@ import java.util.concurrent.PriorityBlockingQueue;
 import pfg.log.Log;
 import senpai.comm.Order;
 import senpai.comm.Ticket;
+import senpai.robot.RobotColor;
 import senpai.comm.CommProtocol;
 import senpai.comm.CommProtocol.Channel;
 import senpai.comm.CommProtocol.Id;
@@ -227,9 +228,12 @@ public class OutgoingOrderBuffer implements Plottable
 		addToBuffer(new Order(data, Id.ENABLE_HIGH_SPEED_MODE));
 	}
 	
-	public void displayColor()
+	public void displayColor(RobotColor c)
 	{
-		addToBuffer(new Order(Id.DISPLAY_COLOR));
+		ByteBuffer data = ByteBuffer.allocate(1);
+		data.order(ByteOrder.LITTLE_ENDIAN);
+		data.put((byte)(c.ordinal()));
+		addToBuffer(new Order(data, Id.DISPLAY_COLOR));
 	}
 	
 	public void actuatorStop()
