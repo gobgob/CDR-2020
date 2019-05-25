@@ -35,7 +35,7 @@ import senpai.table.Table;
 
 public class ScriptDeposeBalance extends Script
 {
-	private XY_RW positionEntree = new XY_RW(145,850);
+	private XY_RW positionEntree = new XY_RW(150,880);
 	
 	public ScriptDeposeBalance(Log log, Robot robot, Table table, CapteursProcess cp, OutgoingOrderBuffer out, boolean symetrie)
 	{
@@ -69,9 +69,9 @@ public class ScriptDeposeBalance extends Script
 	{
 		try {
 			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, 0., 210., 20., 1023., 300., 1023.);
-			robot.avanceTo(new XYO(new XY_RW(145, 600), -Math.PI / 2));
+			robot.avanceTo(new XYO(new XY_RW(150, 600), -Math.PI / 2));
 			try{
-				robot.avanceTo(new XYO(new XY_RW(145, 500), -Math.PI / 2));
+				robot.avanceTo(new XYO(new XY_RW(150, 500), -Math.PI / 2), 0.4); // On se cale sur le mur à basse vitesse
 			} catch (UnableToMoveException e) {
 
 			}
@@ -80,7 +80,7 @@ public class ScriptDeposeBalance extends Script
 			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, 0., 210., 0.);
 		}
 		finally {
-			robot.avance(-322);
+			robot.avance(-362);
 		}
 	}
 	

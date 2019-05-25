@@ -295,7 +295,6 @@ public class Match
 					pathfindingError = true;
 			}
 
-			/*
 			try
 			{
 				doScript(monteRampe, 4, 3, true);
@@ -306,7 +305,7 @@ public class Match
 				log.write("Erreur : "+e, Subject.SCRIPT);
 				if(e instanceof PathfindingException)
 					pathfindingError = true;
-			}*/
+			}
 			
 			if(none)
 			{

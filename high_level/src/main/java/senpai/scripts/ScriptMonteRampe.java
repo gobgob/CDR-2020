@@ -14,6 +14,7 @@
 
 package senpai.scripts;
 
+import pfg.kraken.exceptions.PathfindingException;
 import pfg.kraken.utils.XYO;
 import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
@@ -28,6 +29,7 @@ import senpai.table.AtomeParTerre;
 import senpai.table.Table;
 import senpai.table.TypeAtome;
 import senpai.comm.CommProtocol;
+import senpai.utils.Subject;
 
 /**
  * Script de la montée de la rampe
@@ -37,9 +39,12 @@ import senpai.comm.CommProtocol;
 
 public class ScriptMonteRampe extends Script
 {
-	private XY_RW positionEntree = new XY_RW(1000,200); // point d'entrée du script
+	private XY_RW positionEntree = new XY_RW(1275,335); // point d'entrée du script
+	private double angleEntree = -Math.PI / 2; // angle d'entrée du script
+	private XY_RW positionGoTo = new XY_RW(1000,200); // point d'entrée de la rampe
+	private double angleGoTo = Math.PI; // angle d'entrée de la rampe
 	private XY_RW positionAvance = new XY_RW(350,200); // jusqu'où le robot doit-il avancer
-	private double angleEntree = Math.PI; // angle d'entrée
+	private double angleAvance = Math.PI; // angle d'arrivée
 	private boolean done = false;
 	private AtomeParTerre at;
 	
@@ -51,7 +56,10 @@ public class ScriptMonteRampe extends Script
 			at = AtomeParTerre.PENTE_DROITE;
 			positionEntree.setX(- positionEntree.getX());
 			angleEntree = Math.PI - angleEntree;
+			positionGoTo.setX(- positionGoTo.getX());
+			angleGoTo = Math.PI - angleGoTo;
 			positionAvance.setX(- positionAvance.getX());
+			angleAvance = Math.PI - angleAvance;
 		}
 		else
 			at = AtomeParTerre.PENTE_GAUCHE;
@@ -80,12 +88,14 @@ public class ScriptMonteRampe extends Script
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException, ScriptException
 	{
 		try {
-			// méthodès à utiliser
-			//robot.HACK_setRobotNonDeploye();
-			//robot.goTo(destination, reverse)
-			
-			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, 0., 210., 20., 1023., 300., 300.);
-			robot.avanceTo(new XYO(positionAvance, angleEntree));
+			if (!robot.isCargoEmpty()) {
+				robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, 0., 210., 20., 1023., 300., 300.);
+				robot.HACK_setRobotNonDeploye();
+			} else {
+				robot.rangeSiPossible();
+			}
+			robot.goTo(new XYO(positionGoTo, angleGoTo));
+			robot.avanceTo(new XYO(positionAvance, angleAvance));
 			table.setDone(at);
 			if (!robot.isCargoEmpty()) {	
 				robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, 0., 210., -75., 1023., 300., 1023.);
@@ -96,13 +106,23 @@ public class ScriptMonteRampe extends Script
 			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, 0., 0., 0.);
 			robot.avance(250);
 			robot.updateScore(TypeAtome.Greenium.nbPoints);
+			robot.avance(-250);
+			robot.rangeSiPossible();
 			// si tout s'est bien passé, alors le script n'est plus faisable
 			done = true;
 		}
+		catch (PathfindingException e) {
+			log.write("Pathfinding exception lors du goTo d'entrée", Subject.SCRIPT);
+			throw new ScriptException();
+		}
 		finally
 		{
-			// dans tous les cas, on recule
-			robot.avance(-250);
+			try {
+				robot.goTo(new XYO(positionEntree, angleEntree));
+			} catch (PathfindingException e) {
+				log.write("Pathfinding exception lors du goTo de sortie", Subject.SCRIPT);
+				throw new ScriptException();
+			}
 		}
 	}
 	
