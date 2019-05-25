@@ -165,7 +165,7 @@ public:
         noInterrupts();
         m_z_motor.begin(ACT_MGR_MAX_SPEED_Z, ACT_MGR_MICROSTEP);
         m_z_motor.setMicrostep(ACT_MGR_MICROSTEP);
-        m_z_motor.enable();
+        m_z_motor.disable();
         interrupts();
 
         return ret;
@@ -287,6 +287,15 @@ public:
         return initMove(STATUS_MOVING, p);
     }
 
+    void disableAll()
+    {
+        m_y_motor.enableTorque(false);
+        m_theta_motor.enableTorque(false);
+        noInterrupts();
+        m_z_motor.disable();
+        interrupts();
+    }
+
 private:
     enum ActuatorStatus
     {
@@ -322,6 +331,7 @@ private:
         }
         else
         {
+            enableZMotor(true);
             m_status = moveId;
             m_aim_position = p;
             sendAimPosition();
@@ -407,6 +417,7 @@ private:
             if (aimPositionReached())
             {
                 finishMove();
+                enableZMotor(false);
             }
             break;
         default:
@@ -596,6 +607,18 @@ private:
         m_y_speed = ACT_MGR_MAX_SPEED_Y;
         m_z_speed = ACT_MGR_MAX_SPEED_Z;
         m_theta_speed = ACT_MGR_MAX_SPEED_THETA;
+    }
+
+    void enableZMotor(bool enable)
+    {
+        noInterrupts();
+        if (enable) {
+            m_z_motor.enable();
+        }
+        else {
+            m_z_motor.disable();
+        }
+        interrupts();
     }
 
     ActuatorPosition m_current_position;

@@ -214,7 +214,7 @@ public:
             else if (dir < 0) {
                 movingForward = false;
             }
-            breaking = motionControlSystem.parkingBreakEnabled() || motionControlSystem.isBreaking();
+            breaking = (motionControlSystem.parkingBreakEnabled() && dir == 0) || motionControlSystem.isBreaking();
             float curvature = motionControlSystem.getCurvature();
             if (blinkers != BLINKERS_BOTH) {
                 if (curvature < -TURNING_THRESHOLD) {

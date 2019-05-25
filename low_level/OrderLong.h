@@ -221,6 +221,7 @@ public:
     {
         motionControlSystem.stop_and_clear_trajectory();
         actuatorMgr.stop();
+        actuatorMgr.disableAll();
     }
 
 private:
