@@ -44,6 +44,7 @@ public class ThreadLidar extends Thread
 	protected LidarEth eth;
 	private double multiplier;
 	private int radius;
+	private volatile long lastMessageDate = Long.MAX_VALUE;
 
 	public ThreadLidar(LidarEth eth, ObstaclesDynamiques dynObs, Robot robot, Log log, Config config)
 	{
@@ -83,10 +84,11 @@ public class ThreadLidar extends Thread
 					
 					if(message != null)
 						log.write("Message lidar : "+message, Subject.COMM);	
-					
-					if(message == null)
+					else
 						throw new IOException("Déconnexion prématurée du lidar");
-					else if(message.startsWith("ASK_STATUS"))
+					
+					lastMessageDate = System.currentTimeMillis();
+					if(message.startsWith("ASK_STATUS"))
 					{
 						if(!colorSent)
 						{
@@ -193,6 +195,11 @@ public class ThreadLidar extends Thread
 			e.printStackTrace();
 			Thread.currentThread().interrupt();
 		}
+	}
+	
+	public boolean timeout()
+	{
+		return System.currentTimeMillis() - lastMessageDate > 5000;
 	}
 
 }
