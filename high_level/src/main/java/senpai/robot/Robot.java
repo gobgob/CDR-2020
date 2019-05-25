@@ -64,6 +64,7 @@ public class Robot extends RobotState
 		MOVING; // le robot se déplace
 	}
 	
+	private volatile long lidarCorrectionTimeOut = Long.MIN_VALUE;
 	private volatile boolean needLidarCorrection;
 	private volatile long lastCorrectionDate = Long.MIN_VALUE;
 	protected volatile boolean symetrie;
@@ -536,9 +537,11 @@ public class Robot extends RobotState
 		DataTicket out = null;
 		
 		out = followTrajectory();
+		needLidarCorrection = true;
 
 		if(!simuleLL && out.data != null)
 			throw new UnableToMoveException(out.data.toString());
+
 		return out;
 	}
 	
@@ -556,6 +559,9 @@ public class Robot extends RobotState
 				wait();
 		}
 
+		while(System.currentTimeMillis() < lidarCorrectionTimeOut)
+			Thread.sleep(10);
+		
 		if(!jumperOK)
 		{
 			log.write("La trajectoire est prête : attente du jumper !", Subject.TRAJECTORY);
@@ -590,7 +596,6 @@ public class Robot extends RobotState
 			cinematique.updateReel(path.get(path.size()-1).x, path.get(path.size()-1).y, path.get(path.size()-1).orientation, 0);
 		}
 		
-		needLidarCorrection = true;
 		path = null;
 		etat = State.STANDBY;
 		return dt;
@@ -791,7 +796,17 @@ public class Robot extends RobotState
 
 	public boolean isLidarCorrectionAllowed()
 	{
-		return System.currentTimeMillis() - lastCorrectionDate > 3000; // pas de correction lidar moins de 3s apprès une correction par capteurs
+		return System.currentTimeMillis() - lastCorrectionDate > 2000; // pas de correction lidar moins de 2s apprès une correction par capteurs
+	}
+	
+	public void startLidarCorrection()
+	{
+		lidarCorrectionTimeOut = System.currentTimeMillis() + 2000;
+	}
+	
+	public void stopLidarCorrection()
+	{
+		lidarCorrectionTimeOut = Long.MIN_VALUE;
 	}
 	
 	public boolean needLidarCorrection()

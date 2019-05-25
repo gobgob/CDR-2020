@@ -110,7 +110,10 @@ public class ThreadLidar extends Thread
 							stopped = true;
 						}
 						else if(robot.needLidarCorrection() && robot.isLidarCorrectionAllowed())
+						{
+							robot.startLidarCorrection();
 							eth.sendOdo();
+						}
 						else
 							eth.sendAck();
 					}
@@ -140,6 +143,7 @@ public class ThreadLidar extends Thread
 					else if(message.startsWith("DECALAGE_ERREUR"))
 					{
 						log.write("Erreur dans le recalage du lidar ! " + message, Severity.CRITICAL, Subject.CAPTEURS);
+						robot.stopLidarCorrection();
 						eth.sendAck();
 					}
 					else if(message.startsWith("DECALAGE"))
@@ -152,6 +156,7 @@ public class ThreadLidar extends Thread
 								XYO correction = new XYO(Integer.parseInt(m[1]), Integer.parseInt(m[2]), Double.parseDouble(m[3]));
 								log.write("Envoi d'une correction XYO lidar: " + correction, Subject.STATUS);
 								robot.correctPosition(correction.position, correction.orientation);
+								robot.stopLidarCorrection();
 							}
 							else
 								log.write("Correction d'odo par lidar annulée : correction par capteurs trop récente.", Subject.STATUS);
@@ -171,6 +176,7 @@ public class ThreadLidar extends Thread
 		}
 		catch(InterruptedException e)
 		{
+			robot.stopLidarCorrection();
 			eth.close();
 			robot.clearLidarObs();
 			dynObs.clearLidarObs();
@@ -179,6 +185,7 @@ public class ThreadLidar extends Thread
 		}
 		catch(Exception e)
 		{
+			robot.stopLidarCorrection();
 			eth.close();
 			robot.clearLidarObs();
 			dynObs.clearLidarObs();
