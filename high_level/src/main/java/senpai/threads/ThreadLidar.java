@@ -47,6 +47,8 @@ public class ThreadLidar extends Thread
 	private int radius;
 	private int timeout;
 	private volatile long lastMessageDate = Long.MAX_VALUE;
+	private Process lidarProcess = null;
+	private String command;
 
 	public ThreadLidar(LidarEth eth, ObstaclesDynamiques dynObs, Robot robot, Log log, Config config)
 	{
@@ -58,6 +60,7 @@ public class ThreadLidar extends Thread
 		multiplier = config.getDouble(ConfigInfoSenpai.SLOW_OBSTACLE_RADIUS_MULTIPLIER);
 		radius = config.getInt(ConfigInfoSenpai.LIDAR_OBSTACLE_RADIUS);
 		timeout = config.getInt(ConfigInfoSenpai.TIMEOUT_LIDAR);
+		command = config.getString(ConfigInfoSenpai.LIDAR_COMMAND);
 		setDaemon(true);
 	}
 
@@ -80,6 +83,8 @@ public class ThreadLidar extends Thread
 			else
 			{
 				log.write("Démarrage de " + Thread.currentThread().getName(), Subject.STATUS);	
+				lidarProcess = Runtime.getRuntime().exec(command);
+
 				eth.initialize(config);
 				while(true)
 				{
@@ -190,6 +195,8 @@ public class ThreadLidar extends Thread
 		{
 			robot.stopLidarCorrection();
 			eth.close();
+			if(lidarProcess != null)
+				lidarProcess.destroy();
 			robot.clearLidarObs();
 			dynObs.clearLidarObs();
 			log.write("Arrêt de " + Thread.currentThread().getName(), Subject.STATUS);
@@ -199,6 +206,8 @@ public class ThreadLidar extends Thread
 		{
 			robot.stopLidarCorrection();
 			eth.close();
+			if(lidarProcess != null)
+				lidarProcess.destroy();
 			robot.clearLidarObs();
 			dynObs.clearLidarObs();
 			log.write("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e, Severity.CRITICAL, Subject.STATUS);

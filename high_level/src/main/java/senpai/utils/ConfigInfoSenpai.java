@@ -47,6 +47,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	SLOW_OBSTACLE_RADIUS_MULTIPLIER(1.5),
 	LIDAR_OBSTACLE_RADIUS(100),
 	TIMEOUT_LIDAR(2000),
+	LIDAR_COMMAND("/home/pi/lidar-processor/lidar_env/bin/python /home/pi/lidar-processor/src/main_script.py"),
 	
 	/**
 	 * Infos sur le robot
