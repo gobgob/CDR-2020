@@ -49,6 +49,7 @@ public class ThreadLidar extends Thread
 	private volatile long lastMessageDate = Long.MAX_VALUE;
 	private Process lidarProcess = null;
 	private String command;
+	private boolean enableLidarScript;
 
 	public ThreadLidar(LidarEth eth, ObstaclesDynamiques dynObs, Robot robot, Log log, Config config)
 	{
@@ -60,6 +61,7 @@ public class ThreadLidar extends Thread
 		multiplier = config.getDouble(ConfigInfoSenpai.SLOW_OBSTACLE_RADIUS_MULTIPLIER);
 		radius = config.getInt(ConfigInfoSenpai.LIDAR_OBSTACLE_RADIUS);
 		timeout = config.getInt(ConfigInfoSenpai.TIMEOUT_LIDAR);
+		enableLidarScript = config.getBoolean(ConfigInfoSenpai.ENABLE_LIDAR_SCRIPT);
 		command = config.getString(ConfigInfoSenpai.LIDAR_COMMAND);
 		setDaemon(true);
 	}
@@ -83,7 +85,11 @@ public class ThreadLidar extends Thread
 			else
 			{
 				log.write("Démarrage de " + Thread.currentThread().getName(), Subject.STATUS);	
-				lidarProcess = Runtime.getRuntime().exec(command);
+				if(enableLidarScript)
+				{
+					log.write("Démarrage du script " + command, Subject.STATUS);	
+					lidarProcess = Runtime.getRuntime().exec(command);
+				}
 
 				eth.initialize(config);
 				while(true)
