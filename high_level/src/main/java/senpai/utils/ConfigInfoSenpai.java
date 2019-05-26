@@ -46,6 +46,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	MAX_SPEED_IN_ENEMY(0.4),
 	SLOW_OBSTACLE_RADIUS_MULTIPLIER(1.5),
 	LIDAR_OBSTACLE_RADIUS(100),
+	TIMEOUT_LIDAR(2000),
 	
 	/**
 	 * Infos sur le robot

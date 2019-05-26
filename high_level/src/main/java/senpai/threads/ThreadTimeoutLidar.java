@@ -16,6 +16,7 @@ package senpai.threads;
 
 import pfg.config.Config;
 import pfg.log.Log;
+import senpai.robot.Robot;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Severity;
 import senpai.utils.Subject;
@@ -32,9 +33,11 @@ public class ThreadTimeoutLidar extends Thread
 	protected Config config;
 	protected ThreadLidar threadLidar;
 	protected Log log;
+	protected Robot robot;
 
-	public ThreadTimeoutLidar(ThreadLidar threadLidar, Log log, Config config)
+	public ThreadTimeoutLidar(ThreadLidar threadLidar, Robot robot, Log log, Config config)
 	{
+		this.robot = robot;
 		this.threadLidar = threadLidar;
 		this.config = config;
 		this.log = log;
@@ -56,10 +59,17 @@ public class ThreadTimeoutLidar extends Thread
 			}
 			else
 			{
+				log.write("Démarrage de " + Thread.currentThread().getName(), Subject.STATUS);	
 				while(!threadLidar.timeout())
+				{
 					Thread.sleep(100);
+				}
 				log.write("Timeout lidar !", Severity.CRITICAL, Subject.STATUS);
+				// on prévient le robot que la correction est finie
+				robot.stopLidarCorrection();
+				// on arrête le thread lidar
 				threadLidar.interrupt();
+				threadLidar.close();
 			}
 		}
 		catch(InterruptedException e)

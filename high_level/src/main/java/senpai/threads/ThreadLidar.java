@@ -15,6 +15,7 @@
 package senpai.threads;
 
 import java.io.IOException;
+import java.net.SocketException;
 import pfg.config.Config;
 import pfg.kraken.obstacles.CircularObstacle;
 import pfg.kraken.utils.XY;
@@ -44,6 +45,7 @@ public class ThreadLidar extends Thread
 	protected LidarEth eth;
 	private double multiplier;
 	private int radius;
+	private int timeout;
 	private volatile long lastMessageDate = Long.MAX_VALUE;
 
 	public ThreadLidar(LidarEth eth, ObstaclesDynamiques dynObs, Robot robot, Log log, Config config)
@@ -55,6 +57,7 @@ public class ThreadLidar extends Thread
 		this.robot = robot;
 		multiplier = config.getDouble(ConfigInfoSenpai.SLOW_OBSTACLE_RADIUS_MULTIPLIER);
 		radius = config.getInt(ConfigInfoSenpai.LIDAR_OBSTACLE_RADIUS);
+		timeout = config.getInt(ConfigInfoSenpai.TIMEOUT_LIDAR);
 		setDaemon(true);
 	}
 
@@ -72,7 +75,7 @@ public class ThreadLidar extends Thread
 			{
 				log.write("Démarrage de " + Thread.currentThread().getName()+" annulé !", Severity.WARNING, Subject.STATUS);
 				while(true)
-					Thread.sleep(10);
+					Thread.sleep(100);
 			}
 			else
 			{
@@ -81,6 +84,13 @@ public class ThreadLidar extends Thread
 				while(true)
 				{
 					String message = eth.getMessage();
+					
+					if(isInterrupted())
+					{
+						log.write("Timeout lidar !", Subject.STATUS);
+						while(true)
+							Thread.sleep(100);
+					}
 					
 					if(message != null)
 						log.write("Message lidar : "+message, Subject.COMM);	
@@ -176,7 +186,7 @@ public class ThreadLidar extends Thread
 				}
 			}
 		}
-		catch(InterruptedException e)
+		catch(InterruptedException | SocketException e)
 		{
 			robot.stopLidarCorrection();
 			eth.close();
@@ -199,7 +209,12 @@ public class ThreadLidar extends Thread
 	
 	public boolean timeout()
 	{
-		return System.currentTimeMillis() - lastMessageDate > 5000;
+		return System.currentTimeMillis() - lastMessageDate > timeout;
+	}
+
+	public void close()
+	{
+		eth.close();
 	}
 
 }

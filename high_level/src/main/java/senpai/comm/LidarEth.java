@@ -84,8 +84,6 @@ public class LidarEth
 		if(socket == null)
 			return;
 		
-		assert !socket.isClosed() : "État du socket : "+socket.isClosed();
-		
 		if(!socket.isClosed())
 		{
 			try
@@ -100,8 +98,6 @@ public class LidarEth
 				log.write(e, Severity.WARNING, Subject.COMM);
 			}
 		}
-		else if(socket.isClosed())
-			log.write("Fermeture impossible : carte déjà fermée", Severity.WARNING, Subject.COMM);
 	}
 
 	public String getMessage() throws InterruptedException, IOException
