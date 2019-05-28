@@ -17,6 +17,7 @@ package senpai.comm;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.UnknownHostException;
 import pfg.config.Config;
 import pfg.log.Log;
@@ -57,8 +58,10 @@ public class ElectronEth
 		    e.printStackTrace();
 		}
 		log.write("Prêt à ouvrir le socket de l'électron", Subject.COMM);
-		socket.accept();
+		Socket client = socket.accept();
+		log.write("Électron connecté", Subject.COMM);
+		client.close();
 		socket.close();
-		log.write("Électron connecté !", Subject.COMM);
+		log.write("Socket électron fermé.", Subject.COMM);
 	}
 }
