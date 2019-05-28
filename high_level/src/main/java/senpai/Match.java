@@ -2,6 +2,7 @@ package senpai;
 
 import pfg.config.Config;
 import pfg.kraken.exceptions.PathfindingException;
+import pfg.kraken.exceptions.StartPointException;
 import pfg.kraken.exceptions.TimeoutException;
 import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.utils.XY;
@@ -434,7 +435,7 @@ public class Match
 				if(Thread.currentThread().isInterrupted())
 					throw new InterruptedException();
 			}
-			catch(TimeoutException e)
+			catch(TimeoutException | StartPointException e)
 			{
 				log.write("Timeout de Kraken : "+e, Severity.WARNING, Subject.SCRIPT);
 				helpKraken();
