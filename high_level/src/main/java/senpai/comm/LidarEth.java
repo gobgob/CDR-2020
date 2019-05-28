@@ -18,7 +18,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -58,7 +57,6 @@ public class LidarEth
 	public void initialize(Config config) throws IOException
 	{
 		int port = config.getInt(ConfigInfoSenpai.ETH_LIDAR_PORT_NUMBER);
-		String hostname = config.getString(ConfigInfoSenpai.ETH_HL_HOSTNAME_SERVER);
 		try {
 			// on accepte une connexion max à la fois			
 			socket = new ServerSocket(port);
