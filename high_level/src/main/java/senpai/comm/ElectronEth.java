@@ -48,7 +48,7 @@ public class ElectronEth
 	public void previensElectron(Config config) throws IOException
 	{
 		int port = config.getInt(ConfigInfoSenpai.ETH_ELECTRON_PORT_NUMBER);
-		String hostname = config.getString(ConfigInfoSenpai.ETH_HL_HOSTNAME_SERVER);
+		String hostname = config.getString(ConfigInfoSenpai.ETH_HL_ELECTRON_HOSTNAME_SERVER);
 		ServerSocket socket = null;
 		try {
 			socket = new ServerSocket(port, 200, InetAddress.getByName(hostname));
