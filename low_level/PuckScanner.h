@@ -5,11 +5,13 @@
 #include "Config.h"
 #include "CommunicationServer.h"
 
-#define SCAN_SENSOR_MIN             (15)      // mm
+#define SCAN_SENSOR_MIN             (5)      // mm
 #define SCAN_SENSOR_MAX             (200)     // mm
 #define SCAN_RESOLUTION             (101)     // resolution spaciale selon l'axe Y
 #define SCAN_LEFT_SENSOR_POSITION	(-43.83)  // mm
 #define SCAN_RIGHT_SENSOR_POSITION	(43.83)   // mm
+#define SCAN_LEFT_SENSOR_OFFSET     (4)       // mm
+#define SCAN_RIGHT_SENSOR_OFFSET    (-2)       // mm
 
 /* Detection tuning for standard puck */
 #define SCAN_EDGE_MIN_HEIGHT        (15.0)    // mm
@@ -48,11 +50,11 @@ public:
 
     void updateLeftSensor(SensorValue& s_val, float y)
     {
-        registerSensorUpdate(m_left_sensor.getMeasure(), s_val, y + SCAN_LEFT_SENSOR_POSITION);
+        registerSensorUpdate(m_left_sensor.getMeasure(), s_val, y + SCAN_LEFT_SENSOR_POSITION, SCAN_LEFT_SENSOR_OFFSET);
     }
     void updateRightSensor(SensorValue& s_val, float y)
     {
-        registerSensorUpdate(m_right_sensor.getMeasure(), s_val, y + SCAN_RIGHT_SENSOR_POSITION);
+        registerSensorUpdate(m_right_sensor.getMeasure(), s_val, y + SCAN_RIGHT_SENSOR_POSITION, SCAN_RIGHT_SENSOR_OFFSET);
     }
 
     int compute(bool goldenium, float& y, int32_t& puck_distance)
@@ -168,13 +170,26 @@ public:
     }
 
 private:
-    void registerSensorUpdate(SensorValue input, SensorValue& output, float y)
+    void registerSensorUpdate(SensorValue input, SensorValue& output, float y, int32_t offset)
     {
-        if (input != SENSOR_NOT_UPDATED) {
-            output = input;
-            if (m_scan_enabled) {
-                m_raw_scan_data.push_back(RawScanPoint(input, y, m_y_min, m_y_max));
-            }
+        if (input == SENSOR_NOT_UPDATED) {
+            return;
+        }
+
+        SensorValue input_offset;
+        if (input == SENSOR_DEAD || input == OBSTACLE_TOO_CLOSE || input == NO_OBSTACLE) {
+            input_offset = input;
+        }
+        else if (input + offset < SCAN_SENSOR_MIN) {
+            input_offset = OBSTACLE_TOO_CLOSE;
+        }
+        else {
+            input_offset = min(input + offset, SCAN_SENSOR_MAX);
+        }
+
+        output = input_offset;
+        if (m_scan_enabled) {
+            m_raw_scan_data.push_back(RawScanPoint(input_offset, y, m_y_min, m_y_max));
         }
     }
 
