@@ -111,7 +111,7 @@ public class ScriptPousseAtomeMilieu extends Script
 				robot.HACK_setRobotDeploye();
 			}
 			// dans tous les cas, on recule
-			robot.avance(-200);
+			robot.avance(-250);
 		}
 	}
 

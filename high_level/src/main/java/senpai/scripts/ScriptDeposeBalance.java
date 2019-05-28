@@ -69,9 +69,9 @@ public class ScriptDeposeBalance extends Script
 	{
 		try {
 			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, 0., 210., 20., 1023., 300., 1023.);
-			robot.avanceTo(new XYO(new XY_RW(150, 600), -Math.PI / 2));
+			robot.avanceTo(new XYO(new XY_RW(positionEntree.getX(), 600), -Math.PI / 2));
 			try{
-				robot.avanceTo(new XYO(new XY_RW(150, 500), -Math.PI / 2), 0.4); // On se cale sur le mur à basse vitesse
+				robot.avanceTo(new XYO(new XY_RW(positionEntree.getX(), 500), -Math.PI / 2), 0.4); // On se cale sur le mur à basse vitesse
 			} catch (UnableToMoveException e) {
 
 			}
