@@ -51,7 +51,7 @@ public class ElectronEth
 		String hostname = config.getString(ConfigInfoSenpai.ETH_HL_ELECTRON_HOSTNAME_SERVER);
 		ServerSocket socket = null;
 		try {
-			socket = new ServerSocket(port, 200, InetAddress.getByName(hostname));
+			socket = new ServerSocket(port);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
