@@ -61,7 +61,7 @@ public class LidarEth
 		String hostname = config.getString(ConfigInfoSenpai.ETH_HL_HOSTNAME_SERVER);
 		try {
 			// on accepte une connexion max à la fois			
-			socket = new ServerSocket(port, 1, InetAddress.getByName(hostname));
+			socket = new ServerSocket(port);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
