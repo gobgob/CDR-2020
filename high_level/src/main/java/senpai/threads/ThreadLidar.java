@@ -72,7 +72,7 @@ public class ThreadLidar extends Thread
 		boolean colorSent = false;
 		boolean started = false;
 		boolean stopped = false;
-		long lastCorrection = 0;
+//		long lastCorrection = 0;
 		
 		Thread.currentThread().setName(getClass().getSimpleName());
 		try
@@ -111,8 +111,9 @@ public class ThreadLidar extends Thread
 						log.write("Message lidar : "+message, Subject.COMM);	
 					else
 						throw new IOException("Déconnexion prématurée du lidar");
-					
+					log.write("LidarCorr: "+robot.needLidarCorrection()+" "+robot.isLidarCorrectionAllowed(), Subject.COMM);
 					lastMessageDate = System.currentTimeMillis();
+					
 					if(message.startsWith("ASK_STATUS"))
 					{
 						if(!colorSent)
@@ -136,10 +137,10 @@ public class ThreadLidar extends Thread
 							eth.sendStop();
 							stopped = true;
 						}
-						else if(System.currentTimeMillis() - lastCorrection > 2000)
-//						else if(robot.needLidarCorrection() && robot.isLidarCorrectionAllowed())
+//						else if(System.currentTimeMillis() - lastCorrection > 2000)
+						else if(robot.needLidarCorrection() && robot.isLidarCorrectionAllowed())
 						{
-							lastCorrection = System.currentTimeMillis();
+//							lastCorrection = System.currentTimeMillis();
 							robot.startLidarCorrection();
 							eth.sendOdo();
 						}
@@ -184,10 +185,10 @@ public class ThreadLidar extends Thread
 								XYO correction = new XYO(Integer.parseInt(m[1]), Integer.parseInt(m[2]), Double.parseDouble(m[3]));
 								log.write("Envoi d'une correction XYO lidar: " + correction, Subject.STATUS);
 								robot.correctPosition(correction.position, correction.orientation);
-								robot.stopLidarCorrection();
 							}
 							else
 								log.write("Correction d'odo par lidar annulée : correction par capteurs trop récente.", Subject.STATUS);
+							robot.stopLidarCorrection();
 							eth.sendAck();
 						}
 						else

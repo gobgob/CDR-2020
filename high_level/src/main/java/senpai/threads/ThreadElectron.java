@@ -60,9 +60,11 @@ public class ThreadElectron extends Thread
 			else
 			{
 				log.write("Démarrage de " + Thread.currentThread().getName(), Subject.STATUS);	
+				robot.updateScore(5);
 				while(!robot.isMatchStarted())
 					Thread.sleep(100);
 				eth.previensElectron(config);
+				robot.updateScore(35);
 				while(true)
 					Thread.sleep(100);
 			}

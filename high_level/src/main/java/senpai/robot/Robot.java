@@ -64,9 +64,9 @@ public class Robot extends RobotState
 		MOVING; // le robot se déplace
 	}
 	
-	private volatile long lidarCorrectionTimeOut = Long.MIN_VALUE;
+	private volatile long lidarCorrectionTimeOut = 0;
 	private volatile boolean needLidarCorrection;
-	private volatile long lastCorrectionDate = Long.MIN_VALUE;
+	private volatile long lastCorrectionDate = 0;
 	protected volatile boolean symetrie;
 	protected Log log;
 	private double defaultSpeed, maxSpeedInEnemy;
@@ -806,7 +806,7 @@ public class Robot extends RobotState
 	
 	public void stopLidarCorrection()
 	{
-		lidarCorrectionTimeOut = Long.MIN_VALUE;
+		lidarCorrectionTimeOut = 0;
 	}
 	
 	public boolean needLidarCorrection()
