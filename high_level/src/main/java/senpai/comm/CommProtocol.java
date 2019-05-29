@@ -99,7 +99,8 @@ public class CommProtocol
 		STOPPING_CONSTANTS(0x9C, false),
 		SET_MAX_ACCELERATION(0x9D, false),
 		SET_MAX_DECELERATION(0x9E, false),
-		SET_MAX_CURVATURE(0x9F, false);
+		SET_MAX_CURVATURE(0x9F, false),
+		SET_SMOKE_LEVEL(0xA0, false);
 
 		// Paramètres constants
 		public final byte code;

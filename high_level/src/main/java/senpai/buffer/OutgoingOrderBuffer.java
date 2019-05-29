@@ -212,6 +212,14 @@ public class OutgoingOrderBuffer implements Plottable
 		addToBuffer(new Order(data, Id.SET_WARNINGS));
 	}
 	
+	public void enableSmoke(boolean enable)
+	{
+		ByteBuffer data = ByteBuffer.allocate(1);
+		data.order(ByteOrder.LITTLE_ENDIAN);
+		data.put((byte)(enable ? 1 : 0));
+		addToBuffer(new Order(data, Id.SET_SMOKE_LEVEL));
+	}
+	
 	public void enableParkingBreak(boolean enable)
 	{
 		ByteBuffer data = ByteBuffer.allocate(1);

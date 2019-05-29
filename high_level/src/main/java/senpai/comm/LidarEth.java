@@ -20,6 +20,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 import pfg.config.Config;
 import pfg.log.Log;
@@ -59,13 +60,17 @@ public class LidarEth
 		int port = config.getInt(ConfigInfoSenpai.ETH_LIDAR_PORT_NUMBER);
 		try {
 			// on accepte une connexion max à la fois			
-			socket = new ServerSocket(port);
+			socket = new ServerSocket(port, 1, InetAddress.getByName("127.0.0.1"));
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 		    e.printStackTrace();
 		}
 		log.write("Attente de la connexion du lidar...", Subject.COMM);
+	}
+	
+	public void waitLidar() throws IOException
+	{
 		client = socket.accept();
 		log.write("Lidar connecté !", Subject.COMM);
 		
@@ -105,6 +110,8 @@ public class LidarEth
 	
 	public void sendInit(RobotColor c) throws IOException
 	{
+		log.write("Envoi couleur lidar: "+c, Subject.COMM);
+
 		if(c == RobotColor.JAUNE)
 			output.write("INIT JAUNE\n");
 		else
@@ -114,6 +121,7 @@ public class LidarEth
 	
 	public void sendOdo() throws IOException
 	{
+		log.write("Demande correction odo", Subject.COMM);
 		output.write("CORRECTION_ODO\n");
 		output.flush();
 	}
@@ -126,12 +134,14 @@ public class LidarEth
 	
 	public void sendStart() throws IOException
 	{
+		log.write("Start match lidar", Subject.COMM);
 		output.write("START\n");
 		output.flush();
 	}
 
 	public void sendStop() throws IOException
 	{
+		log.write("Stop match lidar", Subject.COMM);
 		output.write("STOP\n");
 		output.flush();
 	}

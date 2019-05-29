@@ -72,6 +72,7 @@ public class ThreadLidar extends Thread
 		boolean colorSent = false;
 		boolean started = false;
 		boolean stopped = false;
+		long lastCorrection = 0;
 		
 		Thread.currentThread().setName(getClass().getSimpleName());
 		try
@@ -85,13 +86,16 @@ public class ThreadLidar extends Thread
 			else
 			{
 				log.write("Démarrage de " + Thread.currentThread().getName(), Subject.STATUS);	
+				eth.initialize(config);
+				
 				if(enableLidarScript)
 				{
 					log.write("Démarrage du script " + command, Subject.STATUS);	
 					lidarProcess = Runtime.getRuntime().exec(command);
 				}
+				
+				eth.waitLidar();
 
-				eth.initialize(config);
 				while(true)
 				{
 					String message = eth.getMessage();
@@ -132,8 +136,10 @@ public class ThreadLidar extends Thread
 							eth.sendStop();
 							stopped = true;
 						}
-						else if(robot.needLidarCorrection() && robot.isLidarCorrectionAllowed())
+						else if(System.currentTimeMillis() - lastCorrection > 2000)
+//						else if(robot.needLidarCorrection() && robot.isLidarCorrectionAllowed())
 						{
+							lastCorrection = System.currentTimeMillis();
 							robot.startLidarCorrection();
 							eth.sendOdo();
 						}
@@ -150,7 +156,6 @@ public class ThreadLidar extends Thread
 							int id = Integer.parseInt(m[3]);
 //							int timestamp = Integer.parseInt(m[4]);
 							int radSlow = (int) Math.round(multiplier * radius);
-//							int timestamp = Integer.parseInt(m[5]);
 							assert id < 100 : id;
 							CircularObstacle obs = new CircularObstacle(new XY(x, y), radius);
 							dynObs.setLidarObs(obs, id);
