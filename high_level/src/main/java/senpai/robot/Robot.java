@@ -94,6 +94,7 @@ public class Robot extends RobotState
 	private int tailleCargoMax;
 	private boolean goldeniumFree = false; 
 	private CircularObstacle[] lidarObs = new CircularObstacle[100]; // pas plus de cent obstacles
+	private volatile boolean enableLidar;
 	
 	public Robot(Log log, OutgoingOrderBuffer out, Config config, GraphicDisplay buffer, Kraken[] krakens, /*DynamicPath dpath,*/ /*KnownPathManager known,*/ RectangularObstacle obstacle)
 	{
@@ -109,6 +110,8 @@ public class Robot extends RobotState
 		defaultSpeed = config.getDouble(ConfigInfoSenpai.DEFAULT_MAX_SPEED);
 		maxSpeedInEnemy = config.getDouble(ConfigInfoSenpai.MAX_SPEED_IN_ENEMY);
 		graphicPath = config.getBoolean(ConfigInfoSenpai.GRAPHIC_PATH);
+		enableLidar = config.getBoolean(ConfigInfoSenpai.ENABLE_LIDAR);
+		
 		// On ajoute une fois pour toute l'image du robot
 		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ROBOT_AND_SENSORS))
 		{
@@ -536,7 +539,9 @@ public class Robot extends RobotState
 		DataTicket out = null;
 		
 		out = followTrajectory();
-		requestLidarCorrection();
+		
+		if(enableLidar)
+			requestLidarCorrection();
 		
 		if(!simuleLL && out.data != null)
 			throw new UnableToMoveException(out.data.toString());
@@ -563,8 +568,8 @@ public class Robot extends RobotState
 				wait();
 		}
 
-		while(System.currentTimeMillis() < lidarCorrectionTimeOut)
-			Thread.sleep(10);
+		while(enableLidar && (System.currentTimeMillis() < lidarCorrectionTimeOut || needLidarCorrection))
+			Thread.sleep(5);
 		
 		if(!jumperOK)
 		{
@@ -811,6 +816,7 @@ public class Robot extends RobotState
 	public void stopLidarCorrection()
 	{
 		lidarCorrectionTimeOut = 0;
+		enableLidar = false;
 	}
 	
 	public boolean needLidarCorrection()
