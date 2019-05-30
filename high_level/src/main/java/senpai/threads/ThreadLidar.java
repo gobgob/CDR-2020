@@ -180,7 +180,9 @@ public class ThreadLidar extends Thread
 						String[] m = message.split(" ");
 						if(m.length == 4)
 						{
-							if(robot.isLidarCorrectionAllowed())
+							boolean allowed = robot.isLidarCorrectionAllowed();
+							boolean timeout = robot.isLidarTimeout(); 
+							if(allowed && !timeout)
 							{
 								XYO correction = new XYO(Integer.parseInt(m[1]), Integer.parseInt(m[2]), Double.parseDouble(m[3]));
 								if(Math.abs(correction.orientation) > 15*Math.PI/180)
@@ -193,8 +195,10 @@ public class ThreadLidar extends Thread
 									robot.correctPosition(correction.position, correction.orientation);
 								}
 							}
-							else
+							else if(!allowed)
 								log.write("Correction d'odo par lidar annulée : correction par capteurs trop récente.", Subject.STATUS);
+							else
+								log.write("Correction d'odo par lidar annulée : durée trop longue entre request et réponse du lidar.", Subject.STATUS);
 							robot.stopLidarCorrection();
 							eth.sendAck();
 						}

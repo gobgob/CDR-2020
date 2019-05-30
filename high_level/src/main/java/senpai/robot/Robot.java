@@ -568,9 +568,13 @@ public class Robot extends RobotState
 			while(etat == State.STANDBY)
 				wait();
 		}
-
-		while(enableLidar && (System.currentTimeMillis() < lidarCorrectionTimeOut || needLidarCorrection))
-			Thread.sleep(5);
+		
+		if(enableLidar)
+		{
+			log.write("Attente de la correction lidar...", Subject.TRAJECTORY);
+			while(enableLidar && (!isLidarTimeout() || needLidarCorrection))
+				Thread.sleep(5);
+		}
 		
 		if(!jumperOK)
 		{
@@ -611,6 +615,11 @@ public class Robot extends RobotState
 		return dt;
 	}
 
+	public boolean isLidarTimeout()
+	{
+		return System.currentTimeMillis() > lidarCorrectionTimeOut;
+	}
+	
 	public synchronized void setStopping()
 	{
 		etat = State.STOPPING;
