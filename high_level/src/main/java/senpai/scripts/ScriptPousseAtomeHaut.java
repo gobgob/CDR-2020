@@ -96,7 +96,7 @@ public class ScriptPousseAtomeHaut extends Script
 			robot.avanceTo(new XYO(positionDebut, angleDebut));
 			table.setDone(at);
 			robot.goTo(new XYO(positionFin, angleFin));
-			robot.updateScore(6);
+			robot.updateScore(4);
 			// si tout s'est bien passé, alors le script n'est plus faisable
 			done = true;
 			robot.setScriptPousseAtomeHautFait();
