@@ -170,7 +170,8 @@ public class Match
 		robot.updateColorAndSendPosition(couleur);
 		scripts.setCouleur(couleur);
 		ll.enableParkingBreak(config.getBoolean(ConfigInfoSenpai.ENABLE_PARKING_BREAK));
-		robot.requestLidarCorrection();
+		if(config.getBoolean(ConfigInfoSenpai.ENABLE_LIDAR))
+			robot.requestLidarCorrection();
 		/*
 		 * Allumage des capteurs
 		 */
@@ -289,6 +290,46 @@ public class Match
 					pathfindingError = true;
 			}
 
+			try
+			{
+				doScript(accelerateur, 4, 2, true);
+				none = false;
+			}
+			catch(PathfindingException | UnableToMoveException | ScriptException e)
+			{
+				log.write("Erreur : "+e, Subject.SCRIPT);
+				if(e instanceof PathfindingException)
+					pathfindingError = true;
+			}
+			
+//			if(config.getBoolean(ConfigInfoSenpai.SIMULE_COMM))
+//				throw new InterruptedException("Debug");
+			
+			try
+			{
+				doScript(recupereGold, 8, 3, true);
+				none = false;
+			}
+			catch(PathfindingException | UnableToMoveException | ScriptException e)
+			{
+				log.write("Erreur : "+e, Subject.SCRIPT);
+				if(e instanceof PathfindingException)
+					pathfindingError = true;
+			}
+			
+			try
+			{
+				doScript(deposeBalance, 4, 2, true);
+				none = false;
+			}
+			catch(PathfindingException | UnableToMoveException | ScriptException e)
+			{
+				log.write("Erreur : "+e, Subject.SCRIPT);
+				if(e instanceof PathfindingException)
+					pathfindingError = true;
+			}
+
+			
 			try
 			{
 				doScript(recuperePaletBlueium, 4, 2, true);
