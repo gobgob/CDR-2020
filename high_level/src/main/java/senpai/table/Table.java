@@ -47,6 +47,7 @@ public class Table implements Printable
 	private HashMap<AtomeParTerre, Boolean> etat = new HashMap<AtomeParTerre, Boolean>();
 	private List<Obstacle> currentObstacles = new ArrayList<Obstacle>();
 	private List<Obstacle> otherObstacles = new ArrayList<Obstacle>();
+	private List<Obstacle> noEnemyZone = new ArrayList<Obstacle>();
 	
 	public Table(Log log, Config config, GraphicDisplay buffer)
 	{
@@ -60,6 +61,16 @@ public class Table implements Printable
 	public void addOtherObstacle(Obstacle o)
 	{
 		otherObstacles.add(o);
+	}
+
+	public void addNoEnemyZone(Obstacle o)
+	{
+		noEnemyZone.add(o);
+	}
+
+	public List<Obstacle> getNoEnemyZone()
+	{
+		return noEnemyZone;
 	}
 	
 	/**

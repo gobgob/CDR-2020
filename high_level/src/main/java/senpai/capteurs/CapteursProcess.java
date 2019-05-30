@@ -24,10 +24,12 @@ import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Severity;
 import senpai.utils.Subject;
 import java.util.Collections;
+import java.util.List;
 import pfg.config.Config;
 import pfg.graphic.GraphicDisplay;
 import pfg.graphic.printable.Layer;
 import pfg.kraken.obstacles.RectangularObstacle;
+import pfg.kraken.obstacles.Obstacle;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XYO;
@@ -175,6 +177,20 @@ public class CapteursProcess
 					stop = true;
 					break;
 				}
+			
+			if(stop)
+			{
+				c.isThereObstacle = false;
+				continue;
+			}
+
+			List<Obstacle> noEnemyZone = table.getNoEnemyZone();
+			for(Obstacle o : noEnemyZone)
+				if(o.squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
+				{
+					stop = true;
+					break;
+				}
 
 			if(stop)
 			{
@@ -188,13 +204,13 @@ public class CapteursProcess
 					log.write("Élément de jeu vu : " + o, Subject.CAPTEURS);
 					stop = true;
 					break;
-				}*/
+				}
 
 			if(stop)
 			{
 				c.isThereObstacle = false;
 				continue;
-			}	
+			}	*/
 			
 			/**
 			 * Sinon, on ajoute

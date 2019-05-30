@@ -443,7 +443,6 @@ public class Robot extends RobotState
 			{
 				if(s != null && s.isInObstacle(tmp))
 				{
-					// TODO: peut-être faire quelque chose de plus progressif
 					double maxSpeed = Math.min(ip.maxSpeed, maxSpeedInEnemy);
 					ItineraryPoint newIp = new ItineraryPoint(ip.x, ip.y, ip.orientation, ip.curvature, ip.goingForward, maxSpeed, ip.possibleSpeed, ip.stop);
 					out.add(newIp);
@@ -537,12 +536,17 @@ public class Robot extends RobotState
 		DataTicket out = null;
 		
 		out = followTrajectory();
-		needLidarCorrection = true;
-
+		requestLidarCorrection();
+		
 		if(!simuleLL && out.data != null)
 			throw new UnableToMoveException(out.data.toString());
 
 		return out;
+	}
+	
+	public void requestLidarCorrection()
+	{
+		needLidarCorrection = true;
 	}
 	
 	private DataTicket followTrajectory() throws InterruptedException
@@ -819,6 +823,14 @@ public class Robot extends RobotState
 		return false;
 	}
 
+	public String printLidarStatus()
+	{
+		return "needLidarCorrection: "+needLidarCorrection+
+				", lastCorrectionCapteurs: "+lastCorrectionDate+
+				", lidarCorrectionTimeOut: "+lidarCorrectionTimeOut+
+				", delta lastCorrectionCapteurs: "+(System.currentTimeMillis() - lastCorrectionDate)+
+				", delta lidarCorrectionTimeOut: "+(System.currentTimeMillis() - lidarCorrectionTimeOut);
+	}
 
 	public void setLastCorrectionDate()
 	{

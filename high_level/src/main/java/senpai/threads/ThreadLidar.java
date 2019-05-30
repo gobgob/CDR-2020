@@ -111,7 +111,7 @@ public class ThreadLidar extends Thread
 						log.write("Message lidar : "+message, Subject.COMM);	
 					else
 						throw new IOException("Déconnexion prématurée du lidar");
-					log.write("LidarCorr: "+robot.needLidarCorrection()+" "+robot.isLidarCorrectionAllowed(), Subject.COMM);
+					log.write("LidarCorr: "+robot.printLidarStatus(), Subject.COMM);
 					lastMessageDate = System.currentTimeMillis();
 					
 					if(message.startsWith("ASK_STATUS"))

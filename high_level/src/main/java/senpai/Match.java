@@ -144,16 +144,33 @@ public class Match
 			couleur = (RobotColor) etat.data;
 		}
 		
+		/**
+		 * Ajout des zones interdites d'accès
+		 */
 		XY_RW posZoneDepartAdverse = new XY_RW(-1500+550/2, 1250);
+		XY_RW rampeAdverse = new XY_RW(-750, 200);
 		if(couleur.symmetry)
+		{
 			posZoneDepartAdverse.setX(- posZoneDepartAdverse.getX());
-		table.addOtherObstacle(new RectangularObstacle(posZoneDepartAdverse, 550, 900));
+			rampeAdverse.setX(- rampeAdverse.getX());
+		}
+		table.addOtherObstacle(new RectangularObstacle(posZoneDepartAdverse.clone(), 550, 900));
+		table.addOtherObstacle(new RectangularObstacle(rampeAdverse.clone(), 1500, 400));
+
+		/**
+		 * Ajout des zones où on sait qu'il n'y a aucun ennemi (les mêmes, symétrisés)
+		 */
+		posZoneDepartAdverse.setX(- posZoneDepartAdverse.getX());
+		rampeAdverse.setX(- rampeAdverse.getX());
+		table.addNoEnemyZone(new RectangularObstacle(posZoneDepartAdverse.clone(), 550, 900));
+		table.addNoEnemyZone(new RectangularObstacle(rampeAdverse.clone(), 1500, 400));
+
 		
 		log.write("Couleur utilisée : "+couleur, Subject.STATUS);
 		robot.updateColorAndSendPosition(couleur);
 		scripts.setCouleur(couleur);
 		ll.enableParkingBreak(config.getBoolean(ConfigInfoSenpai.ENABLE_PARKING_BREAK));
-
+		robot.requestLidarCorrection();
 		/*
 		 * Allumage des capteurs
 		 */
