@@ -183,8 +183,15 @@ public class ThreadLidar extends Thread
 							if(robot.isLidarCorrectionAllowed())
 							{
 								XYO correction = new XYO(Integer.parseInt(m[1]), Integer.parseInt(m[2]), Double.parseDouble(m[3]));
-								log.write("Envoi d'une correction XYO lidar: " + correction, Subject.STATUS);
-								robot.correctPosition(correction.position, correction.orientation);
+								if(Math.abs(correction.orientation) > 15*Math.PI/180)
+								{
+									log.write("Correction Lidar trop grande ! "+correction, Severity.WARNING, Subject.STATUS);
+								}
+								else
+								{
+									log.write("Envoi d'une correction XYO lidar: " + correction, Subject.STATUS);
+									robot.correctPosition(correction.position, correction.orientation);
+								}
 							}
 							else
 								log.write("Correction d'odo par lidar annulée : correction par capteurs trop récente.", Subject.STATUS);
