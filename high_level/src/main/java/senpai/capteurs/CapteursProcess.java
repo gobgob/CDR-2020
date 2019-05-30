@@ -184,19 +184,6 @@ public class CapteursProcess
 				continue;
 			}
 
-			List<Obstacle> noEnemyZone = table.getNoEnemyZone();
-			for(Obstacle o : noEnemyZone)
-				if(o.squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
-				{
-					stop = true;
-					break;
-				}
-
-			if(stop)
-			{
-				c.isThereObstacle = false;
-				continue;
-			}
 
 /*			for(Atome o : Atome.values())
 				if(!table.isDone(o) && o.visible && o.obstacle.squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
@@ -230,6 +217,22 @@ public class CapteursProcess
 					c.isThereObstacle = false;
 					continue; // hors table
 				}*/
+			
+			List<Obstacle> noEnemyZone = table.getNoEnemyZone();
+			for(Obstacle o : noEnemyZone)
+				if(o.squaredDistance(positionEnnemi) < distanceApproximation * distanceApproximation)
+				{
+					log.write("Obstacle trop proche d'une zone sans-ennemi", Subject.CAPTEURS);
+					stop = true;
+					break;
+				}
+
+			if(stop)
+			{
+				c.isThereObstacle = false;
+				continue;
+			}
+
 			
 			c.isThereObstacle = true;
 			log.write("Ajout d'un obstacle d'ennemi en " + positionEnnemi + " vu par " + c, Subject.CAPTEURS);
