@@ -65,7 +65,7 @@ public class Robot extends RobotState
 	}
 	
 	private volatile long lidarCorrectionTimeOut = 0;
-	private volatile boolean needLidarCorrection;
+	private volatile boolean needLidarCorrection = false;
 	private volatile long lastCorrectionDate = 0;
 	protected volatile boolean symetrie;
 	protected Log log;
@@ -551,6 +551,7 @@ public class Robot extends RobotState
 	
 	public void requestLidarCorrection()
 	{
+		log.write("Lidar request!", Subject.STATUS);
 		needLidarCorrection = true;
 	}
 	
@@ -813,10 +814,15 @@ public class Robot extends RobotState
 		lidarCorrectionTimeOut = System.currentTimeMillis() + 2000;
 	}
 	
+	public void disableLidar()
+	{
+		log.write("On n'utilise plus le lidar", Subject.STATUS);
+		enableLidar = false;
+	}
+	
 	public void stopLidarCorrection()
 	{
 		lidarCorrectionTimeOut = 0;
-		enableLidar = false;
 	}
 	
 	public boolean needLidarCorrection()
@@ -831,7 +837,8 @@ public class Robot extends RobotState
 
 	public String printLidarStatus()
 	{
-		return "needLidarCorrection: "+needLidarCorrection+
+		return "lidarEnable: "+enableLidar+
+				", needLidarCorrection: "+needLidarCorrection+
 				", lastCorrectionCapteurs: "+lastCorrectionDate+
 				", lidarCorrectionTimeOut: "+lidarCorrectionTimeOut+
 				", delta lastCorrectionCapteurs: "+(System.currentTimeMillis() - lastCorrectionDate)+

@@ -205,7 +205,7 @@ public class ThreadLidar extends Thread
 		}
 		catch(InterruptedException | SocketException e)
 		{
-			robot.stopLidarCorrection();
+			robot.disableLidar();
 			eth.close();
 			if(lidarProcess != null)
 				lidarProcess.destroy();
@@ -216,7 +216,7 @@ public class ThreadLidar extends Thread
 		}
 		catch(Exception e)
 		{
-			robot.stopLidarCorrection();
+			robot.disableLidar();
 			eth.close();
 			if(lidarProcess != null)
 				lidarProcess.destroy();

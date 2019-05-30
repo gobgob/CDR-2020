@@ -66,7 +66,7 @@ public class ThreadTimeoutLidar extends Thread
 				}
 				log.write("Timeout lidar !", Severity.CRITICAL, Subject.STATUS);
 				// on prévient le robot que la correction est finie
-				robot.stopLidarCorrection();
+				robot.disableLidar();
 				// on arrête le thread lidar
 				threadLidar.interrupt();
 				threadLidar.close();
