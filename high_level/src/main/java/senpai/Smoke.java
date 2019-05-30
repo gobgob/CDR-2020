@@ -1,9 +1,16 @@
 package senpai;
 
 import pfg.config.Config;
-import senpai.Senpai.ErrorCode;
+import pfg.graphic.GraphicDisplay;
+import pfg.injector.Injector;
+import pfg.injector.InjectorException;
+import pfg.log.Log;
 import senpai.buffer.OutgoingOrderBuffer;
+import senpai.comm.Communication;
+import senpai.threads.comm.ThreadCommEmitter;
 import senpai.utils.ConfigInfoSenpai;
+import senpai.utils.Severity;
+import senpai.utils.Subject;
 
 /*
  * Copyright (C) 2013-2018 Pierre-François Gimenez
@@ -27,7 +34,7 @@ import senpai.utils.ConfigInfoSenpai;
 
 public class Smoke
 {
-	public static void main(String[] args)
+	public static void main(String[] args) throws InjectorException, InterruptedException
 	{
 		String configfile = "match.conf";
 		
@@ -36,35 +43,26 @@ public class Smoke
 		if(args.length > 0)
 			duree = Integer.parseInt(args[0]);
 
-		Senpai senpai = new Senpai();
-		ErrorCode error = ErrorCode.NO_ERROR;
-		try {
-			senpai.initialize(configfile, "default");
-			Config config = senpai.getService(Config.class);
-			if(config.getBoolean(ConfigInfoSenpai.ENABLE_SMOKE))
-			{
-				OutgoingOrderBuffer data = senpai.getService(OutgoingOrderBuffer.class);
-				data.enableSmoke(true);
-				Thread.sleep(duree);
-				data.enableSmoke(false);
-			}
-		}
-		catch(Exception e)
+		Injector injector = new Injector();
+		Subject.STATUS.setShouldPrint(true);
+		Log log = new Log(Severity.INFO, configfile, "default");
+		Config config = new Config(ConfigInfoSenpai.values(), false, configfile, "default");
+		log.write("Démarrage script Smoke", Subject.STATUS);
+		if(config.getBoolean(ConfigInfoSenpai.ENABLE_SMOKE))
 		{
-			e.printStackTrace();
-			error = ErrorCode.EXCEPTION;
-			error.setException(e);
+			log.write("Fumée activée !", Subject.STATUS);
+			injector.addService(GraphicDisplay.class, null);
+			injector.addService(log);
+			injector.addService(config);
+			injector.getService(Communication.class).initialize();
+			OutgoingOrderBuffer data = injector.getService(OutgoingOrderBuffer.class);
+			injector.getService(ThreadCommEmitter.class).start();
+			data.enableSmoke(true);
+			Thread.sleep(duree);
+			data.enableSmoke(false);
 		}
-		finally
-		{
-			try
-			{
-				senpai.destructor(error);
-			}
-			catch(InterruptedException e)
-			{
-				e.printStackTrace();
-			}
-		}
+		log.write("Script Smoke fini !", Subject.STATUS);
+
+
 	}
 }
