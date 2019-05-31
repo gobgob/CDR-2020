@@ -131,7 +131,7 @@ public class ScriptPousseAtomeHaut extends Script
 	@Override
 	public boolean faisable()
 	{
-		return !done && robot.isScriptPousseAtomeMilieuFait();
+		return !done;// && robot.isScriptPousseAtomeMilieuFait();
 	}
 	
 }

@@ -194,6 +194,8 @@ public class MatchFinal
 		Script recuperePaletGreenium = scripts.getScriptRecuperePalet(new XY_RW(1275,285), TypeAtome.Greenium);
 		Script deposeBalance = scripts.getScriptDeposeBalance();
 		Script monteRampe = scripts.getScriptMonteRampe();
+		Script pousseAtomeHaut = scripts.getScriptPousseAtomeHaut();
+		Script pousseAtomeMilieu = scripts.getScriptPousseAtomeMilieu();
 
 		try
 		{
@@ -272,7 +274,31 @@ public class MatchFinal
 
 			try
 			{
-				doScript(monteRampe, 4, 2, true);
+				doScript(monteRampe, 4, 4, true);
+				none = false;
+			}
+			catch(PathfindingException | UnableToMoveException | ScriptException e)
+			{
+				log.write("Erreur : "+e, Subject.SCRIPT);
+				if(e instanceof PathfindingException)
+					pathfindingError = true;
+			}
+			
+			try
+			{
+				doScript(pousseAtomeMilieu, 3, 2, true);
+				none = false;
+			}
+			catch(PathfindingException | UnableToMoveException | ScriptException e)
+			{
+				log.write("Erreur : "+e, Subject.SCRIPT);
+				if(e instanceof PathfindingException)
+					pathfindingError = true;
+			}
+
+			try
+			{
+				doScript(pousseAtomeHaut, 3, 2, true);
 				none = false;
 			}
 			catch(PathfindingException | UnableToMoveException | ScriptException e)

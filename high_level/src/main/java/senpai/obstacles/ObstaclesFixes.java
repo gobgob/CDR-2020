@@ -41,11 +41,10 @@ public enum ObstaclesFixes
 
 	ACCELERATEUR(new RectangularObstacle(new XY(0, 1980), 2000, 40), true),
 	
-	
 	DISTRIBUTEUR_GAUCHE(new RectangularObstacle(new XY(-661, 428), 780, 60), true),
 	DISTRIBUTEUR_DROITE(new RectangularObstacle(new XY(661, 428), 780, 60), true),
 	
-	BALANCES(new RectangularObstacle(new XY(0, 200), 544, 400), true),
+	BALANCES(new RectangularObstacle(new XY(0, 200), 504, 400), true),
 	TASSEAU_CENTRAL(new RectangularObstacle(new XY(0, 500), 40, 200), true),
 	
 	ATOME_BAS_GAUCHE(new CircularObstacle(new XY(-1000, 950), 38), false),

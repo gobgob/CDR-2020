@@ -277,9 +277,10 @@ public class OutgoingOrderBuffer implements Plottable
 		data.putFloat((float) ((double) actY));
 		data.putFloat((float) ((double)actZ));
 		data.putFloat((float) ((double)actTheta));
-		data.putFloat((float) ((double)speedY));
-		data.putFloat((float) ((double)speedZ));
-		data.putFloat((float) ((double)speedTheta));
+		data.putInt((int) ((double)speedY));
+		data.putInt((int) ((double)speedZ));
+		data.putInt((int) ((double)speedTheta));
+		log.write(data.toString()+" "+speedTheta, Subject.COMM);
 		addToBuffer(new Order(data, Id.ACTUATOR_GO_TO_AT_SPEED));
 		return Id.ACTUATOR_GO_TO_AT_SPEED.ticket;
 	}

@@ -72,7 +72,7 @@ public class ScriptRecuperePalet extends Script
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException, ScriptException
 	{
 		try {
-			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, -23.7, 102., 2., 1023., 300., 300.);
+			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, -23.7, 107., 2., 1023., 300., 300.);
 			Object[] d = (Object[]) robot.execute(CommProtocol.Id.ACTUATOR_FIND_PUCK, Boolean.FALSE);
 			if(d == null)
 				throw new ActionneurException("No data after actuator find puck ?!", 0);
@@ -80,9 +80,9 @@ public class ScriptRecuperePalet extends Script
 			int code = (int) d[2];
 			if(code != 0)
 				throw new ActionneurException("No detection!", code);
-			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, y, 102., 2., 1023., 300., 300.);
-			robot.avanceTo(new XYO(positionEntree.getX(), positionEntree.getY() - 50, -Math.PI / 2));
-			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, y, 120., 20., 1023., 300., 300.);
+			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, y, 107., 2., 1023., 300., 300.);
+			robot.avanceTo(new XYO(positionEntree.getX(), positionEntree.getY() - 55, -Math.PI / 2));
+			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, y, 120., 40., 1023., 300., 100.);
 			robot.addToCargo(atome);
 			done = true; // le script n'est plus faisable
 		}
