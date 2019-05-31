@@ -89,7 +89,7 @@ public class ScriptMonteRampe extends Script
 	{
 		try {
 			if (!robot.isCargoEmpty()) {
-				robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, 0., 210., 20., 1023., 300., 300.);
+				robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, 0., 228., 20., 1023., 300., 300.);
 				robot.HACK_setRobotNonDeploye();
 			} else {
 				robot.rangeSiPossible();
@@ -98,12 +98,12 @@ public class ScriptMonteRampe extends Script
 			robot.avanceTo(new XYO(positionAvance, angleAvance));
 			table.setDone(at);
 			if (!robot.isCargoEmpty()) {	
-				robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, 0., 210., -60., 1023., 300., 1023.);
+				robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, 0., 228., -60., 1023., 300., 1023.);
 				robot.emptyCargoOnBalance();
-				robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, 0., 210., 0.);
+				robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, 0., 228., 0.);
 			}
 			robot.avance(-250);
-			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, 0., 0., 0.);
+			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, 0., 10., -2.);
 			robot.avance(250);
 			robot.updateScore(TypeAtome.Greenium.nbPoints);
 			robot.avance(-250);
