@@ -1,0 +1,25 @@
+Workflow HL:
+- le HL est compilé sur un ordi perso
+- le script ./upload.sh (dans high_level) permet de mettre le jar et l'upload sur la raspi
+- pour mettre à jour autre chose (un script par exemple), il faut push sur le .git de la raspi et pull sur la raspi
+- le robot fait son propre hotspot wifi. son hostname est camion-grue et son IP est 172.24.1.1. Le login est "pi" et le mot de passe est "neJamaisMettreDeMotDePasseDansUnDepotPublic"
+- il y a deux fichiers de log. "last.txt" contient tout le log à l'exception de stdout (typiquement les stacktraces). "last_all.txt" contient seulement le stdout, c'est-à-dire le log activé.
+- Dans les scripts "avance", c'est bien, "avanceTo", c'est mieux (ça gère le décalage en orientation)
+- La correction dynamique est commentée et n'a pas été utilisé en 2019
+- Il y a deux Kraken: 1 déployé, 1 non-déployé. Ça marche bien, à garder.
+- La symétrie est gérée seulement dans les scripts. Actuellement les obstacles fixes doivent être forcement symétriques.
+- On ne sauvegarde pas les chemins. Pas besoin.
+
+Hacks 2019:
+Pour le recalage, les bords de la table ont été décalés afin qu'il colle aux obstacles sur lequels on se recale
+
+À améliorer:
+- le système de log est nul. Si refonte: l'objectif final reste de répondre aux questions du genre: "pourquoi le robot a-t-il fait ça ?"
+- le HL peut se bloquer à cause d'une lecture éthernet dont le "read()" ne vérifie pas isInterrupted(). Pourtant ce n'est fait que dans un thread, à voir ce qui peut se passe. Comportement pas facile à reproduire.
+- repenser table. son rôle a beaucoup changé
+- changer d'IDE pour quelque chose de plus léger
+- exception des scripts, notamment pour différencier les exceptinos critiques (on ne peut pas réessayer) des erreurs moins critiques (on peut retenter tout de suite)
+- virer des trucs qui servent à rien, notamment CommeMedium (on n'a plus que l'éthernet), KnownPath… Attention, ce dernier est utilisé par les scripts de création/affichage de trajectoire.
+- virer les plottables, etc. Faire du tri là-dedans.
+
+Remarque générale: en cas de problème, vérifier s'il n'y a pas une config pour régler ça.
