@@ -190,11 +190,23 @@ public class MatchFinal
 		 */
 		Script accelerateur = scripts.getScriptAccelerateur();
 		Script recupereGold = scripts.getScriptRecupereGold();
-		Script recuperePaletBlueium = scripts.getScriptRecuperePalet(new XY_RW(1360,285), TypeAtome.Blueium);
+//		Script recuperePaletBlueium = scripts.getScriptRecuperePalet(new XY_RW(1360,285), TypeAtome.Blueium);
 		Script recuperePaletGreenium = scripts.getScriptRecuperePalet(new XY_RW(1275,285), TypeAtome.Greenium);
 		Script deposeBalance = scripts.getScriptDeposeBalance();
 		Script monteRampe = scripts.getScriptMonteRampe();
 
+		try
+		{
+			int xInitial = 1275;
+			if(couleur.symmetry)
+				xInitial = -xInitial;
+			robot.avanceTo(new XYO(xInitial,285,-Math.PI/2));
+		}
+		catch(UnableToMoveException e)
+		{
+			log.write("Erreur lors du déplacement initial : "+e, Subject.SCRIPT);
+		}
+		
 		/**
 		 * Rush initial
 		 */
@@ -248,7 +260,7 @@ public class MatchFinal
 */
 			try
 			{
-				doScript(recuperePaletGreenium, 4, 2, true);
+				doScript(recuperePaletGreenium, 4, 4, true);
 				none = false;
 			}
 			catch(PathfindingException | UnableToMoveException | ScriptException e)

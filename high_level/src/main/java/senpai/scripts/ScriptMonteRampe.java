@@ -98,7 +98,7 @@ public class ScriptMonteRampe extends Script
 			robot.avanceTo(new XYO(positionAvance, angleAvance));
 			table.setDone(at);
 			if (!robot.isCargoEmpty()) {	
-				robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, 0., 210., -75., 1023., 300., 1023.);
+				robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, 0., 210., -60., 1023., 300., 1023.);
 				robot.emptyCargoOnBalance();
 				robot.execute(CommProtocol.Id.ACTUATOR_GO_TO, 0., 210., 0.);
 			}

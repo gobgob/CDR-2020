@@ -81,7 +81,7 @@ public class ScriptRecuperePalet extends Script
 			if(code != 0)
 				throw new ActionneurException("No detection!", code);
 			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, y, 102., 2., 1023., 300., 300.);
-			robot.avanceTo(new XYO(positionEntree.getX(), positionEntree.getY() - 50, Math.PI / 2));
+			robot.avanceTo(new XYO(positionEntree.getX(), positionEntree.getY() - 50, -Math.PI / 2));
 			robot.execute(CommProtocol.Id.ACTUATOR_GO_TO_AT_SPEED, y, 120., 20., 1023., 300., 300.);
 			robot.addToCargo(atome);
 			done = true; // le script n'est plus faisable
