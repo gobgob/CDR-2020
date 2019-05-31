@@ -92,9 +92,7 @@ public class LidarEth
 			try
 			{
 				log.write("Fermeture de la communication", Subject.COMM);
-				client.close();
 				socket.close();
-				output.close();
 			}
 			catch(IOException e)
 			{

@@ -18,7 +18,6 @@ import pfg.kraken.utils.XYO;
 import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
 import senpai.buffer.OutgoingOrderBuffer;
-import senpai.capteurs.CapteursCorrection;
 import senpai.capteurs.CapteursProcess;
 import senpai.comm.CommProtocol;
 import senpai.exceptions.ActionneurException;

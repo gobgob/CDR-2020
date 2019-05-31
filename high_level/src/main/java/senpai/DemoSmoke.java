@@ -39,6 +39,7 @@ public class DemoSmoke
 		try {
 			senpai.initialize(configfile, "default");
 			ll = senpai.getService(OutgoingOrderBuffer.class);
+			ll.setScore(4242);
 			while(true)
 			{
 				Ticket tc = ll.demandeCouleur();
@@ -67,7 +68,10 @@ public class DemoSmoke
 			try
 			{
 				if(ll != null)
+				{
 					ll.enableSmoke(false);
+					ll.setScore(0);
+				}
 				senpai.destructor(error);
 			}
 			catch(InterruptedException e)
