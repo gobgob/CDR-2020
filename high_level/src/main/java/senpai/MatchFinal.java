@@ -274,7 +274,7 @@ public class MatchFinal
 
 			try
 			{
-				doScript(monteRampe, 4, 4, true);
+				doScript(monteRampe, 4, 10, true);
 				none = false;
 			}
 			catch(PathfindingException | UnableToMoveException | ScriptException e)
