@@ -45,7 +45,7 @@ public class Smoke
 
 		Injector injector = new Injector();
 		Subject.STATUS.setShouldPrint(true);
-		Log log = new Log(Severity.INFO, configfile, "default");
+		Log log = new Log(Severity.INFO, configfile, "smoke");
 		Config config = new Config(ConfigInfoSenpai.values(), false, configfile, "default");
 		log.write("Démarrage script Smoke", Subject.STATUS);
 		if(config.getBoolean(ConfigInfoSenpai.ENABLE_SMOKE))
