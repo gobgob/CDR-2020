@@ -33,7 +33,7 @@ import senpai.utils.Subject;
  *
  */
 
-public class Ethernet implements CommMedium
+public class Ethernet
 {
 	private Log log;
 	private int port;
@@ -53,7 +53,6 @@ public class Ethernet implements CommMedium
 	 * 
 	 * @param log
 	 */
-	@Override
 	public void initialize(Config config)
 	{
 		String hostname = config.getString(ConfigInfoSenpai.ETH_LL_HOSTNAME_SERVER);
@@ -80,7 +79,6 @@ public class Ethernet implements CommMedium
 		assert port >= 0 && port < 655356 : "Port invalide";
 	}
 
-	@Override
 	public boolean openIfClosed() throws InterruptedException
 	{
 		if(isClosed())
@@ -102,7 +100,6 @@ public class Ethernet implements CommMedium
 	 * 
 	 * @throws InterruptedException
 	 */
-	@Override
 	public synchronized void open(int delayBetweenTries) throws InterruptedException
 	{
 		if(isClosed())
@@ -152,7 +149,6 @@ public class Ethernet implements CommMedium
 	/**
 	 * Doit être appelé quand on arrête de se servir de la communication
 	 */
-	@Override
 	public synchronized void close()
 	{
 		if(socket == null)
@@ -179,13 +175,11 @@ public class Ethernet implements CommMedium
 			log.write("Fermeture impossible : carte jamais ouverte", Severity.WARNING, Subject.COMM);
 	}
 
-	@Override
 	public OutputStream getOutput()
 	{
 		return output;
 	}
 
-	@Override
 	public InputStream getInput()
 	{
 		return input;

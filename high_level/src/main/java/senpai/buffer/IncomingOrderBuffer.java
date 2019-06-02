@@ -14,11 +14,8 @@
 
 package senpai.buffer;
 
-import pfg.config.Config;
-import pfg.graphic.GraphicDisplay;
 import pfg.log.Log;
 import senpai.comm.Paquet;
-import senpai.utils.ConfigInfoSenpai;
 
 /**
  * Buffer qui contient les ordres provenant de la série
@@ -29,12 +26,8 @@ import senpai.utils.ConfigInfoSenpai;
 
 public class IncomingOrderBuffer extends IncomingBuffer<Paquet>
 {
-	private static final long serialVersionUID = 1L;
-
-	public IncomingOrderBuffer(Log log, Config config, GraphicDisplay print)
+	public IncomingOrderBuffer(Log log)
 	{
-		super(log, "Buffer d'ordres", 200);
-		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_COMM_CHART))
-			print.addPlottable(this);
+		super(log, 200);
 	}
 }

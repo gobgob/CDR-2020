@@ -24,12 +24,11 @@ import java.nio.ByteOrder;
 import pfg.config.Config;
 import pfg.log.Log;
 import senpai.comm.CommProtocol.Id;
-import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Severity;
 import senpai.utils.Subject;
 
 /**
- * La connexion série
+ * La connexion avec le LL
  * 
  * @author pf
  *
@@ -39,7 +38,7 @@ public class Communication implements Closeable
 {
 	protected Log log;
 	
-	private CommMedium medium;
+	private Ethernet medium;
 	
 	private volatile OutputStream output;
 	private volatile InputStream input;
@@ -55,12 +54,7 @@ public class Communication implements Closeable
 	public Communication(Log log, Config config)
 	{
 		this.log = log;
-		String connexion = config.getString(ConfigInfoSenpai.COMM_MEDIUM);
-		if(connexion.compareToIgnoreCase("ethernet") == 0)
-			medium = new Ethernet(log);
-		else
-			assert false;
-		
+		medium = new Ethernet(log);		
 		medium.initialize(config);
 	}
 

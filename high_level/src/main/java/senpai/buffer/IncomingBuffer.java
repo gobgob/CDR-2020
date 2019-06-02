@@ -21,20 +21,15 @@ import java.util.concurrent.BlockingQueue;
 import pfg.log.Log;
 import senpai.utils.Severity;
 import senpai.utils.Subject;
-import pfg.graphic.Chart;
-import pfg.graphic.printable.Plottable;
 
-public class IncomingBuffer<T> implements Plottable
+public class IncomingBuffer<T>
 {
-	private static final long serialVersionUID = 1L;
 	protected Log log;
 	private boolean warning = false;
-	private String nom;
 	
-	public IncomingBuffer(Log log, String nom, int size)
+	public IncomingBuffer(Log log, int size)
 	{
 		this.log = log;
-		this.nom = nom;
 		buffer = new ArrayBlockingQueue<T>(size);
 	}
 
@@ -90,11 +85,5 @@ public class IncomingBuffer<T> implements Plottable
 			warning = false;
 		}
 		return out;
-	}
-
-	@Override
-	public void plot(Chart a)
-	{
-		a.addData(nom, (double) buffer.size());
 	}
 }

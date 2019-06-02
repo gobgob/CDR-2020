@@ -28,13 +28,8 @@ import senpai.robot.RobotColor;
 import senpai.comm.CommProtocol;
 import senpai.comm.CommProtocol.Channel;
 import senpai.comm.CommProtocol.Id;
-import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Severity;
 import senpai.utils.Subject;
-import pfg.config.Config;
-import pfg.graphic.Chart;
-import pfg.graphic.GraphicDisplay;
-import pfg.graphic.printable.Plottable;
 import pfg.kraken.robot.ItineraryPoint;
 import pfg.kraken.utils.XY;
 
@@ -49,16 +44,13 @@ import pfg.kraken.utils.XY;
  *
  */
 
-public class OutgoingOrderBuffer implements Plottable
+public class OutgoingOrderBuffer
 {
-	private static final long serialVersionUID = 1L;
 	protected Log log;
 
-	public OutgoingOrderBuffer(Log log, Config config, GraphicDisplay print)
+	public OutgoingOrderBuffer(Log log)
 	{
 		this.log = log;
-		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_COMM_CHART))
-			print.addPlottable(this);
 	}
 	
 	private BlockingQueue<Order> buffer = new PriorityBlockingQueue<Order>(1000, comparing(Order::getPriority, naturalOrder()));
@@ -400,11 +392,4 @@ public class OutgoingOrderBuffer implements Plottable
 		// on divise par 2 car il s'agit d'un aller-retour
 		log.write("Latence estimée : "+latency+" μs", latency >= 500 ? Severity.CRITICAL : (latency >= 300 ? Severity.WARNING : Severity.INFO), Subject.COMM);
 	}
-
-	@Override
-	public void plot(Chart a)
-	{
-		a.addData("Buffer d'ordre sortants", (double) buffer.size());
-	}
-	
 }

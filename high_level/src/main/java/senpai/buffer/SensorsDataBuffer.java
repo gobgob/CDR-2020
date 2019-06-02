@@ -14,11 +14,8 @@
 
 package senpai.buffer;
 
-import pfg.config.Config;
-import pfg.graphic.GraphicDisplay;
 import pfg.log.Log;
 import senpai.capteurs.SensorsData;
-import senpai.utils.ConfigInfoSenpai;
 
 /**
  * Buffer qui contient les infos provenant des capteurs du LL
@@ -29,12 +26,8 @@ import senpai.utils.ConfigInfoSenpai;
 
 public class SensorsDataBuffer extends IncomingBuffer<SensorsData>
 {
-	private static final long serialVersionUID = 1L;
-
-	public SensorsDataBuffer(Log log, Config config, GraphicDisplay print)
+	public SensorsDataBuffer(Log log)
 	{
-		super(log, "Buffer des capteurs", 1);
-		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_CAPTEURS_CHART))
-			print.addPlottable(this);
+		super(log, 1);
 	}
 }

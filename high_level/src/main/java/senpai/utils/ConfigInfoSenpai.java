@@ -27,7 +27,6 @@ import pfg.config.ConfigInfo;
 
 public enum ConfigInfoSenpai implements ConfigInfo
 {
-//	AFFICHAGE_TIMEOUT(5000), // timeout sur l'affichage (0 pour infini)
 	CHECK_LATENCY(false), // estime la latence de la communication
 	DISABLE_JUMPER(false),
 	ENABLE_LIDAR(true),
@@ -85,8 +84,6 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	/**
 	 * Paramètres de la comm
 	 */
-	COMM_MEDIUM("Ethernet"),
-	
 	ETH_LL_PORT_NUMBER(80), // port socket LL
 	ETH_LL_HOSTNAME_SERVER("172.16.0.2"), // adresse ip du LL. Un hostname fonctionne aussi
 	
@@ -133,25 +130,12 @@ public enum ConfigInfoSenpai implements ConfigInfo
 								// données par le D* Lite
 	GRAPHIC_ENABLE(false), // désactive tout affichage si faux (empêche le
 							// thread d'affichage de se lancer)
-//	GRAPHIC_D_STAR_LITE(false), // affiche les calculs du D* Lite
-//	GRAPHIC_D_STAR_LITE_FINAL(false), // affiche l'itinéraire final du D* Lite
-//	GRAPHIC_PROXIMITY_OBSTACLES(true), // affiche les obstacles de proximité
-//	GRAPHIC_TRAJECTORY(false), // affiche les trajectoires temporaires
-//	GRAPHIC_TRAJECTORY_ALL(false), // affiche TOUTES les trajectoires
-									// temporaires
-//	GRAPHIC_TRAJECTORY_FINAL(true), // affiche les trajectoires
-//	GRAPHIC_FIXED_OBSTACLES(true), // affiche les obstacles fixes
-//	GRAPHIC_GAME_ELEMENTS(true), // affiche les éléments de jeux
-//	GRAPHIC_ROBOT_COLLISION(false), // affiche les obstacles du robot lors de la
-									// vérification des collisions
 	GRAPHIC_ROBOT_PATH("/camion.png"), // image du robot sans les
 													// roues
 	GRAPHIC_SEEN_OBSTACLES(false), // affiche les obstacles vus
 	GRAPHIC_ROBOT_AND_SENSORS(false), // affiche le robot et ses capteurs
 	GRAPHIC_TRACE_ROBOT(false), // affiche la trace du robot
-	GRAPHIC_PATH(false), // affiche le chemin en cours
-	GRAPHIC_COMM_CHART(false), // active les graphes de debug de la communication
-	GRAPHIC_CAPTEURS_CHART(false); // active les graphes de debug des capteurs
+	GRAPHIC_PATH(false); // affiche le chemin en cours
 
 
 	private Object defaultValue;
