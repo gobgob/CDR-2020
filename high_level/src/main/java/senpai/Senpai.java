@@ -28,6 +28,7 @@ import pfg.graphic.DebugTool;
 import pfg.injector.Injector;
 import pfg.injector.InjectorException;
 import pfg.kraken.Kraken;
+import pfg.kraken.KrakenParameters;
 import pfg.kraken.SeverityCategoryKraken;
 import pfg.kraken.display.Display;
 import pfg.kraken.obstacles.Obstacle;
@@ -316,8 +317,16 @@ public class Senpai
 		Display display = debug.getDisplay();
 
 		injector.addService(Display.class, display);
-		Kraken kDeploye = new Kraken(robotTemplateDeploye, display, obstaclesFixes, obsDyn, new XY(-1500, 0), new XY(1500, 2000), configfile, profiles);
-		Kraken kRange = new Kraken(robotTemplateRange, display, obstaclesFixes, obsDyn, new XY(-1500, 0), new XY(1500, 2000), configfile, profiles);
+		KrakenParameters kp = new KrakenParameters(robotTemplateDeploye, obstaclesFixes, new XY(-1500,0), new XY(1500, 2000), configfile, profiles);
+		kp.setDisplay(display);
+		kp.setDynamicObstacle(obsDyn);
+		Kraken kDeploye = new Kraken(kp);
+		
+		KrakenParameters kp2 = new KrakenParameters(robotTemplateRange, obstaclesFixes, new XY(-1500,0), new XY(1500, 2000), configfile, profiles);
+		kp2.setDisplay(display);
+		kp2.setDynamicObstacle(obsDyn);
+		Kraken kRange = new Kraken(kp2);
+
 		injector.addService(new Kraken[]{kDeploye, kRange});
 
 //		injector.addService(k.enableAutoReplanning());
