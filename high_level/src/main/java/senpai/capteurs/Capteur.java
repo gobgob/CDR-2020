@@ -16,8 +16,8 @@ package senpai.capteurs;
 
 import java.awt.Graphics;
 
-import pfg.graphic.GraphicPanel;
-import pfg.graphic.printable.Printable;
+import pfg.kraken.display.Display;
+import pfg.kraken.display.Printable;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XY_RW;
@@ -58,7 +58,7 @@ public class Capteur implements Printable
 	}
 
 	@Override
-	public void print(Graphics g, GraphicPanel f)
+	public void print(Graphics g, Display f)
 	{
 		double orientation = cinemRobot.orientationReelle;
 		XY_RW p1 = positionRelativeRotate.clone();

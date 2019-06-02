@@ -21,16 +21,15 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import pfg.config.Config;
-import pfg.config.ConfigInfo;
-import pfg.graphic.GraphicDisplay;
 import pfg.graphic.DebugTool;
 import pfg.injector.Injector;
 import pfg.injector.InjectorException;
 import pfg.kraken.Kraken;
+import pfg.kraken.SeverityCategoryKraken;
+import pfg.kraken.display.Display;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.robot.Cinematique;
@@ -247,8 +246,9 @@ public class Senpai
 
 		Cinematique positionRobot = new Cinematique(0, 0, 0, true, 0, false);
 		
-		debug = DebugTool.getDebugTool(new HashMap<ConfigInfo, Object>(), new XY(0,1000), positionRobot.getPosition(), Severity.INFO, configfile, profiles);
-		injector.addService(GraphicDisplay.class, debug.getGraphicDisplay());
+		debug = DebugTool.getDebugTool(new XY(0,1000), positionRobot.getPosition(), Severity.INFO, configfile, profiles);
+		injector.addService(Display.class, debug.getDisplay());
+		
 
 		/**
 		 * Affiche la version du programme (dernier commit et sa branche)
@@ -285,9 +285,9 @@ public class Senpai
 		assert checkAssert();
 		
 		List<Obstacle> obstaclesFixes = new ArrayList<Obstacle>();
-		if(!config.getBoolean(ConfigInfoSenpai.NO_OBSTACLES))
-			for(ObstaclesFixes o : ObstaclesFixes.values())
-				obstaclesFixes.add(o.obstacle);
+//		if(!config.getBoolean(ConfigInfoSenpai.NO_OBSTACLES))
+		for(ObstaclesFixes o : ObstaclesFixes.values())
+			obstaclesFixes.add(o.obstacle);
 		ObstaclesDynamiques obsDyn = getService(ObstaclesDynamiques.class);
 
 		int marge = config.getInt(ConfigInfoSenpai.MARGE_PATHFINDING);
@@ -312,9 +312,12 @@ public class Senpai
 			ThreadWarmUp warmUp = new ThreadWarmUp(log, new Kraken(robotTemplateDeploye, obstaclesFixes, new XY(-1500, 0), new XY(1500, 2000), "warmup.conf", "default"), config);
 			warmUp.start();
 		}
+		DebugTool debug = DebugTool.getDebugTool(new XY(0,1000), new XY(0, 1000), SeverityCategoryKraken.INFO, "kraken-examples.conf", "trajectory");
+		Display display = debug.getDisplay();
 
-		Kraken kDeploye = new Kraken(robotTemplateDeploye, obstaclesFixes, obsDyn, new XY(-1500, 0), new XY(1500, 2000), configfile, profiles);
-		Kraken kRange = new Kraken(robotTemplateRange, obstaclesFixes, obsDyn, new XY(-1500, 0), new XY(1500, 2000), configfile, profiles);
+		injector.addService(Display.class, display);
+		Kraken kDeploye = new Kraken(robotTemplateDeploye, display, obstaclesFixes, obsDyn, new XY(-1500, 0), new XY(1500, 2000), configfile, profiles);
+		Kraken kRange = new Kraken(robotTemplateRange, display, obstaclesFixes, obsDyn, new XY(-1500, 0), new XY(1500, 2000), configfile, profiles);
 		injector.addService(new Kraken[]{kDeploye, kRange});
 
 //		injector.addService(k.enableAutoReplanning());

@@ -1,9 +1,9 @@
 package senpai;
 
 import pfg.config.Config;
-import pfg.graphic.GraphicDisplay;
 import pfg.injector.Injector;
 import pfg.injector.InjectorException;
+import pfg.kraken.display.Display;
 import pfg.log.Log;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.Communication;
@@ -51,7 +51,7 @@ public class Smoke
 		if(config.getBoolean(ConfigInfoSenpai.ENABLE_SMOKE))
 		{
 			log.write("Fumée activée !", Subject.STATUS);
-			injector.addService(GraphicDisplay.class, null);
+			injector.addService(Display.class, null);
 			injector.addService(log);
 			injector.addService(config);
 			injector.getService(Communication.class).initialize();

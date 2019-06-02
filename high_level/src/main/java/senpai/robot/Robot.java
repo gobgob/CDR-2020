@@ -22,11 +22,11 @@ import java.util.List;
 //import java.util.PriorityQueue;
 
 import pfg.config.Config;
-import pfg.graphic.GraphicDisplay;
 import pfg.graphic.printable.Layer;
 import pfg.graphic.printable.Segment;
 import pfg.kraken.Kraken;
 import pfg.kraken.SearchParameters;
+import pfg.kraken.display.Display;
 import pfg.kraken.exceptions.PathfindingException;
 import pfg.kraken.obstacles.CircularObstacle;
 import pfg.kraken.obstacles.RectangularObstacle;
@@ -84,7 +84,7 @@ public class Robot extends RobotState
 	private final boolean simuleLL;
 	private final boolean printTrace;
 	private OutgoingOrderBuffer out;
-	private GraphicDisplay buffer;
+	private Display buffer;
 	private RobotPrintable printable = null;
 	private boolean graphicPath;
 	private volatile boolean cinematiqueInitialised = false;
@@ -96,7 +96,7 @@ public class Robot extends RobotState
 	private CircularObstacle[] lidarObs = new CircularObstacle[100]; // pas plus de cent obstacles
 	private volatile boolean enableLidar;
 	
-	public Robot(Log log, OutgoingOrderBuffer out, Config config, GraphicDisplay buffer, Kraken[] krakens, /*DynamicPath dpath,*/ /*KnownPathManager known,*/ RectangularObstacle obstacle)
+	public Robot(Log log, OutgoingOrderBuffer out, Config config, Display buffer, Kraken[] krakens, /*DynamicPath dpath,*/ /*KnownPathManager known,*/ RectangularObstacle obstacle)
 	{
 		this.log = log;
 		this.out = out;

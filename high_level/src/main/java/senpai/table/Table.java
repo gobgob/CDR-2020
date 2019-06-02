@@ -21,10 +21,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import pfg.config.Config;
-import pfg.graphic.GraphicDisplay;
-import pfg.graphic.GraphicPanel;
 import pfg.graphic.printable.Layer;
-import pfg.graphic.printable.Printable;
+import pfg.kraken.display.Display;
+import pfg.kraken.display.Printable;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.log.Log;
 import senpai.utils.ConfigInfoSenpai;
@@ -49,7 +48,7 @@ public class Table implements Printable
 	private List<Obstacle> otherObstacles = new ArrayList<Obstacle>();
 	private List<Obstacle> noEnemyZone = new ArrayList<Obstacle>();
 	
-	public Table(Log log, Config config, GraphicDisplay buffer)
+	public Table(Log log, Config config, Display buffer)
 	{
 		this.log = log;
 		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ENABLE))
@@ -107,7 +106,7 @@ public class Table implements Printable
 	}
 	
 	@Override
-	public void print(Graphics g, GraphicPanel f)
+	public void print(Graphics g, Display f)
 	{
 	}
 }

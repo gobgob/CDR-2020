@@ -21,10 +21,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import pfg.config.Config;
-import pfg.graphic.GraphicDisplay;
-import pfg.graphic.GraphicPanel;
 import pfg.graphic.printable.Layer;
-import pfg.graphic.printable.Printable;
+import pfg.kraken.display.Display;
+import pfg.kraken.display.Printable;
 import pfg.kraken.obstacles.CircularObstacle;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.kraken.obstacles.RectangularObstacle;
@@ -49,14 +48,14 @@ public class ObstaclesDynamiques extends SmartDynamicObstacles implements Iterat
 	private transient Table table;
 	private transient Iterator<Obstacle> iteratorMemory, iteratorTable;
 	private transient Iterator<CircularObstacle> iteratorLidar;
-	private transient boolean obsTable;
+//	private transient boolean obsTable;
 	private transient CircularObstacle[] lidarObs = new CircularObstacle[100];
 	private transient List<CircularObstacle> lidarTmpObs = new ArrayList<CircularObstacle>(100);
 	
-	public ObstaclesDynamiques(Log log, Table table, Config config, GraphicDisplay buffer)
+	public ObstaclesDynamiques(Log log, Table table, Config config, Display buffer)
 	{
 		this.log = log;
-		obsTable = !config.getBoolean(ConfigInfoSenpai.NO_OBSTACLES);
+//		obsTable = !config.getBoolean(ConfigInfoSenpai.NO_OBSTACLES);
 		this.table = table;
 		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_SEEN_OBSTACLES))
 			buffer.addPrintable(this, Color.BLACK, Layer.FOREGROUND.layer);
@@ -82,7 +81,7 @@ public class ObstaclesDynamiques extends SmartDynamicObstacles implements Iterat
 	@Override
 	public boolean hasNext()
 	{
-		return iteratorLidar.hasNext() || iteratorMemory.hasNext() || (obsTable && iteratorTable.hasNext());
+		return iteratorLidar.hasNext() || iteratorMemory.hasNext() || (/*obsTable &&*/ iteratorTable.hasNext());
 	}
 
 	@Override
@@ -125,7 +124,7 @@ public class ObstaclesDynamiques extends SmartDynamicObstacles implements Iterat
 	}
 
 	@Override
-	public void print(Graphics g, GraphicPanel f)
+	public void print(Graphics g, Display f)
 	{
 		for(CapteursRobot c : CapteursRobot.values)
 			if(c.isThereObstacle)

@@ -1,13 +1,12 @@
 package senpai;
 import java.awt.Color;
-import java.util.HashMap;
 import java.util.List;
-import pfg.config.ConfigInfo;
 import pfg.graphic.DebugTool;
-import pfg.graphic.GraphicDisplay;
-import pfg.graphic.Vec2RO;
 import pfg.graphic.printable.Layer;
+import pfg.kraken.SeverityCategoryKraken;
+import pfg.kraken.display.Display;
 import pfg.kraken.robot.ItineraryPoint;
+import pfg.kraken.utils.XY;
 import pfg.log.Log;
 import senpai.robot.KnownPathManager;
 import senpai.utils.Severity;
@@ -47,8 +46,8 @@ public class DisplayTrajectory
 		String configfile = "senpai-trajectory.conf";
 		Log log = new Log(Severity.INFO, configfile, "log");
 		
-		DebugTool debug = DebugTool.getDebugTool(new HashMap<ConfigInfo, Object>(), new Vec2RO(0,1000), Severity.INFO, configfile, "default", "graphic");
-		GraphicDisplay display = debug.getGraphicDisplay();
+		DebugTool debug = DebugTool.getDebugTool(new XY(0,1000), new XY(0, 1000), SeverityCategoryKraken.INFO, "kraken-examples.conf", "trajectory");
+		Display display = debug.getDisplay();
 
 		Color[] couleurs = new Color[]{Color.BLACK, Color.RED, Color.BLUE, Color.GRAY, Color.ORANGE, Color.MAGENTA};
 		

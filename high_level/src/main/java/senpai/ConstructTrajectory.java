@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pfg.config.Config;
-import pfg.graphic.GraphicDisplay;
+import pfg.graphic.DebugTool;
 import pfg.graphic.printable.Layer;
 import pfg.kraken.Kraken;
 import pfg.kraken.SearchParameters;
+import pfg.kraken.SeverityCategoryKraken;
 import pfg.kraken.astar.DirectionStrategy;
+import pfg.kraken.display.Display;
 import pfg.kraken.exceptions.PathfindingException;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.kraken.obstacles.RectangularObstacle;
@@ -101,10 +103,10 @@ public class ConstructTrajectory
 			warmUp.start();
 			Thread.sleep(config.getInt(ConfigInfoSenpai.WARM_UP_DURATION) + 500);
 		}*/
+		DebugTool debug = DebugTool.getDebugTool(new XY(0,1000), new XY(0, 1000), SeverityCategoryKraken.INFO, "kraken-examples.conf", "trajectory");
+		Display display = debug.getDisplay();
 		
 		Kraken kraken = new Kraken(robotTemplate, obsList, new XY(-1500,0), new XY(1500, 2000), configfile, "default", "graphic");
-		
-		GraphicDisplay display = kraken.getGraphicDisplay();
 
 		display.refresh();
 		try

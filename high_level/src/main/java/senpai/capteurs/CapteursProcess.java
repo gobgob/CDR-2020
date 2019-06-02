@@ -26,9 +26,9 @@ import senpai.utils.Subject;
 import java.util.Collections;
 import java.util.List;
 import pfg.config.Config;
-import pfg.graphic.GraphicDisplay;
 import pfg.graphic.printable.Layer;
 import pfg.kraken.obstacles.RectangularObstacle;
+import pfg.kraken.display.Display;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.utils.XY;
@@ -73,7 +73,7 @@ public class CapteursProcess
 	
 //	private List<SensorsData> mesuresScan = new ArrayList<SensorsData>();
 
-	public CapteursProcess(ObstaclesDynamiques dynObs, Robot robot, Log log, RectangularObstacle obstacleRobot, Table table, Config config, GraphicDisplay buffer)
+	public CapteursProcess(ObstaclesDynamiques dynObs, Robot robot, Log log, RectangularObstacle obstacleRobot, Table table, Config config, Display buffer)
 	{
 		this.table = table;
 		this.log = log;

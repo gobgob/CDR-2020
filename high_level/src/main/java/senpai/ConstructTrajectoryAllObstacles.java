@@ -2,11 +2,11 @@ package senpai;
 
 import java.awt.Color;
 import java.util.List;
-import pfg.graphic.GraphicDisplay;
 import pfg.graphic.printable.Layer;
 import pfg.kraken.Kraken;
 import pfg.kraken.SearchParameters;
 import pfg.kraken.astar.DirectionStrategy;
+import pfg.kraken.display.Display;
 import pfg.kraken.exceptions.PathfindingException;
 import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.robot.ItineraryPoint;
@@ -70,7 +70,7 @@ public class ConstructTrajectoryAllObstacles
 
 		Kraken k = senpai.getService(Kraken[].class)[deploye ? 0 : 1];
 		Log log = senpai.getService(Log.class);
-		GraphicDisplay display = senpai.getService(GraphicDisplay.class);
+		Display display = senpai.getService(Display.class);
 		display.refresh();
 		try
 		{

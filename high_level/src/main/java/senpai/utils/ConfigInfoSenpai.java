@@ -120,7 +120,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	/**
 	 * Debug
 	 */
-	NO_OBSTACLES(false), // désactive tous les obstacles. Utile pour debug
+//	NO_OBSTACLES(false), // désactive tous les obstacles. Utile pour debug
 	SIMULE_COMM(false), // la comm doit-elle être simulée (utile pour debug du HL)
 
 	/**

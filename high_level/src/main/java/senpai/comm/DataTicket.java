@@ -23,8 +23,8 @@ package senpai.comm;
 
 public class DataTicket
 {
-	public Object data;
-	public CommProtocol.State status;
+	public final Object data;
+	public final CommProtocol.State status;
 	
 	public DataTicket(Object data, CommProtocol.State status)
 	{
