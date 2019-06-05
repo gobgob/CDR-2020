@@ -1,7 +1,5 @@
-# Chariot élévateur
-Code du robot de GobGob Senpaï pour Eurobot 2019
-
-![Camion grue - vue 3D CAO](img/Robot_2019-Feb-23.png)
+# Robot anomyme 2020
+Code du robot de GobGob Senpaï pour Eurobot 2020
 
 ## Code bas niveau (`low_level/`)
 

@@ -8,7 +8,8 @@ digraph {
     log -> eurobotruck
     injector -> graphic
     injector -> eurobotruck
-    graphic -> Kraken
+    injector -> Kraken
     graphic -> eurobotruck
     Kraken -> eurobotruck
+    Kraken -> graphic
     }
