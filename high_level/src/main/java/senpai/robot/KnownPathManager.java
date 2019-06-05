@@ -111,7 +111,7 @@ public class KnownPathManager {
 	{
 		List<ItineraryPoint> newPath = new ArrayList<ItineraryPoint>();
 		for(ItineraryPoint it : path.path)
-			newPath.add(new ItineraryPoint(it.x, it.y, it.orientation, it.curvature, it.goingForward, Math.min(maxSpeed, it.maxSpeed), Math.min(maxSpeed, it.possibleSpeed), it.stop));
+			newPath.add(new ItineraryPoint(it.x, it.y, it.orientation, it.curvature, it.goingForward, Math.min(maxSpeed, it.maxSpeed), it.stop));
 		SavedPath s = new SavedPath(newPath, path.sp, path.name+"-limited");
 		s.sp.maxSpeed = maxSpeed;
 		return s;
@@ -187,7 +187,6 @@ public class KnownPathManager {
 				-ip.curvature,
 				ip.goingForward,
 				ip.maxSpeed,
-				ip.possibleSpeed,
 				ip.stop);
 	}
 	

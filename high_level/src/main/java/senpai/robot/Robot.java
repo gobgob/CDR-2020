@@ -274,7 +274,7 @@ public class Robot extends RobotState
 		if(nbPoint == 0)
 		{
 			// Le point est vraiment tout proche
-			ch.add(new ItineraryPoint(xyo.position.getX(), xyo.position.getY(), xyo.orientation, 0, marcheAvant, vitesseMax, vitesseMax, true));
+			ch.add(new ItineraryPoint(xyo.position.getX(), xyo.position.getY(), xyo.orientation, 0, marcheAvant, vitesseMax, true));
 		}
 		else
 		{
@@ -287,7 +287,7 @@ public class Robot extends RobotState
 			}
 
 			for(int i = 0; i < nbPoint; i++)
-				ch.addFirst(new ItineraryPoint(xyo.position.getX() - i * deltaX, xyo.position.getY() - i * deltaY, xyo.orientation, 0, marcheAvant, vitesseMax, vitesseMax, i == 0));
+				ch.addFirst(new ItineraryPoint(xyo.position.getX() - i * deltaX, xyo.position.getY() - i * deltaY, xyo.orientation, 0, marcheAvant, vitesseMax, i == 0));
 		}
 
 		if(!simuleLL)
@@ -328,7 +328,7 @@ public class Robot extends RobotState
 		if(nbPoint == 0)
 		{
 			// Le point est vraiment tout proche
-			ch.add(new ItineraryPoint(xFinal, yFinal, cinematique.orientationReelle, 0, marcheAvant, vitesseMax, vitesseMax, true));
+			ch.add(new ItineraryPoint(xFinal, yFinal, cinematique.orientationReelle, 0, marcheAvant, vitesseMax, true));
 		}
 		else
 		{
@@ -341,7 +341,7 @@ public class Robot extends RobotState
 			}
 
 			for(int i = 0; i < nbPoint; i++)
-				ch.addFirst(new ItineraryPoint(xFinal - i * deltaX, yFinal - i * deltaY, cinematique.orientationReelle, 0, marcheAvant, vitesseMax, vitesseMax, i == 0));
+				ch.addFirst(new ItineraryPoint(xFinal - i * deltaX, yFinal - i * deltaY, cinematique.orientationReelle, 0, marcheAvant, vitesseMax, i == 0));
 //			System.out.println("Trajectoire : "+ch);
 		}
 
@@ -447,7 +447,7 @@ public class Robot extends RobotState
 				if(s != null && s.isInObstacle(tmp))
 				{
 					double maxSpeed = Math.min(ip.maxSpeed, maxSpeedInEnemy);
-					ItineraryPoint newIp = new ItineraryPoint(ip.x, ip.y, ip.orientation, ip.curvature, ip.goingForward, maxSpeed, ip.possibleSpeed, ip.stop);
+					ItineraryPoint newIp = new ItineraryPoint(ip.x, ip.y, ip.orientation, ip.curvature, ip.goingForward, maxSpeed, ip.stop);
 					out.add(newIp);
 					changed = true;
 					break;
@@ -514,10 +514,10 @@ public class Robot extends RobotState
 			for(int i = path.size()-2; i >= 0; i--)
 			{
 				ItineraryPoint ip = path.get(i);
-				tmp.add(new ItineraryPoint(ip.x, ip.y, ip.orientation, ip.curvature, !ip.goingForward, ip.maxSpeed, ip.possibleSpeed, ip.stop));
+				tmp.add(new ItineraryPoint(ip.x, ip.y, ip.orientation, ip.curvature, !ip.goingForward, ip.maxSpeed, ip.stop));
 			}
 			tmp.add(new ItineraryPoint(sp.start.getPosition().getX(), sp.start.getPosition().getY(), sp.start.orientationReelle, tmp.get(tmp.size()-1).curvature,
-					tmp.get(tmp.size()-1).goingForward, tmp.get(tmp.size()-1).maxSpeed, 0, true));
+					tmp.get(tmp.size()-1).goingForward, tmp.get(tmp.size()-1).maxSpeed, true));
 			path = tmp;
 		}
 		if(graphicPath)
