@@ -21,7 +21,7 @@ import org.junit.runner.Request;
 import org.junit.runner.Result;
 
 import pfg.config.Config;
-import pfg.kraken.robot.Cinematique;
+import pfg.kraken.struct.Cinematique;
 import pfg.log.Log;
 import org.junit.After;
 

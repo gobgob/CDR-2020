@@ -30,8 +30,8 @@ import java.util.PriorityQueue;
 
 import pfg.config.Config;
 import pfg.kraken.SearchParameters;
-import pfg.kraken.robot.Cinematique;
-import pfg.kraken.robot.ItineraryPoint;
+import pfg.kraken.struct.Cinematique;
+import pfg.kraken.struct.ItineraryPoint;
 import pfg.log.Log;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Subject;

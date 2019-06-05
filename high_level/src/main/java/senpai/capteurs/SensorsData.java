@@ -14,7 +14,7 @@
 
 package senpai.capteurs;
 
-import pfg.kraken.robot.Cinematique;
+import pfg.kraken.struct.Cinematique;
 
 /**
  * Un groupe de mesures qui proviennent des capteurs

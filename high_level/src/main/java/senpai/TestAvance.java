@@ -1,6 +1,6 @@
 package senpai;
 
-import pfg.kraken.utils.XY;
+import pfg.kraken.struct.XY;
 import senpai.Senpai.ErrorCode;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.robot.Robot;

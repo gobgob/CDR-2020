@@ -29,12 +29,11 @@ import pfg.injector.Injector;
 import pfg.injector.InjectorException;
 import pfg.kraken.Kraken;
 import pfg.kraken.KrakenParameters;
-import pfg.kraken.SeverityCategoryKraken;
 import pfg.kraken.display.Display;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.kraken.obstacles.RectangularObstacle;
-import pfg.kraken.robot.Cinematique;
-import pfg.kraken.utils.XY;
+import pfg.kraken.struct.Cinematique;
+import pfg.kraken.struct.XY;
 import pfg.log.Log;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.Communication;
@@ -313,7 +312,7 @@ public class Senpai
 			ThreadWarmUp warmUp = new ThreadWarmUp(log, new Kraken(robotTemplateDeploye, obstaclesFixes, new XY(-1500, 0), new XY(1500, 2000), "warmup.conf", "default"), config);
 			warmUp.start();
 		}
-		DebugTool debug = DebugTool.getDebugTool(new XY(0,1000), new XY(0, 1000), SeverityCategoryKraken.INFO, "kraken-examples.conf", "trajectory");
+		DebugTool debug = DebugTool.getDebugTool(new XY(0,1000), new XY(0, 1000), null, "kraken-examples.conf", "trajectory");
 		Display display = debug.getDisplay();
 
 		injector.addService(Display.class, display);

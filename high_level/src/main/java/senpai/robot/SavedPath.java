@@ -3,7 +3,7 @@ package senpai.robot;
 import java.io.Serializable;
 import java.util.List;
 import pfg.kraken.SearchParameters;
-import pfg.kraken.robot.ItineraryPoint;
+import pfg.kraken.struct.ItineraryPoint;
 
 public class SavedPath implements Serializable
 {

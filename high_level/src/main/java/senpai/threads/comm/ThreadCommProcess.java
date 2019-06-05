@@ -15,8 +15,8 @@
 package senpai.threads.comm;
 
 import java.nio.ByteBuffer;
+import pfg.kraken.struct.Cinematique;
 import pfg.log.Log;
-import pfg.kraken.robot.Cinematique;
 import senpai.Senpai;
 import senpai.Senpai.ErrorCode;
 import senpai.buffer.IncomingOrderBuffer;

@@ -30,8 +30,8 @@ import senpai.comm.CommProtocol.Channel;
 import senpai.comm.CommProtocol.Id;
 import senpai.utils.Severity;
 import senpai.utils.Subject;
-import pfg.kraken.robot.ItineraryPoint;
-import pfg.kraken.utils.XY;
+import pfg.kraken.struct.ItineraryPoint;
+import pfg.kraken.struct.XY;
 
 /**
  * Classe qui contient les ordres à envoyer à la série

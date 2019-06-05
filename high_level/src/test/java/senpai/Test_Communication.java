@@ -16,12 +16,11 @@ package senpai;
 
 import org.junit.Before;
 import org.junit.Test;
-
+import pfg.kraken.struct.XY;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.Ticket;
 import senpai.comm.CommProtocol.Id;
 import senpai.comm.CommProtocol.State;
-import pfg.kraken.utils.XY;
 
 /**
  * Tests unitaires de la série.

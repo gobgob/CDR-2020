@@ -15,7 +15,7 @@
 
 package senpai.scripts;
 
-import pfg.kraken.utils.XYO;
+import pfg.kraken.struct.XYO;
 import pfg.log.Log;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.capteurs.CapteursProcess;

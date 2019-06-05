@@ -18,9 +18,9 @@ import java.awt.Graphics;
 
 import pfg.kraken.display.Display;
 import pfg.kraken.display.Printable;
-import pfg.kraken.robot.Cinematique;
-import pfg.kraken.utils.XY;
-import pfg.kraken.utils.XY_RW;
+import pfg.kraken.struct.Cinematique;
+import pfg.kraken.struct.XY;
+import pfg.kraken.struct.XY_RW;
 import senpai.robot.Robot;
 
 /**

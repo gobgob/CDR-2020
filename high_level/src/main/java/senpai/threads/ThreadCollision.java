@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pfg.kraken.obstacles.RectangularObstacle;
-import pfg.kraken.robot.ItineraryPoint;
+import pfg.kraken.struct.ItineraryPoint;
 
 /**
  * Thread qui s'occupe de la détection de collisions lors des déplacements

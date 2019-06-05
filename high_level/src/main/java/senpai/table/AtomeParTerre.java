@@ -16,7 +16,7 @@ package senpai.table;
 
 import pfg.kraken.obstacles.CircularObstacle;
 import pfg.kraken.obstacles.Obstacle;
-import pfg.kraken.utils.XY;
+import pfg.kraken.struct.XY;
 
 /**
  * Enumérations contenant tous les éléments de jeux

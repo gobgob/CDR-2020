@@ -28,12 +28,12 @@ import java.util.List;
 import pfg.config.Config;
 import pfg.graphic.printable.Layer;
 import pfg.kraken.obstacles.RectangularObstacle;
+import pfg.kraken.struct.Cinematique;
+import pfg.kraken.struct.XY;
+import pfg.kraken.struct.XYO;
+import pfg.kraken.struct.XY_RW;
 import pfg.kraken.display.Display;
 import pfg.kraken.obstacles.Obstacle;
-import pfg.kraken.robot.Cinematique;
-import pfg.kraken.utils.XY;
-import pfg.kraken.utils.XYO;
-import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
 
 /**

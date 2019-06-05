@@ -14,7 +14,7 @@
 
 package senpai.scripts;
 
-import pfg.kraken.utils.XY_RW;
+import pfg.kraken.struct.XY_RW;
 import pfg.log.Log;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.capteurs.CapteursProcess;

@@ -30,12 +30,11 @@ import pfg.kraken.display.Display;
 import pfg.kraken.exceptions.PathfindingException;
 import pfg.kraken.obstacles.CircularObstacle;
 import pfg.kraken.obstacles.RectangularObstacle;
-import pfg.kraken.robot.Cinematique;
-import pfg.kraken.robot.ItineraryPoint;
-import pfg.kraken.robot.RobotState;
-import pfg.kraken.utils.XY;
-import pfg.kraken.utils.XYO;
-import pfg.kraken.utils.XY_RW;
+import pfg.kraken.struct.Cinematique;
+import pfg.kraken.struct.ItineraryPoint;
+import pfg.kraken.struct.XY;
+import pfg.kraken.struct.XYO;
+import pfg.kraken.struct.XY_RW;
 import pfg.log.Log;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.CommProtocol;
@@ -54,7 +53,7 @@ import senpai.utils.Subject;
  * @author pf
  */
 
-public class Robot extends RobotState
+public class Robot
 {
 	public enum State
 	{
@@ -78,6 +77,7 @@ public class Robot extends RobotState
 	private RobotColor c = null;
 	private boolean deploye = false;
 	private boolean scriptPousseAtomeMilieuFait = false, scriptPousseAtomeHautFait = false;
+	private Cinematique cinematique;
 	
 	private boolean jumperOK = false;
 	private volatile State etat = State.STANDBY;
@@ -859,4 +859,9 @@ public class Robot extends RobotState
 		lastCorrectionDate = System.currentTimeMillis();
 	}
 
+	public Cinematique getCinematique()
+	{
+		return cinematique;
+	}
+	
 }

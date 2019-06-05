@@ -1,7 +1,7 @@
 package senpai.capteurs;
 
 import pfg.kraken.obstacles.RectangularObstacle;
-import pfg.kraken.utils.XY;
+import pfg.kraken.struct.XY;
 
 /*
  * Copyright (C) 2013-2018 Pierre-François Gimenez

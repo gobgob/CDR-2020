@@ -16,8 +16,8 @@ package senpai.obstacles;
 
 import pfg.kraken.obstacles.Obstacle;
 import pfg.kraken.obstacles.RectangularObstacle;
+import pfg.kraken.struct.XY;
 import pfg.kraken.obstacles.CircularObstacle;
-import pfg.kraken.utils.XY;
 
 /**
  * Enumération des obstacles fixes.
