@@ -309,19 +309,23 @@ public class Senpai
 		 */
 		if(config.getInt(ConfigInfoSenpai.WARM_UP_DURATION) > 0)
 		{
-			ThreadWarmUp warmUp = new ThreadWarmUp(log, new Kraken(robotTemplateDeploye, obstaclesFixes, new XY(-1500, 0), new XY(1500, 2000), "warmup.conf", "default"), config);
+			KrakenParameters kpWarmUp = new KrakenParameters(robotTemplateDeploye, new XY(-1500,0), new XY(1500, 2000), "warmup.conf", "default");
+			kpWarmUp.setFixedObstacles(obstaclesFixes);
+			ThreadWarmUp warmUp = new ThreadWarmUp(log, new Kraken(kpWarmUp), config);
 			warmUp.start();
 		}
 		DebugTool debug = DebugTool.getDebugTool(new XY(0,1000), new XY(0, 1000), null, "kraken-examples.conf", "trajectory");
 		Display display = debug.getDisplay();
 
 		injector.addService(Display.class, display);
-		KrakenParameters kp = new KrakenParameters(robotTemplateDeploye, obstaclesFixes, new XY(-1500,0), new XY(1500, 2000), configfile, profiles);
+		KrakenParameters kp = new KrakenParameters(robotTemplateDeploye, new XY(-1500,0), new XY(1500, 2000), configfile, profiles);
+		kp.setFixedObstacles(obstaclesFixes);
 		kp.setDisplay(display);
 		kp.setDynamicObstacle(obsDyn);
 		Kraken kDeploye = new Kraken(kp);
 		
-		KrakenParameters kp2 = new KrakenParameters(robotTemplateRange, obstaclesFixes, new XY(-1500,0), new XY(1500, 2000), configfile, profiles);
+		KrakenParameters kp2 = new KrakenParameters(robotTemplateRange, new XY(-1500,0), new XY(1500, 2000), configfile, profiles);
+		kp2.setFixedObstacles(obstaclesFixes);
 		kp2.setDisplay(display);
 		kp2.setDynamicObstacle(obsDyn);
 		Kraken kRange = new Kraken(kp2);

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import pfg.config.Config;
 import pfg.kraken.Kraken;
+import pfg.kraken.KrakenParameters;
 import pfg.kraken.SearchParameters;
 import pfg.kraken.exceptions.PathfindingException;
 import pfg.kraken.obstacles.Obstacle;
@@ -65,7 +66,9 @@ public class Benchmark
 
 		RectangularObstacle robotTemplate = new RectangularObstacle(demieLargeurNonDeploye, demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
 
-		Kraken kraken = new Kraken(robotTemplate, obstaclesFixes, new XY(-1500, 0), new XY(1500, 2000), configfile, "default");
+		KrakenParameters kp = new KrakenParameters(robotTemplate, new XY(-1500, 0), new XY(1500, 2000), configfile, "default");
+		kp.setFixedObstacles(obstaclesFixes);
+		Kraken kraken = new Kraken(kp);
 		ThreadWarmUp warmUp = new ThreadWarmUp(log, kraken, config);
 		warmUp.run();
 		System.out.println("Warm-up");

@@ -7,6 +7,7 @@ import pfg.config.Config;
 import pfg.graphic.DebugTool;
 import pfg.graphic.printable.Layer;
 import pfg.kraken.Kraken;
+import pfg.kraken.KrakenParameters;
 import pfg.kraken.SearchParameters;
 import pfg.kraken.astar.DirectionStrategy;
 import pfg.kraken.display.Display;
@@ -105,7 +106,9 @@ public class ConstructTrajectory
 		DebugTool debug = DebugTool.getDebugTool(new XY(0,1000), new XY(0, 1000), null, "kraken-examples.conf", "trajectory");
 		Display display = debug.getDisplay();
 		
-		Kraken kraken = new Kraken(robotTemplate, obsList, new XY(-1500,0), new XY(1500, 2000), configfile, "default", "graphic");
+		KrakenParameters kp = new KrakenParameters(robotTemplate, new XY(-1500, 0), new XY(1500, 2000), configfile, "default", "graphic");
+		kp.setFixedObstacles(obsList);
+		Kraken kraken = new Kraken(kp);
 
 		display.refresh();
 		try
