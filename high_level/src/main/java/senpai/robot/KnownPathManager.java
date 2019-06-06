@@ -30,7 +30,7 @@ import java.util.PriorityQueue;
 
 import pfg.config.Config;
 import pfg.kraken.SearchParameters;
-import pfg.kraken.struct.Cinematique;
+import pfg.kraken.struct.Kinematic;
 import pfg.kraken.struct.ItineraryPoint;
 import pfg.log.Log;
 import senpai.utils.ConfigInfoSenpai;
@@ -167,9 +167,9 @@ public class KnownPathManager {
 		return out;
 	}
 	
-	private Cinematique symetrise(Cinematique c)
+	private Kinematic symetrise(Kinematic c)
 	{
-		return new Cinematique(
+		return new Kinematic(
 				-c.getPosition().getX(),
 				c.getPosition().getY(),
 				Math.PI - c.orientationGeometrique,

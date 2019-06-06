@@ -38,4 +38,8 @@ public class UnableToMoveException extends Exception
 		super(m);
 	}
 
+	public UnableToMoveException(String m, Throwable e)
+	{
+		super(m, e);
+	}	
 }

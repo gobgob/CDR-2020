@@ -14,7 +14,7 @@
 
 package senpai.capteurs;
 
-import pfg.kraken.struct.Cinematique;
+import pfg.kraken.struct.Kinematic;
 
 /**
  * Un groupe de mesures qui proviennent des capteurs
@@ -25,7 +25,7 @@ import pfg.kraken.struct.Cinematique;
 
 public class SensorsData
 {	
-	public Cinematique cinematique;
+	public Kinematic cinematique;
 	/* Ce que voit chacun des capteurs */
 	public final int[] mesures;
 	public long dateCreation;

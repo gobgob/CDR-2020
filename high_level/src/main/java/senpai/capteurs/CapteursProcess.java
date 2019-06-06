@@ -28,7 +28,7 @@ import java.util.List;
 import pfg.config.Config;
 import pfg.graphic.printable.Layer;
 import pfg.kraken.obstacles.RectangularObstacle;
-import pfg.kraken.struct.Cinematique;
+import pfg.kraken.struct.Kinematic;
 import pfg.kraken.struct.XY;
 import pfg.kraken.struct.XYO;
 import pfg.kraken.struct.XY_RW;
@@ -418,7 +418,7 @@ public class CapteursProcess
 	 * @param cinematique
 	 * @return
 	 */
-	private XY_RW getPositionVue(Capteur c, int mesure, Cinematique cinematique)
+	private XY_RW getPositionVue(Capteur c, int mesure, Kinematic cinematique)
 	{
 		/**
 		 * Si le capteur voit trop proche ou trop loin, on ne peut pas lui faire
@@ -522,7 +522,7 @@ public class CapteursProcess
 	public XYO endStaticCorrection()
 	{
 		log.write("Fin de la correction manuelle !", Subject.CORRECTION);
-		Cinematique cinem = robot.getCinematique();
+		Kinematic cinem = robot.getCinematique();
 		ongoingStaticCorrection = false;
 		
 		XY_RW totalDeltaPos = new XY_RW();

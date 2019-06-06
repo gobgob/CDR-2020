@@ -15,7 +15,7 @@
 package senpai.threads.comm;
 
 import java.nio.ByteBuffer;
-import pfg.kraken.struct.Cinematique;
+import pfg.kraken.struct.Kinematic;
 import pfg.log.Log;
 import senpai.Senpai;
 import senpai.Senpai.ErrorCode;
@@ -46,7 +46,7 @@ public class ThreadCommProcess extends Thread
 	private SensorsDataBuffer buffer;
 	private Robot robot;
 	private Senpai container;
-	private Cinematique current = new Cinematique();
+	private Kinematic current = new Kinematic();
 	private SensorsData[] memory;
 	private int indexMem = 0;
 //	private DynamicPath chemin;

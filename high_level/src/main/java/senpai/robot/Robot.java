@@ -30,7 +30,7 @@ import pfg.kraken.display.Display;
 import pfg.kraken.exceptions.PathfindingException;
 import pfg.kraken.obstacles.CircularObstacle;
 import pfg.kraken.obstacles.RectangularObstacle;
-import pfg.kraken.struct.Cinematique;
+import pfg.kraken.struct.Kinematic;
 import pfg.kraken.struct.ItineraryPoint;
 import pfg.kraken.struct.XY;
 import pfg.kraken.struct.XYO;
@@ -77,7 +77,7 @@ public class Robot
 	private RobotColor c = null;
 	private boolean deploye = false;
 	private boolean scriptPousseAtomeMilieuFait = false, scriptPousseAtomeHautFait = false;
-	private Cinematique cinematique;
+	private Kinematic cinematique;
 	
 	private boolean jumperOK = false;
 	private volatile State etat = State.STANDBY;
@@ -122,7 +122,7 @@ public class Robot
 		
 //		enableLoadPath = config.getBoolean(ConfigInfoSenpai.ENABLE_KNOWN_PATHS);
 		printTrace = config.getBoolean(ConfigInfoSenpai.GRAPHIC_TRACE_ROBOT);
-		cinematique = new Cinematique(new XYO(
+		cinematique = new Kinematic(new XYO(
 				config.getDouble(ConfigInfoSenpai.INITIAL_X),
 				config.getDouble(ConfigInfoSenpai.INITIAL_Y),
 				config.getDouble(ConfigInfoSenpai.INITIAL_O)));
@@ -168,7 +168,7 @@ public class Robot
 
 	private XY_RW oldPosition = new XY_RW();
 	
-	public void setCinematique(Cinematique cinematique)
+	public void setCinematique(Kinematic cinematique)
 	{
 		this.cinematique.getPosition().copy(oldPosition);
 		cinematique.copy(this.cinematique);
@@ -403,7 +403,7 @@ public class Robot
 		
 		// on applique la symétrie à la position initiale
 		if(symetrie)
-			setCinematique(new Cinematique(-cinematique.getPosition().getX(),
+			setCinematique(new Kinematic(-cinematique.getPosition().getX(),
 					cinematique.getPosition().getY(),
 					Math.PI - cinematique.orientationReelle,
 					cinematique.enMarcheAvant,
@@ -420,7 +420,7 @@ public class Robot
 	/*
 	 * On a besoin d'initialiser à part car elle est utilisée pour centre l'affichage graphique
 	 */
-	public void initPositionObject(Cinematique c)
+	public void initPositionObject(Kinematic c)
 	{
 		cinematique.copy(c);
 		cinematique = c;
@@ -669,7 +669,7 @@ public class Robot
 		return obstacle.isProcheObstacle(positionVue, distance);
 	}
 
-	public void setCurrentTrajectoryIndex(Cinematique current, int indexTrajectory)
+	public void setCurrentTrajectoryIndex(Kinematic current, int indexTrajectory)
 	{	
 		currentIndexTrajectory = indexTrajectory;
 //		chemin.setCurrentTrajectoryIndex(indexTrajectory);
@@ -859,7 +859,7 @@ public class Robot
 		lastCorrectionDate = System.currentTimeMillis();
 	}
 
-	public Cinematique getCinematique()
+	public Kinematic getCinematique()
 	{
 		return cinematique;
 	}

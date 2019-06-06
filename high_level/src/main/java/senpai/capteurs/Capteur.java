@@ -18,7 +18,7 @@ import java.awt.Graphics;
 
 import pfg.kraken.display.Display;
 import pfg.kraken.display.Printable;
-import pfg.kraken.struct.Cinematique;
+import pfg.kraken.struct.Kinematic;
 import pfg.kraken.struct.XY;
 import pfg.kraken.struct.XY_RW;
 import senpai.robot.Robot;
@@ -41,7 +41,7 @@ public class Capteur implements Printable
 	protected double orientationRelativeRotate;
 	protected XY_RW positionRelativeRotate;
 	public TypeCapteur type;
-	private Cinematique cinemRobot;
+	private Kinematic cinemRobot;
 
 	public Capteur(Robot robot, XY positionRelative, double orientationRelative, TypeCapteur type)
 	{
@@ -90,7 +90,7 @@ public class Capteur implements Printable
 	 * Utilisé pour l'affichage uniquement
 	 * @param c
 	 */
-	public void setCinematique(Cinematique c)
+	public void setCinematique(Kinematic c)
 	{
 		cinemRobot = c.clone();
 	}

@@ -21,7 +21,7 @@ import org.junit.runner.Request;
 import org.junit.runner.Result;
 
 import pfg.config.Config;
-import pfg.kraken.struct.Cinematique;
+import pfg.kraken.struct.Kinematic;
 import pfg.log.Log;
 import org.junit.After;
 
@@ -69,7 +69,7 @@ public abstract class JUnit_Test
 		 * La position initiale du robot
 		 */
 		Robot r = container.getService(Robot.class);
-		r.setCinematique(new Cinematique(0, 1800, -Math.PI / 3, true, 0, false));
+		r.setCinematique(new Kinematic(0, 1800, -Math.PI / 3, true, 0, false));
 	}
 
 	@After

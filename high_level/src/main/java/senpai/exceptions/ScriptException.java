@@ -35,4 +35,9 @@ public class ScriptException extends Exception
 		super(m);
 	}
 
+	public ScriptException(String m, Throwable e)
+	{
+		super(m, e);
+	}	
+
 }

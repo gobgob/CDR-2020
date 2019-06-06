@@ -32,7 +32,7 @@ import pfg.kraken.KrakenParameters;
 import pfg.kraken.display.Display;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.kraken.obstacles.RectangularObstacle;
-import pfg.kraken.struct.Cinematique;
+import pfg.kraken.struct.Kinematic;
 import pfg.kraken.struct.XY;
 import pfg.log.Log;
 import senpai.buffer.OutgoingOrderBuffer;
@@ -244,7 +244,7 @@ public class Senpai
 		shutdownThread = new ThreadShutdown(this, log);
 		Runtime.getRuntime().addShutdownHook(shutdownThread);
 
-		Cinematique positionRobot = new Cinematique(0, 0, 0, true, 0, false);
+		Kinematic positionRobot = new Kinematic(0, 0, 0, true, 0, false);
 		
 		debug = DebugTool.getDebugTool(new XY(0,1000), positionRobot.getPosition(), Severity.INFO, configfile, profiles);
 		injector.addService(Display.class, debug.getDisplay());

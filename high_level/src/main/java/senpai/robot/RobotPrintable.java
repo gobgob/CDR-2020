@@ -9,7 +9,7 @@ import javax.imageio.ImageIO;
 import pfg.config.Config;
 import pfg.kraken.display.Display;
 import pfg.kraken.display.Printable;
-import pfg.kraken.struct.Cinematique;
+import pfg.kraken.struct.Kinematic;
 import pfg.kraken.struct.XY;
 import pfg.kraken.struct.XY_RW;
 import senpai.utils.ConfigInfoSenpai;
@@ -17,7 +17,7 @@ import senpai.utils.ConfigInfoSenpai;
 public class RobotPrintable implements Printable
 {
 	private transient Image imageRobot;
-	private Cinematique cinematique;
+	private Kinematic cinematique;
 	protected transient double cos, sin;
 	
 	private static final long serialVersionUID = 1L;
@@ -177,12 +177,12 @@ public class RobotPrintable implements Printable
 		out.setY(sin * point.getX() + cos * point.getY() + cinematique.getPosition().getY());
 	}
 
-	public void initPositionObject(Cinematique c)
+	public void initPositionObject(Kinematic c)
 	{
 		cinematique = c;
 	}
 
-	public Cinematique getCinematique()
+	public Kinematic getCinematique()
 	{
 		return cinematique.clone();
 	}

@@ -33,4 +33,10 @@ public class ActionneurException extends Exception
 		this.code = code;
 	}
 
+	public ActionneurException(String m, Throwable e, int code)
+	{
+		super(m, e);
+		this.code = code;
+	}	
+
 }
