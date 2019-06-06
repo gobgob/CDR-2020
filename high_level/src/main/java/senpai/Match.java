@@ -180,14 +180,7 @@ public class Match
 		/**
 		 * Initialisation des scripts
 		 */
-		Script accelerateur = scripts.getScriptAccelerateur();
-		Script recupereGold = scripts.getScriptRecupereGold();
-		Script recuperePaletBlueium = scripts.getScriptRecuperePalet(new XY_RW(1360,285), TypeAtome.Blueium);
-		Script recuperePaletGreenium = scripts.getScriptRecuperePalet(new XY_RW(1275,285), TypeAtome.Greenium);
-		Script deposeBalance = scripts.getScriptDeposeBalance();
-		Script monteRampe = scripts.getScriptMonteRampe();
-		Script pousseAtomeHaut = scripts.getScriptPousseAtomeHaut();
-		Script pousseAtomeMilieu = scripts.getScriptPousseAtomeMilieu();
+//		Script accelerateur = scripts.getScriptAccelerateur();
 
 		/**
 		 * Rush initial
@@ -227,7 +220,8 @@ public class Match
 		{
 			none = true;
 			pathfindingError = false;
-			try
+
+/*			try
 			{
 				doScript(accelerateur, 4, 2, true);
 				none = false;
@@ -237,135 +231,9 @@ public class Match
 				log.write("Erreur : "+e, Subject.SCRIPT);
 				if(e instanceof PathfindingException)
 					pathfindingError = true;
-			}
+			}*/
 			
-//			if(config.getBoolean(ConfigInfoSenpai.SIMULE_COMM))
-//				throw new InterruptedException("Debug");
-			
-			try
-			{
-				doScript(recupereGold, 8, 3, true);
-				none = false;
-			}
-			catch(PathfindingException | UnableToMoveException | ScriptException e)
-			{
-				log.write("Erreur : "+e, Subject.SCRIPT);
-				if(e instanceof PathfindingException)
-					pathfindingError = true;
-			}
-			
-			try
-			{
-				doScript(deposeBalance, 4, 2, true);
-				none = false;
-			}
-			catch(PathfindingException | UnableToMoveException | ScriptException e)
-			{
-				log.write("Erreur : "+e, Subject.SCRIPT);
-				if(e instanceof PathfindingException)
-					pathfindingError = true;
-			}
 
-			try
-			{
-				doScript(pousseAtomeMilieu, 3, 2, true);
-				none = false;
-			}
-			catch(PathfindingException | UnableToMoveException | ScriptException e)
-			{
-				log.write("Erreur : "+e, Subject.SCRIPT);
-				if(e instanceof PathfindingException)
-					pathfindingError = true;
-			}
-
-			try
-			{
-				doScript(pousseAtomeHaut, 3, 2, true);
-				none = false;
-			}
-			catch(PathfindingException | UnableToMoveException | ScriptException e)
-			{
-				log.write("Erreur : "+e, Subject.SCRIPT);
-				if(e instanceof PathfindingException)
-					pathfindingError = true;
-			}
-
-			try
-			{
-				doScript(accelerateur, 4, 2, true);
-				none = false;
-			}
-			catch(PathfindingException | UnableToMoveException | ScriptException e)
-			{
-				log.write("Erreur : "+e, Subject.SCRIPT);
-				if(e instanceof PathfindingException)
-					pathfindingError = true;
-			}
-			
-//			if(config.getBoolean(ConfigInfoSenpai.SIMULE_COMM))
-//				throw new InterruptedException("Debug");
-			
-			try
-			{
-				doScript(recupereGold, 8, 3, true);
-				none = false;
-			}
-			catch(PathfindingException | UnableToMoveException | ScriptException e)
-			{
-				log.write("Erreur : "+e, Subject.SCRIPT);
-				if(e instanceof PathfindingException)
-					pathfindingError = true;
-			}
-			
-			try
-			{
-				doScript(deposeBalance, 4, 2, true);
-				none = false;
-			}
-			catch(PathfindingException | UnableToMoveException | ScriptException e)
-			{
-				log.write("Erreur : "+e, Subject.SCRIPT);
-				if(e instanceof PathfindingException)
-					pathfindingError = true;
-			}
-
-			
-			try
-			{
-				doScript(recuperePaletBlueium, 4, 2, true);
-				none = false;
-			}
-			catch(PathfindingException | UnableToMoveException | ScriptException e)
-			{
-				log.write("Erreur : "+e, Subject.SCRIPT);
-				if(e instanceof PathfindingException)
-					pathfindingError = true;
-			}
-
-			try
-			{
-				doScript(recuperePaletGreenium, 4, 2, true);
-				none = false;
-			}
-			catch(PathfindingException | UnableToMoveException | ScriptException e)
-			{
-				log.write("Erreur : "+e, Subject.SCRIPT);
-				if(e instanceof PathfindingException)
-					pathfindingError = true;
-			}
-
-			try
-			{
-				doScript(monteRampe, 4, 3, true);
-				none = false;
-			}
-			catch(PathfindingException | UnableToMoveException | ScriptException e)
-			{
-				log.write("Erreur : "+e, Subject.SCRIPT);
-				if(e instanceof PathfindingException)
-					pathfindingError = true;
-			}
-			
 			if(none)
 			{
 				if(pathfindingError)

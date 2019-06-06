@@ -15,8 +15,8 @@ import pfg.kraken.struct.XYO;
 import pfg.kraken.struct.XY_RW;
 import pfg.log.Log;
 import senpai.Senpai.ErrorCode;
-import senpai.robot.KnownPathManager;
-import senpai.robot.SavedPath;
+import senpai.pathlibrary.KnownPathManager;
+import senpai.pathlibrary.SavedPath;
 import senpai.table.Table;
 import senpai.utils.Subject;
 
@@ -26,7 +26,7 @@ public class ConstructTrajectoryAllObstacles
 	{
 		if(args.length < 9 || args.length > 11)
 		{
-			System.out.println("Usage : ./run.sh "+ConstructTrajectory.class.getSimpleName()+" mode vitesse_max couleur deploye x_depart y_depart o_depart x_arrivee y_arrivee [o_arrivee] [chemin]");
+			System.out.println("Usage : ./run.sh "+ConstructTrajectoryAllObstacles.class.getSimpleName()+" mode vitesse_max couleur deploye x_depart y_depart o_depart x_arrivee y_arrivee [o_arrivee] [chemin]");
 			return;
 		}
 		

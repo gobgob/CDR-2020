@@ -247,47 +247,6 @@ public class OutgoingOrderBuffer
 		return Id.ACT_GET_POSITION.ticket;
 	}
 	
-	public Ticket actuatorGoHome()
-	{
-		addToBuffer(new Order(Id.ACTUATOR_GO_HOME));
-		return Id.ACTUATOR_GO_HOME.ticket;
-	}
-
-	public Ticket actuatorFindPuck(Boolean goldenium)
-	{
-		ByteBuffer data = ByteBuffer.allocate(1);
-		data.order(ByteOrder.LITTLE_ENDIAN);
-		data.put((byte)(goldenium ? 1 : 0));
-		addToBuffer(new Order(data, Id.ACTUATOR_FIND_PUCK));
-		return Id.ACTUATOR_FIND_PUCK.ticket;
-	}
-	
-	public Ticket actuatorGoToAtSpeed(Double actY, Double actZ, Double actTheta, Double speedY, Double speedZ, Double speedTheta)
-	{
-		ByteBuffer data = ByteBuffer.allocate(6*4);
-		data.order(ByteOrder.LITTLE_ENDIAN);
-		data.putFloat((float) ((double) actY));
-		data.putFloat((float) ((double)actZ));
-		data.putFloat((float) ((double)actTheta));
-		data.putInt((int) ((double)speedY));
-		data.putInt((int) ((double)speedZ));
-		data.putInt((int) ((double)speedTheta));
-		log.write(data.toString()+" "+speedTheta, Subject.COMM);
-		addToBuffer(new Order(data, Id.ACTUATOR_GO_TO_AT_SPEED));
-		return Id.ACTUATOR_GO_TO_AT_SPEED.ticket;
-	}
-	
-	public Ticket actuatorGoTo(Double actY, Double actZ, Double actTheta)
-	{
-		ByteBuffer data = ByteBuffer.allocate(3*4);
-		data.order(ByteOrder.LITTLE_ENDIAN);
-		data.putFloat((float) ((double)actY));
-		data.putFloat((float) ((double)actZ));
-		data.putFloat((float) ((double)actTheta));
-		addToBuffer(new Order(data, Id.ACTUATOR_GO_TO));
-		return Id.ACTUATOR_GO_TO.ticket;
-	}
-
 	/**
 	 * Démarre un stream
 	 */

@@ -7,7 +7,7 @@ import pfg.kraken.display.Display;
 import pfg.kraken.struct.ItineraryPoint;
 import pfg.kraken.struct.XY;
 import pfg.log.Log;
-import senpai.robot.KnownPathManager;
+import senpai.pathlibrary.KnownPathManager;
 import senpai.utils.Severity;
 import senpai.utils.Subject;
 

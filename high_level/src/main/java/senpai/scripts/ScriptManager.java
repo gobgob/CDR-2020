@@ -52,39 +52,10 @@ public class ScriptManager
 		this.out = out;
 	}
 	
-	public ScriptAccelerateur getScriptAccelerateur()
+/*	public ScriptAccelerateur getScriptAccelerateur()
 	{
 		return new ScriptAccelerateur(log, robot, table, cp, out, couleur.symmetry);
-	}
+	}*/
 	
-	public ScriptRecupereGold getScriptRecupereGold()
-	{
-		return new ScriptRecupereGold(log, robot, table, cp, out, couleur.symmetry);
-	}
-	
-	public ScriptRecuperePalet getScriptRecuperePalet(XY_RW entryPoint, TypeAtome tAtome)
-	{
-		return new ScriptRecuperePalet(log, robot, table, cp, out, couleur.symmetry, entryPoint, tAtome);
-	}
-	
-	public ScriptMonteRampe getScriptMonteRampe()
-	{
-		return new ScriptMonteRampe(log, robot, table, cp, out, couleur.symmetry);
-	}
-	
-	public ScriptPousseAtomeHaut getScriptPousseAtomeHaut()
-	{
-		return new ScriptPousseAtomeHaut(log, robot, table, cp, out, couleur.symmetry);
-	}
-
-	public ScriptPousseAtomeMilieu getScriptPousseAtomeMilieu()
-	{
-		return new ScriptPousseAtomeMilieu(log, robot, table, cp, out, couleur.symmetry);
-	}
-
-	public ScriptDeposeBalance getScriptDeposeBalance()
-	{
-		return new ScriptDeposeBalance(log, robot, table, cp, out, couleur.symmetry);
-	}
 }
 

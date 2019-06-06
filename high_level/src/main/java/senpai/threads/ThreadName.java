@@ -29,12 +29,11 @@ public enum ThreadName
 {
 	LIDAR(ThreadLidar.class),
 	LIDAR_TIMEOUT(ThreadTimeoutLidar.class),
-	ELECTRON(ThreadElectron.class),
 	CAPTEURS(ThreadCapteurs.class),
 	COLLISION_TEMPS_REEL(ThreadCollision.class),
-	SERIAL_INPUT_ORDRE(ThreadCommProcess.class),
-	SERIAL_INPUT_TRAME(ThreadCommListener.class),
-	SERIAL_OUTPUT_ORDER(ThreadCommEmitter.class);
+	ETH_INPUT_ORDRE(ThreadCommProcess.class),
+	ETH_INPUT_TRAME(ThreadCommListener.class),
+	ETH_OUTPUT_ORDER(ThreadCommEmitter.class);
 
 	public Class<? extends Thread> c;
 

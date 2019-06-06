@@ -42,7 +42,6 @@ import senpai.comm.DataTicket;
 import senpai.comm.Ticket;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.UnableToMoveException;
-import senpai.table.TypeAtome;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Severity;
 import senpai.utils.Subject;
@@ -76,7 +75,6 @@ public class Robot
 	private volatile long dateDebutMatch = Long.MAX_VALUE, dateFinMatch = Long.MAX_VALUE;
 	private RobotColor c = null;
 	private boolean deploye = false;
-	private boolean scriptPousseAtomeMilieuFait = false, scriptPousseAtomeHautFait = false;
 	private Kinematic cinematique;
 	
 	private boolean jumperOK = false;
@@ -89,10 +87,7 @@ public class Robot
 	private boolean graphicPath;
 	private volatile boolean cinematiqueInitialised = false;
 	private int currentIndexTrajectory = 0;
-	private List<TypeAtome> cargo = new ArrayList<TypeAtome>();
 	private int score;
-	private int tailleCargoMax;
-	private boolean goldeniumFree = false; 
 	private CircularObstacle[] lidarObs = new CircularObstacle[100]; // pas plus de cent obstacles
 	private volatile boolean enableLidar;
 	
@@ -118,7 +113,6 @@ public class Robot
 			printable = new RobotPrintable(config);
 			buffer.addPrintable(printable, Color.BLACK, Layer.MIDDLE.layer);
 		}
-		tailleCargoMax = config.getInt(ConfigInfoSenpai.TAILLE_CARGO_MAX);
 		
 //		enableLoadPath = config.getBoolean(ConfigInfoSenpai.ENABLE_KNOWN_PATHS);
 		printTrace = config.getBoolean(ConfigInfoSenpai.GRAPHIC_TRACE_ROBOT);
@@ -140,26 +134,6 @@ public class Robot
 		cinematique.enMarcheAvant = enMarcheAvant;
 	}
 	
-	public void setScriptPousseAtomeMilieuFait()
-	{
-		scriptPousseAtomeMilieuFait = true;
-	}
-	
-	public boolean isScriptPousseAtomeMilieuFait()
-	{
-		return scriptPousseAtomeMilieuFait;
-	}
-	
-	public void setScriptPousseAtomeHautFait()
-	{
-		scriptPousseAtomeHautFait = true;
-	}
-	
-	public boolean isScriptPousseAtomeHautFait()
-	{
-		return scriptPousseAtomeHautFait;
-	}
-
 	@Override
 	public String toString()
 	{
@@ -363,7 +337,8 @@ public class Robot
 	
 	public Object execute(CommProtocol.Id ordre, Object... param) throws InterruptedException, ActionneurException
 	{
-		deploye = ordre != CommProtocol.Id.ACTUATOR_GO_HOME; // dans le doute…
+		// TODO
+//		deploye = ordre != CommProtocol.Id.ACTUATOR_GO_HOME;
 		int nbEssaiMax = 2;
 		boolean retry;
 		do {
@@ -750,43 +725,12 @@ public class Robot
 
 	public void rangeSiPossible() throws InterruptedException, ActionneurException
 	{
-		if(cargo.isEmpty() && deploye)
+		if(deploye)
 		{
-			execute(CommProtocol.Id.ACTUATOR_GO_HOME);
+			// TODO
 		}
 	}
 	
-	public boolean isCargoEmpty()
-	{
-		return cargo.isEmpty();
-	}
-	
-	private int getCargoSize()
-	{
-		int out = 0;
-		for(TypeAtome at: cargo)
-			out += at.taille;
-		return out;
-	}
-	
-	public boolean isCargoFull(TypeAtome type)
-	{
-		return getCargoSize() + type.taille > tailleCargoMax;
-	}
-	
-	public void addToCargo(TypeAtome atome)
-	{
-		cargo.add(atome);
-	}
-
-
-	public void emptyCargoOnBalance()
-	{
-		for(TypeAtome at: cargo)
-			updateScore(at.nbPoints);
-		cargo.clear();
-	}
-
 
 	public RobotColor getColor()
 	{
@@ -803,16 +747,6 @@ public class Robot
 		return getTempsRestant() < 0;
 	}
 	
-	public void setGoldeniumFree()
-	{
-		goldeniumFree = true;
-	}
-	
-	public boolean isGoldeniumFree()
-	{
-		return goldeniumFree;
-	}
-
 	public boolean isLidarCorrectionAllowed()
 	{
 		return System.currentTimeMillis() - lastCorrectionDate > 2000; // pas de correction lidar moins de 2s apprès une correction par capteurs

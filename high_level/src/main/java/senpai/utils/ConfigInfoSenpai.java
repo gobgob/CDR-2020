@@ -29,8 +29,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 {
 	CHECK_LATENCY(false), // estime la latence de la communication
 	DISABLE_JUMPER(false),
-	ENABLE_LIDAR(true),
-	ENABLE_ELECTRON(true),
+	ENABLE_LIDAR(false),
 	RUSH_SPEED(0.8),
 	ENABLE_PARKING_BREAK(true),
 	
@@ -47,8 +46,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	LIDAR_OBSTACLE_RADIUS(100),
 	TIMEOUT_LIDAR(2000),
 	LIDAR_COMMAND("/home/pi/lidar-processor/lidar_env/bin/python /home/pi/lidar-processor/src/main_script.py"),
-	ENABLE_LIDAR_SCRIPT(true),
-	ENABLE_SMOKE(false),
+	ENABLE_LIDAR_SCRIPT(false),
 	
 	/**
 	 * Infos sur le robot
@@ -68,11 +66,6 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	LARGEUR_NON_DEPLOYE(210), // distance entre le bord gauche et le bord droit
 								// du robot non-déployé
 	MARGE_PATHFINDING(20), // marge latérale sur la dimension du robot
-
-	/**
-	 * Paramètre de comportement / de scripts
-	 */
-	TAILLE_CARGO_MAX(5),
 
 	/**
 	 * Paramètres du pathfinding

@@ -62,10 +62,7 @@ public class CommProtocol
 		STOP(0x21, -20),
 		WAIT_FOR_JUMPER(0x22),
 		START_MATCH_CHRONO(0x23),
-		ACTUATOR_GO_HOME(0x24, "actuatorGoHome"),
-		ACTUATOR_GO_TO(0x25, "actuatorGoTo"),
-		ACTUATOR_FIND_PUCK(0x26, "actuatorFindPuck"),
-		ACTUATOR_GO_TO_AT_SPEED(0x27, "actuatorGoToAtSpeed"),
+//		ACTUATOR_GO_HOME(0x24, "actuatorGoHome"), // gardé pour l'exemple
 				
 		// Ordres immédiats (0x80 à 0xFF)
 		PING(0x80, true),

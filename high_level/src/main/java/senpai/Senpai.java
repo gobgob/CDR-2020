@@ -248,32 +248,7 @@ public class Senpai
 		
 		debug = DebugTool.getDebugTool(new XY(0,1000), positionRobot.getPosition(), Severity.INFO, configfile, profiles);
 		injector.addService(Display.class, debug.getDisplay());
-		
 
-		/**
-		 * Affiche la version du programme (dernier commit et sa branche)
-		 */
-		// TODO gérer ça bien
-/*		try
-		{
-			Process p = Runtime.getRuntime().exec("git log -1 --oneline");
-			Process p2 = Runtime.getRuntime().exec("git branch");
-			BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			BufferedReader in2 = new BufferedReader(new InputStreamReader(p2.getInputStream()));
-			String s = in.readLine();
-			int index = s.indexOf(" ");
-			in.close();
-			String s2 = in2.readLine();
-
-			while(!s2.contains("*"))
-				s2 = in2.readLine();
-
-			int index2 = s2.indexOf(" ");
-			log.write("Version : " + s.substring(0, index) + " on " + s2.substring(index2 + 1) + " - [" + s.substring(index + 1) + "]", Subject.STATUS);
-			in2.close();
-		}
-		catch(IOException e1)
-		{}*/
 
 		/**
 		 * Infos diverses

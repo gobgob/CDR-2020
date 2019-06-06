@@ -1,4 +1,4 @@
-package senpai.robot;
+package senpai.pathlibrary;
 
 import java.io.Serializable;
 import java.util.List;
