@@ -17,3 +17,14 @@ paths:
                  - "North"
                  - "South"
                  - "???"
+        500:
+          description: Something is not working
+          content:
+            applictaion/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message

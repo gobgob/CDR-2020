@@ -5,36 +5,48 @@ import numpy as np
 import time
 import math
 
-ARUCO_DICT = aruco.Dictionary_get(aruco.DICT_4X4_250)
 COMPASS_ID = 17
 BUFFER_SIZE = 5  # Number of values before giving a result
+WEBCAM_ID = 0
 DEBUG = True
 
-
-class CompassWatcher():
+class CompassWatcher:
     def __init__(self):
+        # Error
+        self.error = None
+
         # Compass values
         self.values = ""
 
+        # Aruco config
+        self._aruco_dict = aruco.Dictionary_get(aruco.DICT_4X4_250)
+        self._aruco_params = aruco.DetectorParameters_create()
+
         # Start `run` in a separate thread
-        thread = threading.Thread(target=self.run, args=())
+        thread = threading.Thread(target=self.run)
         thread.daemon = True
         thread.start()
+        self.should_stop = False
 
     def run(self):
-        cap = cv2.VideoCapture(0)
+        cap = cv2.VideoCapture(WEBCAM_ID)
 
-        while(True):
+        while(self.should_stop == False):
             # Capture frame-by-frame
             ret, frame = cap.read()
+
+            if ret == False:
+                if DEBUG:
+                    print("No camera output!")
+                self.error = "No camera output!"
+                break
 
             # Frame to Grayscale
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
             # Read markers
-            paramaters = aruco.DetectorParameters_create()
             corners, ids, rejectedImgPoints = aruco.detectMarkers(
-                gray, ARUCO_DICT, parameters=paramaters)
+                gray, self._aruco_dict, parameters=self._aruco_params)
 
             # Save the value if the compass is visible
             try:
@@ -50,9 +62,9 @@ class CompassWatcher():
                         self.values += "N" if angle_in_rad > 0 else "S"
 
                         # Cut the values to have the last results only
-                        self.values = self.values[BUFFER_SIZE * -1:]
-                        
-                        if (DEBUG):
+                        self.values = self.values[-BUFFER_SIZE:]
+
+                        if DEBUG:
                             print(self.values)
 
                         time.sleep(.5)
@@ -62,6 +74,9 @@ class CompassWatcher():
         # When everything done, release the capture
         cap.release()
         cv2.destroyAllWindows()
+
+    def stop(self):
+        self.should_stop = True
 
     def get_value(self):
         if self.values == "S" * BUFFER_SIZE:
