@@ -1,0 +1,19 @@
+openapi: 3.0.0
+info:
+  title: "Compass reader"
+  version: "1.0.0"
+paths:
+  "/":
+    get:
+      description: Get compass value
+      responses:
+        200:
+          description: The compass value
+          content:
+            application/json:
+              schema:
+                type: string
+                enum:
+                 - "North"
+                 - "Sud"
+                 - "???"

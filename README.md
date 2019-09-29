@@ -76,3 +76,30 @@ Et de compiler grâce à maven:
     mvn clean compile assembly:single
 
 Le fichier généré est `chariot-hl.jar` placé dans `high_level/target`. Des scripts placés dans `high_level` permet de l'utiliser facilement.
+
+## Balise pour lire la girouette (`compass_reader/`)
+
+Programme en charge de donner la valeur de la girouette. Ce programme tournera sur une raspberrypi zero équipée d’une webcam.
+
+La girouette est elle balisée d’un tag ArUco 4x4 numéro 17 de 6cm de largeur, c’est ce tag qui sera lu pour indiquer la position de la girouette.
+
+Pour augmenter la fiabilité, nous filmons en continue la girouette et nous basons sur les 5 dernières lectures
+Si celles-ci sont toutes identiques, la valeur sera transmise au robot principale, sinon la balise renverra `???` en attente de plus d’information.
+
+### Lancer le projet
+
+* Installer python 3.7
+* Installer les dépendances (`pip install -r requirements.txt`)
+* Lancer le serveur web (`python main.py`)
+
+### Comment tester ?
+
+Une fois le server lancé, montrez l’ArUco ci-dessous à la webcam:
+
+![ArUco17](./compass_reader/aruco-17.svg)
+
+Allez sur [http://localhost:8080/](http://localhost:8080/) pour voir le résultat. Le point blanc vers le haut indiquera `North`, en bas `South` (et `???` si la valeur n’est pas stable)
+
+Vous pouvez aussi voir les lectures dans la console si `DEBUG = True` dans `compass.py`
+
+Pro tips : Si tu décides d’afficher l’ArUco sur ton téléphone, pense à désactiver la rotation automatique de l’écran 😅
