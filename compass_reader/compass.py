@@ -23,10 +23,10 @@ class CompassWatcher:
         self._aruco_params = aruco.DetectorParameters_create()
 
         # Start `run` in a separate thread
+        self.should_stop = False
         thread = threading.Thread(target=self.run)
         thread.daemon = True
         thread.start()
-        self.should_stop = False
 
     def run(self):
         cap = cv2.VideoCapture(WEBCAM_ID)
