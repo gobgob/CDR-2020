@@ -31,7 +31,7 @@ class CompassWatcher:
     def run(self):
         cap = cv2.VideoCapture(WEBCAM_ID)
 
-        while(self.should_stop == False):
+        while(not self.should_stop):
             # Capture frame-by-frame
             ret, frame = cap.read()
 
