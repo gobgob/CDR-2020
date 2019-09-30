@@ -89,7 +89,7 @@ Si celles-ci sont toutes identiques, la valeur sera transmise au robot principal
 ### Lancer le projet
 
 * Installer python 3.7
-* Installer les dépendances (`pip install -r requirements.txt`)
+* Installer les dépendances (`pip3 install -r requirements.txt`)
 * Lancer le serveur web (`python main.py`)
 
 ### Comment tester ?
