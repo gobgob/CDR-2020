@@ -103,3 +103,9 @@ Allez sur [http://localhost:8080/](http://localhost:8080/) pour voir le résulta
 Vous pouvez aussi voir les lectures dans la console si `DEBUG = True` dans `compass.py`
 
 Pro tips : Si tu décides d’afficher l’ArUco sur ton téléphone, pense à désactiver la rotation automatique de l’écran 😅
+
+### Comment faire marcher le projet sur raspberry-pi?
+
+1. `sudo apt-get install python3-opencv`
+1. `sudo apt-get install python3-numpy`
+1. `sudo apt-get install python3-aiohttp`
