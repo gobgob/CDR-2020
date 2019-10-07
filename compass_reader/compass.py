@@ -49,27 +49,24 @@ class CompassWatcher:
                 gray, self._aruco_dict, parameters=self._aruco_params)
 
             # Save the value if the compass is visible
-            try:
-                if isinstance(ids, np.ndarray):
-                    compass = np.where(ids == COMPASS_ID)
-                    if len(compass) > 0:
-                        c = corners[compass[0][0]][0]
-                        c0 = c[0]
-                        c1 = c[1]
-                        delta = [c1[0] - c0[0], c1[1] - c0[0]]
-                        angle_in_rad = math.atan2(delta[0], delta[1])
+            if isinstance(ids, np.ndarray):
+                compass = np.where(ids == COMPASS_ID)
+                if len(compass) == 2 and len(compass[0]) == 1 and len(corners[compass[0][0]]) == 1:
+                    c = corners[compass[0][0]][0]
+                    c0 = c[0]
+                    c1 = c[1]
+                    delta = [c1[0] - c0[0], c1[1] - c0[0]]
+                    angle_in_rad = math.atan2(delta[0], delta[1])
 
-                        self.values += "N" if angle_in_rad > 0 else "S"
+                    self.values += "N" if angle_in_rad > 0 else "S"
 
-                        # Cut the values to have the last results only
-                        self.values = self.values[-BUFFER_SIZE:]
+                    # Cut the values to have the last results only
+                    self.values = self.values[-BUFFER_SIZE:]
 
-                        if DEBUG:
-                            print(self.values)
+                    if DEBUG:
+                        print(self.values)
 
-                        time.sleep(.5)
-            except:
-                continue
+                    time.sleep(.5)
 
         # When everything done, release the capture
         cap.release()
