@@ -34,21 +34,7 @@ public enum ObstaclesFixes
 	BORD_BAS(new RectangularObstacle(new XY(0, 0), 3000, 5), true),
 	BORD_GAUCHE(new RectangularObstacle(new XY(-1500, 1000), 5, 2000), true),
 	BORD_DROITE(new RectangularObstacle(new XY(1500, 1000), 5, 2000), true),
-	BORD_HAUT(new RectangularObstacle(new XY(0, 2000), 3000, 5), true),
-
-	ZONE_CHAOS_GAUCHE(new CircularObstacle(new XY(-500, 950), 150), false),
-	ZONE_CHAOS_DROITE(new CircularObstacle(new XY(500, 950), 150), false),
-
-	ACCELERATEUR(new RectangularObstacle(new XY(0, 1980), 2000, 40), true),
-	
-	DISTRIBUTEUR_GAUCHE(new RectangularObstacle(new XY(-661, 428), 780, 60), true),
-	DISTRIBUTEUR_DROITE(new RectangularObstacle(new XY(661, 428), 780, 60), true),
-	
-	BALANCES(new RectangularObstacle(new XY(0, 200), 504, 400), true),
-	TASSEAU_CENTRAL(new RectangularObstacle(new XY(0, 500), 40, 200), true),
-	
-	ATOME_BAS_GAUCHE(new CircularObstacle(new XY(-1000, 950), 38), false),
-	ATOME_BAS_DROITE(new CircularObstacle(new XY(1000, 950), 38), false);
+	BORD_HAUT(new RectangularObstacle(new XY(0, 2000), 3000, 5), true);
 
 	public final Obstacle obstacle;
 	public final boolean visible;
