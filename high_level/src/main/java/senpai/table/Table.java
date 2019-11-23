@@ -43,7 +43,6 @@ public class Table implements Printable
 	// Dépendances
 	protected transient Log log;
 
-	private HashMap<AtomeParTerre, Boolean> etat = new HashMap<AtomeParTerre, Boolean>();
 	private List<Obstacle> currentObstacles = new ArrayList<Obstacle>();
 	private List<Obstacle> otherObstacles = new ArrayList<Obstacle>();
 	private List<Obstacle> noEnemyZone = new ArrayList<Obstacle>();
@@ -53,8 +52,6 @@ public class Table implements Printable
 		this.log = log;
 		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ENABLE))
 			buffer.addPrintable(this, Color.BLACK, Layer.BACKGROUND.layer);
-		for(AtomeParTerre n : AtomeParTerre.values())
-			etat.put(n, false);
 	}
 	
 	public void addOtherObstacle(Obstacle o)
@@ -72,35 +69,12 @@ public class Table implements Printable
 		return noEnemyZone;
 	}
 	
-	/**
-	 * On a pris l'objet, on est passé dessus, le robot ennemi est passé
-	 * dessus...
-	 * Attention, on ne peut qu'augmenter cette valeur.
-	 * 
-	 * @param id
-	 */
-	public void setDone(AtomeParTerre id)
-	{
-		log.write("Atome absent de la table : "+id, Subject.TABLE);
-		etat.put(id, true);
-	}
-
-	/**
-	 * Cet objet est-il présent ou non?
-	 * 
-	 * @param id
-	 */
-	public boolean isDone(AtomeParTerre id)
-	{
-		return etat.get(id);
-	}
-
 	public Iterator<Obstacle> getCurrentObstaclesIterator()
 	{
 		currentObstacles.clear();
-		for(AtomeParTerre n : AtomeParTerre.values())
+/*		for(AtomeParTerre n : AtomeParTerre.values())
 			if(!etat.get(n))
-				currentObstacles.add(n.obstacle);
+				currentObstacles.add(n.obstacle);*/
 		currentObstacles.addAll(otherObstacles);
 		return currentObstacles.iterator();
 	}

@@ -18,7 +18,6 @@ import senpai.comm.CommProtocol;
 import senpai.obstacles.ObstaclesDynamiques;
 import senpai.obstacles.ObstaclesFixes;
 import senpai.robot.Robot;
-import senpai.table.AtomeParTerre;
 import senpai.table.Table;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Severity;
@@ -127,12 +126,12 @@ public class CapteursProcess
 		/**
 		 * On update la table avec notre position
 		 */
-		for(AtomeParTerre g : AtomeParTerre.values())
+/*		for(AtomeParTerre g : AtomeParTerre.values())
 			if(!table.isDone(g) && g.obstacle.isColliding(obstacleRobot))
 			{
 				log.write("Élément shooté", Subject.CAPTEURS);
 				table.setDone(g);
-			}
+			}*/
 
 		/**
 		 * Suppression des mesures qui sont hors-table ou qui voient un obstacle

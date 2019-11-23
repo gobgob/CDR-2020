@@ -21,7 +21,6 @@ import senpai.capteurs.CapteursProcess;
 import senpai.robot.Robot;
 import senpai.robot.RobotColor;
 import senpai.table.Table;
-import senpai.table.TypeAtome;
 
 /**
  * Script manager

@@ -22,7 +22,6 @@ import senpai.robot.RobotColor;
 import senpai.scripts.Script;
 import senpai.scripts.ScriptManager;
 import senpai.table.Table;
-import senpai.table.TypeAtome;
 import senpai.threads.comm.ThreadCommProcess;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Severity;
@@ -185,7 +184,7 @@ public class Match
 		/**
 		 * Rush initial
 		 */
-		double rush_speed = config.getDouble(ConfigInfoSenpai.RUSH_SPEED);
+/*		double rush_speed = config.getDouble(ConfigInfoSenpai.RUSH_SPEED);
 		try
 		{
 			ll.enableHighSpeedMode(rush_speed >= 1);
@@ -209,30 +208,17 @@ public class Match
 				}
 				currentX = robot.getCinematique().getPosition().getX();
 			}
-		}
+		}*/
 		
 		/**
 		 * Boucle des scripts
 		 */
-		boolean none;
+/*		boolean none;
 		boolean pathfindingError;
 		while(true)
 		{
 			none = true;
 			pathfindingError = false;
-
-/*			try
-			{
-				doScript(accelerateur, 4, 2, true);
-				none = false;
-			}
-			catch(PathfindingException | UnableToMoveException | ScriptException e)
-			{
-				log.write("Erreur : "+e, Subject.SCRIPT);
-				if(e instanceof PathfindingException)
-					pathfindingError = true;
-			}*/
-			
 
 			if(none)
 			{
@@ -248,7 +234,7 @@ public class Match
 			}
 		}
 		
-
+*/
 	}
 	
 	/**
