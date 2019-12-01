@@ -45,7 +45,10 @@ public class GameState implements Printable
 		BORD_BAS(new RectangularObstacle(new XY(0, 0), 3000, 5), true),
 		BORD_GAUCHE(new RectangularObstacle(new XY(-1500, 1000), 5, 2000), true),
 		BORD_DROITE(new RectangularObstacle(new XY(1500, 1000), 5, 2000), true),
-		BORD_HAUT(new RectangularObstacle(new XY(0, 2000), 3000, 5), true);
+		BORD_HAUT(new RectangularObstacle(new XY(0, 2000), 3000, 5), true),
+		ROCHER_GAUCHE(new RectangularObstacle(new XY(-611, 75), 22, 150), false), // peut-être mal calé en x ?
+		ROCHER_MILIEU(new RectangularObstacle(new XY(0, 150), 22, 300), false),
+		ROCHER_DROIT(new RectangularObstacle(new XY(611, 75), 22, 150), false);
 
 		public final Obstacle obstacle;
 		public final boolean visible;
@@ -144,6 +147,8 @@ public class GameState implements Printable
 	public void print(Graphics g, Display f)
 	{
 		g.setColor(Color.BLUE);
+		for(ObstaclesFixes o : ObstaclesFixes.values())
+			o.obstacle.print(g, f);
 		for(Bouees n : Bouees.values())
 			n.obs.print(g, f);
 	}
