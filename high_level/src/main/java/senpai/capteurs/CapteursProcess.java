@@ -18,7 +18,7 @@ import senpai.comm.CommProtocol;
 import senpai.obstacles.ObstaclesDynamiques;
 import senpai.obstacles.ObstaclesFixes;
 import senpai.robot.Robot;
-import senpai.table.Table;
+import senpai.scripts.GameState;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Severity;
 import senpai.utils.Subject;
@@ -46,7 +46,7 @@ import pfg.log.Log;
 public class CapteursProcess
 {
 	protected Log log;
-	private Table table;
+	private GameState table;
 //	private OutgoingOrderBuffer serie;
 
 	private int nbCapteurs;
@@ -72,7 +72,7 @@ public class CapteursProcess
 	
 //	private List<SensorsData> mesuresScan = new ArrayList<SensorsData>();
 
-	public CapteursProcess(ObstaclesDynamiques dynObs, Robot robot, Log log, RectangularObstacle obstacleRobot, Table table, Config config, Display buffer)
+	public CapteursProcess(ObstaclesDynamiques dynObs, Robot robot, Log log, RectangularObstacle obstacleRobot, GameState table, Config config, Display buffer)
 	{
 		this.table = table;
 		this.log = log;
@@ -496,7 +496,7 @@ public class CapteursProcess
 			cc.valc1.clear();
 			cc.valc2.clear();
 		}
-		robot.setLastCorrectionDate();
+//		robot.setLastCorrectionDate();
 		ongoingStaticCorrection = true;		
 	}
 	

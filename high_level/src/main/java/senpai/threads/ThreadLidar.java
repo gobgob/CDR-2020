@@ -14,28 +14,13 @@
 
 package senpai.threads;
 
-import java.io.IOException;
-import java.net.SocketException;
-import pfg.config.Config;
-import pfg.kraken.obstacles.CircularObstacle;
-import pfg.kraken.struct.XY;
-import pfg.kraken.struct.XYO;
-import pfg.log.Log;
-import senpai.comm.LidarEth;
-import senpai.obstacles.ObstaclesDynamiques;
-import senpai.robot.Robot;
-import senpai.robot.RobotColor;
-import senpai.utils.ConfigInfoSenpai;
-import senpai.utils.Severity;
-import senpai.utils.Subject;
-
 /**
  * Thread qui gère les données du lidar
  * 
  * @author pf
  *
  */
-
+/*
 public class ThreadLidar extends Thread
 {
 	protected ObstaclesDynamiques dynObs;
@@ -137,10 +122,8 @@ public class ThreadLidar extends Thread
 							eth.sendStop();
 							stopped = true;
 						}
-//						else if(System.currentTimeMillis() - lastCorrection > 2000)
 						else if(robot.needLidarCorrection() && robot.isLidarCorrectionAllowed())
 						{
-//							lastCorrection = System.currentTimeMillis();
 							robot.startLidarCorrection();
 							eth.sendOdo();
 						}
@@ -155,7 +138,6 @@ public class ThreadLidar extends Thread
 							int x = Integer.parseInt(m[1]);
 							int y = Integer.parseInt(m[2]);
 							int id = Integer.parseInt(m[3]);
-//							int timestamp = Integer.parseInt(m[4]);
 							int radSlow = (int) Math.round(multiplier * radius);
 							assert id < 100 : id;
 							CircularObstacle obs = new CircularObstacle(new XY(x, y), radius);
@@ -249,4 +231,4 @@ public class ThreadLidar extends Thread
 		eth.close();
 	}
 
-}
+}*/

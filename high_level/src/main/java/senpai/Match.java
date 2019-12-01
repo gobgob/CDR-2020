@@ -19,9 +19,9 @@ import senpai.exceptions.ScriptException;
 import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
 import senpai.robot.RobotColor;
+import senpai.scripts.GameState;
 import senpai.scripts.Script;
 import senpai.scripts.ScriptManager;
-import senpai.table.Table;
 import senpai.threads.comm.ThreadCommProcess;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Severity;
@@ -55,7 +55,7 @@ public class Match
 	private static ScriptManager scripts;
 	private static Log log;
 	private static Config config;
-	private static Table table;
+	private static GameState table;
 
 	/**
 	 * Gestion des paramètres et de la fermeture du HL, ne pas toucher
@@ -105,7 +105,7 @@ public class Match
 		config = senpai.getService(Config.class);
 		ll = senpai.getService(OutgoingOrderBuffer.class);
 		robot = senpai.getService(Robot.class);
-		table = senpai.getService(Table.class);
+		table = senpai.getService(GameState.class);
 		scripts = senpai.getService(ScriptManager.class);
 		log = senpai.getService(Log.class);
 		

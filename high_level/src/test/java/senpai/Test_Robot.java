@@ -25,8 +25,8 @@ import senpai.buffer.OutgoingOrderBuffer;
 import senpai.capteurs.CapteursProcess;
 import senpai.comm.CommProtocol.Id;
 import senpai.robot.Robot;
+import senpai.scripts.GameState;
 import senpai.scripts.ScriptManager;
-import senpai.table.Table;
 
 /**
  * Tests unitaires des trajectoires et des actionneurs
@@ -102,7 +102,7 @@ public class Test_Robot extends JUnit_Test
 		data = container.getService(OutgoingOrderBuffer.class);
 		container.getService(ScriptManager.class);
 		container.getService(CapteursProcess.class);
-		container.getService(Table.class);
+		container.getService(GameState.class);
 //		simuleSerie = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
 		data.startStream(Id.ODO_AND_SENSORS);
 	}

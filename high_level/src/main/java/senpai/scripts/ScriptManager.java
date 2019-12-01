@@ -20,7 +20,6 @@ import senpai.buffer.OutgoingOrderBuffer;
 import senpai.capteurs.CapteursProcess;
 import senpai.robot.Robot;
 import senpai.robot.RobotColor;
-import senpai.table.Table;
 
 /**
  * Script manager
@@ -31,7 +30,7 @@ import senpai.table.Table;
 public class ScriptManager
 {
 	protected Log log;
-	private Table table;
+	private GameState table;
 	private Robot robot;
 	private CapteursProcess cp;
 	private RobotColor couleur;
@@ -42,7 +41,7 @@ public class ScriptManager
 		this.couleur = couleur;
 	}
 	
-	public ScriptManager(Log log, Table table, Robot robot, CapteursProcess cp, OutgoingOrderBuffer out)
+	public ScriptManager(Log log, GameState table, Robot robot, CapteursProcess cp, OutgoingOrderBuffer out)
 	{
 		this.log = log;
 		this.table = table;

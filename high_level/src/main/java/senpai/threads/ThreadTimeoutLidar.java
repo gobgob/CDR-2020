@@ -14,13 +14,6 @@
 
 package senpai.threads;
 
-import pfg.config.Config;
-import pfg.log.Log;
-import senpai.robot.Robot;
-import senpai.utils.ConfigInfoSenpai;
-import senpai.utils.Severity;
-import senpai.utils.Subject;
-
 /**
  * Thread qui gère le timeout du lidar
  * 
@@ -28,7 +21,7 @@ import senpai.utils.Subject;
  *
  */
 
-public class ThreadTimeoutLidar extends Thread
+/**public class ThreadTimeoutLidar extends Thread
 {
 	protected Config config;
 	protected ThreadLidar threadLidar;
@@ -85,4 +78,4 @@ public class ThreadTimeoutLidar extends Thread
 		}
 	}
 
-}
+}*/

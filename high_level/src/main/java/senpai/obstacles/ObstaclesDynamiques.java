@@ -30,7 +30,7 @@ import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.obstacles.container.SmartDynamicObstacles;
 import pfg.log.Log;
 import senpai.capteurs.CapteursRobot;
-import senpai.table.Table;
+import senpai.scripts.GameState;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Severity;
 import senpai.utils.Subject;
@@ -45,14 +45,14 @@ public class ObstaclesDynamiques extends SmartDynamicObstacles implements Iterat
 {
 	private transient Log log;
 	private static final long serialVersionUID = 1L;
-	private transient Table table;
+	private transient GameState table;
 	private transient Iterator<Obstacle> iteratorMemory, iteratorTable;
 	private transient Iterator<CircularObstacle> iteratorLidar;
 //	private transient boolean obsTable;
 	private transient CircularObstacle[] lidarObs = new CircularObstacle[100];
 	private transient List<CircularObstacle> lidarTmpObs = new ArrayList<CircularObstacle>(100);
 	
-	public ObstaclesDynamiques(Log log, Table table, Config config, Display buffer)
+	public ObstaclesDynamiques(Log log, GameState table, Config config, Display buffer)
 	{
 		this.log = log;
 //		obsTable = !config.getBoolean(ConfigInfoSenpai.NO_OBSTACLES);

@@ -23,7 +23,6 @@ import senpai.exceptions.ActionneurException;
 import senpai.exceptions.ScriptException;
 import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
-import senpai.table.Table;
 import senpai.utils.Severity;
 import senpai.utils.Subject;
 
@@ -38,7 +37,7 @@ public abstract class Script
 {
 	protected Log log;
 	protected Robot robot;
-	protected Table table;
+	protected GameState table;
 	protected CapteursProcess cp;
 	protected OutgoingOrderBuffer out;
 	
@@ -47,7 +46,7 @@ public abstract class Script
 		return false;
 	}
 	
-	public Script(Log log, Robot robot, Table table, CapteursProcess cp, OutgoingOrderBuffer out)
+	public Script(Log log, Robot robot, GameState table, CapteursProcess cp, OutgoingOrderBuffer out)
 	{
 		this.log = log;
 		this.robot = robot;

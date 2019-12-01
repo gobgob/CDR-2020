@@ -42,12 +42,13 @@ import senpai.comm.DataTicket;
 import senpai.comm.Ticket;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.UnableToMoveException;
+import senpai.scripts.GameState;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Severity;
 import senpai.utils.Subject;
 
 /**
- * Classe abstraite du robot, dont héritent RobotVrai et RobotChrono
+ * Les méthodes que peut faire le robot
  * 
  * @author pf
  */
@@ -71,6 +72,7 @@ public class Robot
 	protected Kraken krakenDeploye;
 	protected Kraken krakenRange;
 	private RectangularObstacle obstacle;
+	private GameState gamestate;
 	private List<ItineraryPoint> path = null;
 	private volatile long dateDebutMatch = Long.MAX_VALUE, dateFinMatch = Long.MAX_VALUE;
 	private RobotColor c = null;
@@ -88,11 +90,12 @@ public class Robot
 	private volatile boolean cinematiqueInitialised = false;
 	private int currentIndexTrajectory = 0;
 	private int score;
-	private CircularObstacle[] lidarObs = new CircularObstacle[100]; // pas plus de cent obstacles
-	private volatile boolean enableLidar;
+//	private CircularObstacle[] lidarObs = new CircularObstacle[100]; // pas plus de cent obstacles
+//	private volatile boolean enableLidar;
 	
-	public Robot(Log log, OutgoingOrderBuffer out, Config config, Display buffer, Kraken[] krakens, /*DynamicPath dpath,*/ /*KnownPathManager known,*/ RectangularObstacle obstacle)
+	public Robot(Log log, GameState gamestate, OutgoingOrderBuffer out, Config config, Display buffer, Kraken[] krakens, /*DynamicPath dpath,*/ /*KnownPathManager known,*/ RectangularObstacle obstacle)
 	{
+		this.gamestate = gamestate;
 		this.log = log;
 		this.out = out;
 		this.buffer = buffer;
@@ -105,7 +108,7 @@ public class Robot
 		defaultSpeed = config.getDouble(ConfigInfoSenpai.DEFAULT_MAX_SPEED);
 		maxSpeedInEnemy = config.getDouble(ConfigInfoSenpai.MAX_SPEED_IN_ENEMY);
 		graphicPath = config.getBoolean(ConfigInfoSenpai.GRAPHIC_PATH);
-		enableLidar = config.getBoolean(ConfigInfoSenpai.ENABLE_LIDAR);
+//		enableLidar = config.getBoolean(ConfigInfoSenpai.ENABLE_LIDAR);
 		
 		// On ajoute une fois pour toute l'image du robot
 		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ROBOT_AND_SENSORS))
@@ -406,7 +409,7 @@ public class Robot
 	}
 
 	XY_RW tmp = new XY_RW();
-	public List<ItineraryPoint> slowDownTrajectory(List<ItineraryPoint> path)
+/*	public List<ItineraryPoint> slowDownTrajectory(List<ItineraryPoint> path)
 	{
 		List<ItineraryPoint> out = new ArrayList<ItineraryPoint>();
 		log.write("On ralentit la trajectoire si nécessaire", Subject.TRAJECTORY);
@@ -433,7 +436,7 @@ public class Robot
 		}
 		assert out.size() == size : out.size()+" "+size;
 		return out;	
-	}
+	}*/
 	
 	public synchronized void setReady()
 	{
@@ -501,7 +504,7 @@ public class Robot
 		System.out.println(path.get(0));
 		log.write("Durée de la recherche : "+(System.currentTimeMillis() - avant), Subject.TRAJECTORY);
 		
-		path = slowDownTrajectory(path);
+//		path = slowDownTrajectory(path);
 		
 		if(!simuleLL)
 		{
@@ -515,8 +518,8 @@ public class Robot
 		
 		out = followTrajectory();
 		
-		if(enableLidar)
-			requestLidarCorrection();
+//		if(enableLidar)
+//			requestLidarCorrection();
 		
 		if(!simuleLL && out.data != null)
 			throw new UnableToMoveException(out.data.toString());
@@ -544,12 +547,12 @@ public class Robot
 				wait();
 		}
 		
-		if(enableLidar)
+/*		if(enableLidar)
 		{
 			log.write("Attente de la correction lidar...", Subject.TRAJECTORY);
 			while(enableLidar && (!isLidarTimeout() || needLidarCorrection))
 				Thread.sleep(5);
-		}
+		}*/
 		
 		if(!jumperOK)
 		{
@@ -692,7 +695,7 @@ public class Robot
 		out.correctPosition(position, orientation);
 	}
 
-	public void setLidarObs(CircularObstacle obs, int id)
+/*	public void setLidarObs(CircularObstacle obs, int id)
 	{
 		lidarObs[id] = obs;
 	}
@@ -701,7 +704,7 @@ public class Robot
 	{
 		for(int i = 0; i < lidarObs.length; i++)
 			lidarObs[i] = null;
-	}
+	}*/
 
 	public void initActionneurs() throws ActionneurException, InterruptedException
 	{
@@ -747,7 +750,7 @@ public class Robot
 		return getTempsRestant() < 0;
 	}
 	
-	public boolean isLidarCorrectionAllowed()
+/*	public boolean isLidarCorrectionAllowed()
 	{
 		return System.currentTimeMillis() - lastCorrectionDate > 2000; // pas de correction lidar moins de 2s apprès une correction par capteurs
 	}
@@ -791,7 +794,7 @@ public class Robot
 	public void setLastCorrectionDate()
 	{
 		lastCorrectionDate = System.currentTimeMillis();
-	}
+	}*/
 
 	public Kinematic getCinematique()
 	{

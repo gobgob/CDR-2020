@@ -12,7 +12,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package senpai.table;
+package senpai.scripts;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -36,7 +36,7 @@ import senpai.utils.Subject;
  *
  */
 
-public class Table implements Printable
+public class GameState implements Printable
 {
 	private static final long serialVersionUID = 1L;
 
@@ -47,7 +47,7 @@ public class Table implements Printable
 	private List<Obstacle> otherObstacles = new ArrayList<Obstacle>();
 	private List<Obstacle> noEnemyZone = new ArrayList<Obstacle>();
 	
-	public Table(Log log, Config config, Display buffer)
+	public GameState(Log log, Config config, Display buffer)
 	{
 		this.log = log;
 		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ENABLE))

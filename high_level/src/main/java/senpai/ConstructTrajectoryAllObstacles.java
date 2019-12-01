@@ -17,7 +17,7 @@ import pfg.log.Log;
 import senpai.Senpai.ErrorCode;
 import senpai.pathlibrary.KnownPathManager;
 import senpai.pathlibrary.SavedPath;
-import senpai.table.Table;
+import senpai.scripts.GameState;
 import senpai.utils.Subject;
 
 public class ConstructTrajectoryAllObstacles
@@ -61,7 +61,7 @@ public class ConstructTrajectoryAllObstacles
 		
 		Senpai senpai = new Senpai();
 		senpai.initialize("senpai-trajectory.conf", "default", "graphic");
-		Table table = senpai.getService(Table.class);
+		GameState table = senpai.getService(GameState.class);
 		
 		XY_RW posZoneDepartAdverse = new XY_RW(-1500+550/2, 1250);
 		if(symetrie)

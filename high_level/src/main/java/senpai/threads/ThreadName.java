@@ -27,8 +27,8 @@ import senpai.threads.comm.ThreadCommProcess;
 
 public enum ThreadName
 {
-	LIDAR(ThreadLidar.class),
-	LIDAR_TIMEOUT(ThreadTimeoutLidar.class),
+//	LIDAR(ThreadLidar.class),
+//	LIDAR_TIMEOUT(ThreadTimeoutLidar.class),
 	CAPTEURS(ThreadCapteurs.class),
 	COLLISION_TEMPS_REEL(ThreadCollision.class),
 	ETH_INPUT_ORDRE(ThreadCommProcess.class),
