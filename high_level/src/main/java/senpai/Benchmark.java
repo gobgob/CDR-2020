@@ -12,7 +12,7 @@ import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.struct.XY;
 import pfg.kraken.struct.XYO;
 import pfg.log.Log;
-import senpai.obstacles.ObstaclesFixes;
+import senpai.scripts.GameState.ObstaclesFixes;
 import senpai.threads.ThreadWarmUp;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Severity;

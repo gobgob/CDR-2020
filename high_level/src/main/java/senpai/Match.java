@@ -169,8 +169,8 @@ public class Match
 		robot.updateColorAndSendPosition(couleur);
 		scripts.setCouleur(couleur);
 		ll.enableParkingBreak(config.getBoolean(ConfigInfoSenpai.ENABLE_PARKING_BREAK));
-		if(config.getBoolean(ConfigInfoSenpai.ENABLE_LIDAR))
-			robot.requestLidarCorrection();
+//		if(config.getBoolean(ConfigInfoSenpai.ENABLE_LIDAR))
+//			robot.requestLidarCorrection();
 		/*
 		 * Allumage des capteurs
 		 */

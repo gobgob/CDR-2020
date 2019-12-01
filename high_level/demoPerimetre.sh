@@ -1,2 +1,2 @@
 #!/bin/sh
-java -cp target/chariot-hl.jar senpai.DemoPerimetre $@
+java -cp target/navire-hl.jar senpai.DemoPerimetre $@

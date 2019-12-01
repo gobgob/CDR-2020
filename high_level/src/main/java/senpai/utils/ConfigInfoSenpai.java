@@ -44,9 +44,9 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	MAX_SPEED_IN_ENEMY(0.4),
 	SLOW_OBSTACLE_RADIUS_MULTIPLIER(1.5),
 	LIDAR_OBSTACLE_RADIUS(100),
-	TIMEOUT_LIDAR(2000),
-	LIDAR_COMMAND("/home/pi/lidar-processor/lidar_env/bin/python /home/pi/lidar-processor/src/main_script.py"),
-	ENABLE_LIDAR_SCRIPT(false),
+//	TIMEOUT_LIDAR(2000),
+//	LIDAR_COMMAND("/home/pi/lidar-processor/lidar_env/bin/python /home/pi/lidar-processor/src/main_script.py"),
+//	ENABLE_LIDAR_SCRIPT(false),
 	
 	/**
 	 * Infos sur le robot
@@ -54,16 +54,16 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	
 	// par "non-déployé", comprendre "forme du robot en mouvement"
 	// utilisé par le pathfinding
-	DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE(278), // distance entre le centre du robot
+	DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE(240), // distance entre le centre du robot
 											// et le bord arrière du robot
 											// non-déployé
-	DEMI_LONGUEUR_DEPLOYE_AVANT(263), // distance entre le centre du
+	DEMI_LONGUEUR_DEPLOYE_AVANT(83), // distance entre le centre du
 												// robot et le bord avant du
 												// robot non-déployé
-	DEMI_LONGUEUR_NON_DEPLOYE_AVANT(106), // distance entre le centre du
+	DEMI_LONGUEUR_NON_DEPLOYE_AVANT(83), // distance entre le centre du
 	// robot et le bord avant du
 	// robot déployé
-	LARGEUR_NON_DEPLOYE(210), // distance entre le bord gauche et le bord droit
+	LARGEUR_NON_DEPLOYE(176), // distance entre le bord gauche et le bord droit
 								// du robot non-déployé
 	MARGE_PATHFINDING(20), // marge latérale sur la dimension du robot
 
@@ -123,7 +123,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 								// données par le D* Lite
 	GRAPHIC_ENABLE(false), // désactive tout affichage si faux (empêche le
 							// thread d'affichage de se lancer)
-	GRAPHIC_ROBOT_PATH("/camion.png"), // image du robot sans les
+	GRAPHIC_ROBOT_PATH("/navire.png"), // image du robot sans les
 													// roues
 	GRAPHIC_SEEN_OBSTACLES(false), // affiche les obstacles vus
 	GRAPHIC_ROBOT_AND_SENSORS(false), // affiche le robot et ses capteurs

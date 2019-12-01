@@ -16,9 +16,9 @@ package senpai.capteurs;
 
 import senpai.comm.CommProtocol;
 import senpai.obstacles.ObstaclesDynamiques;
-import senpai.obstacles.ObstaclesFixes;
 import senpai.robot.Robot;
 import senpai.scripts.GameState;
+import senpai.scripts.GameState.ObstaclesFixes;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Severity;
 import senpai.utils.Subject;

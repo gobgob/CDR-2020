@@ -23,7 +23,7 @@ sleep 0.3
 gpio write 22 0
 sleep 0.3
 
-pkill -f chariot-hl.jar && sleep 3 # on éteint le HL et on laisse un peu de temps au HL pour s'éteindre (s'il était déjà éteint, pas de sleep)
+pkill -f navire-hl.jar && sleep 3 # on éteint le HL et on laisse un peu de temps au HL pour s'éteindre (s'il était déjà éteint, pas de sleep)
 gpio write 22 0 # on éteint la diode avant l'arrêt
 sudo halt
 # la diode sera allumée une fois la raspi complètement éteinte

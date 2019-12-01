@@ -3,15 +3,15 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>senpai</groupId>
-  <artifactId>chariot-elevateur</artifactId>
+  <artifactId>navire</artifactId>
   <version>1.0-SNAPSHOT</version>
 
   <packaging>jar</packaging>
 
-  <name>Chariot-elevateur</name>
-  <description>Robot of GobGob Technology for Eurobot 2019</description>
+  <name>Navire</name>
+  <description>Robot of GobGob Technology for Eurobot 2020</description>
 
-  <url>https://github.com/gobgob/chariot-elevateur</url>
+  <url>https://github.com/gobgob/CDR-2020</url>
 
   <properties>
       <maven.compiler.source>1.8</maven.compiler.source>
@@ -88,7 +88,7 @@
             <version>3.1.0</version>
             <configuration>
                 <appendAssemblyId>false</appendAssemblyId>
-                <finalName>chariot-hl</finalName>
+                <finalName>navire-hl</finalName>
                 <descriptorRefs>
                     <descriptorRef>jar-with-dependencies</descriptorRef>
                 </descriptorRefs>

@@ -1,2 +1,2 @@
 #!/bin/sh
-java -Xmx1G -Xms1G -cp target/chariot-hl.jar senpai.Benchmark $@
+java -Xmx1G -Xms1G -cp target/navire-hl.jar senpai.Benchmark $@

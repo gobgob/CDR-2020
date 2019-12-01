@@ -25,6 +25,8 @@ import pfg.graphic.printable.Layer;
 import pfg.kraken.display.Display;
 import pfg.kraken.display.Printable;
 import pfg.kraken.obstacles.Obstacle;
+import pfg.kraken.obstacles.RectangularObstacle;
+import pfg.kraken.struct.XY;
 import pfg.log.Log;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Subject;
@@ -38,13 +40,41 @@ import senpai.utils.Subject;
 
 public class GameState implements Printable
 {
+	public enum ObstaclesFixes
+	{
+		// bords
+		BORD_BAS(new RectangularObstacle(new XY(0, 0), 3000, 5), true),
+		BORD_GAUCHE(new RectangularObstacle(new XY(-1500, 1000), 5, 2000), true),
+		BORD_DROITE(new RectangularObstacle(new XY(1500, 1000), 5, 2000), true),
+		BORD_HAUT(new RectangularObstacle(new XY(0, 2000), 3000, 5), true);
+
+		public final Obstacle obstacle;
+		public final boolean visible;
+
+		private ObstaclesFixes(Obstacle obstacle, boolean visible)
+		{
+			this.obstacle = obstacle;
+			this.visible = visible;
+		}
+
+	}
+	
+	public enum Bouees {
+		
+	}
+	
 	private static final long serialVersionUID = 1L;
 
 	// Dépendances
 	protected transient Log log;
 
+	// Utilisé pour construire à la volée les obstacles courants
 	private List<Obstacle> currentObstacles = new ArrayList<Obstacle>();
+	
+	// Ajoute des obstacles à la table
 	private List<Obstacle> otherObstacles = new ArrayList<Obstacle>();
+	
+	// Zones dans lesquelles on sait qu'il ne peut pas y avoir d'ennemis
 	private List<Obstacle> noEnemyZone = new ArrayList<Obstacle>();
 	
 	public GameState(Log log, Config config, Display buffer)

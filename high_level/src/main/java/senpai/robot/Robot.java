@@ -63,12 +63,12 @@ public class Robot
 		MOVING; // le robot se déplace
 	}
 	
-	private volatile long lidarCorrectionTimeOut = 0;
+/*	private volatile long lidarCorrectionTimeOut = 0;
 	private volatile boolean needLidarCorrection = false;
-	private volatile long lastCorrectionDate = 0;
+	private volatile long lastCorrectionDate = 0;*/
 	protected volatile boolean symetrie;
 	protected Log log;
-	private double defaultSpeed, maxSpeedInEnemy;
+	private double defaultSpeed;//, maxSpeedInEnemy;
 	protected Kraken krakenDeploye;
 	protected Kraken krakenRange;
 	private RectangularObstacle obstacle;
@@ -106,7 +106,7 @@ public class Robot
 
 		jumperOK = config.getBoolean(ConfigInfoSenpai.DISABLE_JUMPER);
 		defaultSpeed = config.getDouble(ConfigInfoSenpai.DEFAULT_MAX_SPEED);
-		maxSpeedInEnemy = config.getDouble(ConfigInfoSenpai.MAX_SPEED_IN_ENEMY);
+//		maxSpeedInEnemy = config.getDouble(ConfigInfoSenpai.MAX_SPEED_IN_ENEMY);
 		graphicPath = config.getBoolean(ConfigInfoSenpai.GRAPHIC_PATH);
 //		enableLidar = config.getBoolean(ConfigInfoSenpai.ENABLE_LIDAR);
 		
@@ -527,11 +527,11 @@ public class Robot
 		return out;
 	}
 	
-	public void requestLidarCorrection()
+/*	public void requestLidarCorrection()
 	{
 		log.write("Lidar request!", Subject.STATUS);
 		needLidarCorrection = true;
-	}
+	}*/
 	
 	private DataTicket followTrajectory() throws InterruptedException
 	{
@@ -593,10 +593,10 @@ public class Robot
 		return dt;
 	}
 
-	public boolean isLidarTimeout()
+/*	public boolean isLidarTimeout()
 	{
 		return System.currentTimeMillis() > lidarCorrectionTimeOut;
-	}
+	}*/
 	
 	public synchronized void setStopping()
 	{
