@@ -72,6 +72,8 @@ public class Senpai
 	private boolean threadsDemarres = false;
 	private Thread shutdownThread;
 	
+	public static final int KRAKEN_REPLIE = 0; // etc
+	
 	public enum ErrorCode
 	{
 		NO_ERROR(true),

@@ -36,9 +36,9 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	/**
 	 * Position initiale du robot
 	 */
-	INITIAL_X(1210),
-	INITIAL_Y(1400),
-	INITIAL_O(Math.PI),
+	INITIAL_X(1350),
+	INITIAL_Y(1200),
+	INITIAL_O(Math.PI/2),
 
 	DEFAULT_MAX_SPEED(0.8),
 	MAX_SPEED_IN_ENEMY(0.4),

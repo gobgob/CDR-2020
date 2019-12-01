@@ -60,40 +60,47 @@ public class GameState implements Printable
 		}
 
 	}
+
+	public enum CouleurBouee {
+		ROUGE,
+		VERT;
+	}
 	
 	public enum Bouees {
-		A(-1200,1600),
-		B(-1200, 800),
-		C(-1050, 1490),
-		D(-1050, 920),
-		E(-830,1900),
-		F(-550, 1600),
-		G(-400, 1200),
-		H(-230,800),
-		I(-495,45),
-		J(-435,350),
-		K(-165,350),
-		L(-105,45),
-		A2(1200,1600),
-		B2(1200, 800),
-		C2(1050, 1490),
-		D2(1050, 920),
-		E2(830,1900),
-		F2(550, 1600),
-		G2(400, 1200),
-		H2(230,800),
-		I2(495,45),
-		J2(435,350),
-		K2(165,350),
-		L2(105,45);
+		A(-1200,1600,CouleurBouee.ROUGE),
+		B(-1200, 800,CouleurBouee.VERT),
+		C(-1050, 1490,CouleurBouee.VERT),
+		D(-1050, 920,CouleurBouee.ROUGE),
+		E(-830,1900,CouleurBouee.ROUGE),
+		F(-550, 1600,CouleurBouee.VERT),
+		G(-400, 1200,CouleurBouee.ROUGE),
+		H(-230,800,CouleurBouee.VERT),
+		I(-495,45,CouleurBouee.ROUGE),
+		J(-435,350, CouleurBouee.VERT),
+		K(-165,350, CouleurBouee.ROUGE),
+		L(-105,45, CouleurBouee.VERT),
+		A2(1200,1600,CouleurBouee.VERT),
+		B2(1200, 800,CouleurBouee.ROUGE),
+		C2(1050, 1490, CouleurBouee.ROUGE),
+		D2(1050, 920,CouleurBouee.VERT),
+		E2(830,1900, CouleurBouee.VERT),
+		F2(550, 1600, CouleurBouee.ROUGE),
+		G2(400, 1200, CouleurBouee.VERT),
+		H2(230,800, CouleurBouee.ROUGE),
+		I2(495,45,CouleurBouee.VERT),
+		J2(435,350,CouleurBouee.ROUGE),
+		K2(165,350,CouleurBouee.VERT),
+		L2(105,45,CouleurBouee.ROUGE);
 		
 		public final Obstacle obs;
 		public static final int diametreBouee = 72;
 		public boolean surTable = true;
+		public final CouleurBouee couleur;
 		
-		private Bouees(int x, int y)
+		private Bouees(int x, int y, CouleurBouee c)
 		{
 			obs = new CircularObstacle(new XY(x, y), diametreBouee/2);
+			couleur = c;
 		}
 	}
 	
@@ -150,6 +157,12 @@ public class GameState implements Printable
 		for(ObstaclesFixes o : ObstaclesFixes.values())
 			o.obstacle.print(g, f);
 		for(Bouees n : Bouees.values())
+		{
+			if(n.couleur == CouleurBouee.ROUGE)
+				g.setColor(Color.RED.darker().darker());
+			else
+				g.setColor(Color.GREEN.darker().darker());
 			n.obs.print(g, f);
+		}
 	}
 }
