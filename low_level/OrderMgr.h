@@ -28,11 +28,11 @@ public:
             immediateOrderList[i] = (OrderImmediate*)NULL;
         }
 
-        /*    ################################################## *
-        *    # Ici est définie la correspondance ID <-> Ordre # *
-        *    # (il faut ajouter le START_ID à l'index du         # *
-        *    # tableau pour avoir l'ID utilisé dans la trame) # *
-        *    ################################################## */
+        /* ################################################## *
+        *  # Ici est définie la correspondance ID <-> Ordre # *
+        *  # (il faut ajouter le START_ID à l'index du      # *
+        *  # tableau pour avoir l'ID utilisé dans la trame) # *
+        *  ################################################## */
 
         // Ordres à réponse immédiate
         immediateOrderList[0x00] = &Ping::Instance();
@@ -84,10 +84,9 @@ public:
     void execute()
     {
         Server.communicate();
-        while (Server.available())
-        {
-            Command command = Server.getLastCommand();
-            handleNewCommand(command);
+        while (Server.available()) {
+            handleNewCommand(Server.getLastCommand());
+            Server.discardLastCommand();
         }
         executeStackedOrders();
     }
@@ -144,57 +143,49 @@ private:
         bool running;
     };
 
-    void handleNewCommand(Command const & command)
+    void handleNewCommand(const Command &command)
     {
-        if (command.isValid())
+        uint8_t id = command.getId();
+        const std::vector<uint8_t> &data = command.getData();
+        if (id >= IMMEDIATE_ORDER_START_ID)
         {
-            uint8_t id = command.getId();
-            std::vector<uint8_t> data = command.getData();
-            if (id >= IMMEDIATE_ORDER_START_ID)
+            uint8_t index = id - IMMEDIATE_ORDER_START_ID;
+            if (index < NB_IMMEDIATE_ORDER && immediateOrderList[index] != NULL)
             {
-                uint8_t index = id - IMMEDIATE_ORDER_START_ID;
-                if (index < NB_IMMEDIATE_ORDER && immediateOrderList[index] != NULL)
+                immediateOrderList[index]->execute(data);
+                if (data.size() > 0)
                 {
-                    immediateOrderList[index]->execute(data);
-                    if (data.size() > 0)
-                    {
-                        Command answer(command.getSource(), id, data);
-                        Server.sendAnswer(answer);
-                    }
-                }
-                else
-                {
-                    Server.printf_err("Unknown immediate order: %u\n", index);
-                }
-            }
-            else if (id >= LONG_ORDER_START_ID)
-            {
-                uint8_t index = id - LONG_ORDER_START_ID;
-                if (index < NB_LONG_ORDER && longOrderList[index] != NULL)
-                {
-                    if (addOrderToStack(index, command) == 0)
-                    {
-                        longOrderList[index]->launch(data);
-                    }
-                    else
-                    {
-                        Server.printf_err("Too many long orders already running\n");
-                    }
-                }
-                else
-                {
-                    Server.printf_err("Unknown long order: %u\n", index);
+                    Command answer(command.getSource(), id, data);
+                    Server.sendAnswer(answer);
                 }
             }
             else
             {
-                Server.printf_err("Invalid command id\n");
-                Server.print_err(command);
+                Server.printf_err("Unknown immediate order: %u\n", index);
+            }
+        }
+        else if (id >= LONG_ORDER_START_ID)
+        {
+            uint8_t index = id - LONG_ORDER_START_ID;
+            if (index < NB_LONG_ORDER && longOrderList[index] != NULL)
+            {
+                if (addOrderToStack(index, command) == 0)
+                {
+                    longOrderList[index]->launch(data);
+                }
+                else
+                {
+                    Server.printf_err("Too many long orders already running\n");
+                }
+            }
+            else
+            {
+                Server.printf_err("Unknown long order: %u\n", index);
             }
         }
         else
         {
-            Server.printf_err("Invalid command\n");
+            Server.printf_err("Invalid command id\n");
             Server.print_err(command);
         }
     }
@@ -239,4 +230,3 @@ private:
 
 
 #endif
-
