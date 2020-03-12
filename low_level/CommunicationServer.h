@@ -34,7 +34,7 @@ class CommunicationServer
 {
 public:
     /* Constructeur */
-    CommunicationServer();
+    CommunicationServer(Stream &aStream);
 
     /* Envoie les messages de la file d'attente et lit les messages entrants */
     void communicate();
@@ -91,13 +91,7 @@ private:
     void println(Channel channel);
 
     /* Envoie les 4 octets d'entête d'une trame d'information */
-    void writeInfoFrameHeader(Channel channel)
-    {
-        Serial.write(COMMAND_HEADER);
-        Serial.write(COMMAND_BROADCAST);
-        Serial.write((uint8_t)channel);
-        Serial.write(0xFF);
-    }
+    void writeInfoFrameHeader(Channel channel);
 
 public:
     /* Envoie une trame d'information sur la canal TRACE permettant de
@@ -134,6 +128,8 @@ private:
     std::vector<ExecTrace> asyncTraceVect;
     std::vector<ExecTrace> asyncTraceVectBis;
     volatile bool bisTraceVectUsed;
+
+    Stream& stream;
 };
 
 

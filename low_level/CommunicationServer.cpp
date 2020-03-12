@@ -1,11 +1,12 @@
 #include "CommunicationServer.h"
+#include "Config.h"
 
 using std::vector;
 
-CommunicationServer Server = CommunicationServer();
+CommunicationServer Server = CommunicationServer(SERIAL_HL);
 
-
-CommunicationServer::CommunicationServer()
+CommunicationServer::CommunicationServer(Stream& aStream) :
+    stream(aStream)
 {
     cBufferHead = 0;
     cBufferTail = 0;
@@ -22,14 +23,14 @@ void CommunicationServer::communicate()
     do {
         receivedAtLeastOneByte = false;
 
-        if (Serial.available() > 0) {
+        if (stream.available() > 0) {
             if (available() >= COMMAND_BUFFER_SIZE - 1) {
                 printf_err("Command buffer is full\n");
                 break;
             }
 
             receivedAtLeastOneByte = true;
-            uint8_t newByte = Serial.read();
+            uint8_t newByte = stream.read();
 
             if (!commandBuffer[cBufferHead].addByte(newByte)) {
                 printf_err("Drop the byte: %u\n", newByte);
@@ -98,7 +99,7 @@ void CommunicationServer::sendAnswer(const Command &answer)
     vector<uint8_t> frame;
 
     answer.getFrame(frame);
-    n += Serial.write(COMMAND_HEADER);
+    n += stream.write(COMMAND_HEADER);
     n += sendVector(frame);
 
     if (n != normal_n) {
@@ -118,10 +119,10 @@ void CommunicationServer::sendData(Channel channel,
     size_t n = 0;
     size_t normal_n = data.size() + 4;
 
-    n += Serial.write(COMMAND_HEADER);
-    n += Serial.write(COMMAND_BROADCAST);
-    n += Serial.write((uint8_t)channel);
-    n += Serial.write((uint8_t)data.size());
+    n += stream.write(COMMAND_HEADER);
+    n += stream.write(COMMAND_BROADCAST);
+    n += stream.write((uint8_t)channel);
+    n += stream.write((uint8_t)data.size());
     n += sendVector(data);
 
     if (n != normal_n) {
@@ -132,8 +133,8 @@ void CommunicationServer::sendData(Channel channel,
 void CommunicationServer::print(Channel channel, const Printable & obj)
 {
     writeInfoFrameHeader(channel);
-    Serial.print(obj);
-    Serial.print('\0');
+    stream.print(obj);
+    stream.print('\0');
 }
 
 void CommunicationServer::printf(const char * format, ...)
@@ -166,53 +167,61 @@ void CommunicationServer::printf(Channel channel, const char * format, ...)
 void CommunicationServer::print(Channel channel, uint32_t u, bool newLine)
 {
     writeInfoFrameHeader(channel);
-    if (newLine) { Serial.print(u); }
-    else { Serial.println(u); }
-    Serial.print('\0');
+    if (newLine) { stream.print(u); }
+    else { stream.println(u); }
+    stream.print('\0');
 }
 
 void CommunicationServer::print(Channel channel, int32_t n, bool newLine)
 {
     writeInfoFrameHeader(channel);
-    if (newLine) { Serial.print(n); }
-    else { Serial.println(n); }
-    Serial.print('\0');
+    if (newLine) { stream.print(n); }
+    else { stream.println(n); }
+    stream.print('\0');
 }
 
 void CommunicationServer::print(Channel channel, double d, bool newLine)
 {
     writeInfoFrameHeader(channel);
-    if (newLine) { Serial.print(d); }
-    else { Serial.println(d); }
-    Serial.print('\0');
+    if (newLine) { stream.print(d); }
+    else { stream.println(d); }
+    stream.print('\0');
 }
 
 void CommunicationServer::print(Channel channel, const char* str, bool newLine)
 {
     writeInfoFrameHeader(channel);
-    if (newLine) { Serial.print(str); }
-    else { Serial.println(str); }
-    Serial.print('\0');
+    if (newLine) { stream.print(str); }
+    else { stream.println(str); }
+    stream.print('\0');
 }
 
 void CommunicationServer::println(Channel channel)
 {
     writeInfoFrameHeader(channel);
-    Serial.println();
-    Serial.print('\0');
+    stream.println();
+    stream.print('\0');
+}
+
+void CommunicationServer::writeInfoFrameHeader(Channel channel)
+{
+    stream.write(COMMAND_HEADER);
+    stream.write(COMMAND_BROADCAST);
+    stream.write((uint8_t)channel);
+    stream.write(0xFF);
 }
 
 void CommunicationServer::trace(uint32_t line, const char* filename,
     uint32_t timestamp)
 {
     writeInfoFrameHeader(TRACE);
-    if (timestamp == 0) { Serial.print(micros()); }
-    else { Serial.print(timestamp); }
-    Serial.print('_');
-    Serial.print(line);
-    Serial.print('_');
-    Serial.print(filename);
-    Serial.print('\0');
+    if (timestamp == 0) { stream.print(micros()); }
+    else { stream.print(timestamp); }
+    stream.print('_');
+    stream.print(line);
+    stream.print('_');
+    stream.print(filename);
+    stream.print('\0');
 }
 
 void CommunicationServer::asynchronous_trace(uint32_t line)
@@ -237,10 +246,10 @@ void CommunicationServer::printOutputBuffer(Channel channel)
 
 size_t CommunicationServer::sendVector(vector<uint8_t> const &vect) const
 {
-    return Serial.write(vect.data(), vect.size());
+    return stream.write(vect.data(), vect.size());
 }
 
 size_t CommunicationServer::sendCString(const char* str) const
 {
-    return Serial.write(str) + Serial.print('\0');
+    return stream.write(str) + stream.print('\0');
 }

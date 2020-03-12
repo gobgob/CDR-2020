@@ -11,6 +11,8 @@
 
 #define AVERAGE_SPEED_SIZE      50          // Nombre de valeurs à utiliser dans le calcul de la moyenne glissante permettant de lisser la mesure de vitesse
 
+/* Liaison série HL */
+#define SERIAL_HL               Serial
 
 /* Liaison série AX12 */
 #define SERIAL_AX12			    Serial1		// Pins 0 1
