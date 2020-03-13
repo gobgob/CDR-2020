@@ -1,11 +1,8 @@
 #include "CommunicationServer.h"
-#include "Config.h"
 
 using std::vector;
 
-CommunicationServer Server = CommunicationServer(SERIAL_HL);
-
-CommunicationServer::CommunicationServer(Stream& aStream) :
+CommunicationServer::CommunicationServer(Stream &aStream) :
     stream(aStream)
 {
     cBufferHead = 0;

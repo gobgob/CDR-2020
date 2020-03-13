@@ -4,26 +4,16 @@
     Author:	    Sylvain Gaultier
 */
 
-#include <Ethernet.h>
 #include <Wire.h>
-#include <Dynamixel.h>
-#include <DynamixelInterface.h>
-#include <DynamixelMotor.h>
 #include <Encoder.h>
-#include <ToF_sensor.h>
-#include <A4988.h>
-#include <Adafruit_LEDBackpack.h>
 #include <Adafruit_NeoPixel.h>
 #include "Config.h"
 #include "OrderMgr.h"
 #include "MotionControlSystem.h"
-#include "ContextualLightning.h"
 #include "ActuatorMgr.h"
 #include "SensorsMgr.h"
 #include "Serializer.h"
-#include "Dashboard.h"
-#include "SerialAX12.h"
-#include "SmokeMgr.h"
+#include "Serial.h"
 
 #define ODOMETRY_REPORT_PERIOD  20  // ms
 
@@ -36,63 +26,40 @@ void loop()
     DirectionController &directionController = DirectionController::Instance();
     SensorsMgr &sensorMgr = SensorsMgr::Instance();
     ActuatorMgr &actuatorMgr = ActuatorMgr::Instance();
-    Dashboard &dashboard = Dashboard::Instance();
-    ContextualLightning &contextualLightning = ContextualLightning::Instance();
-    SmokeMgr &smokeMgr = SmokeMgr::Instance();
+
     IntervalTimer motionControlTimer;
-    IntervalTimer actuatorMgrTimer;
     uint32_t odometryReportTimer = 0;
     std::vector<uint8_t> odometryReport;
 
     Wire.begin();
-    dashboard.init();
-    if (Server.begin() != 0)
-    {
-        dashboard.setErrorLevel(Dashboard::WEAK_ERROR);
+    init_serial_ports();
+
+    if (directionController.init() != EXIT_SUCCESS) {
+        // todo
     }
-    SerialAX12.begin(SERIAL_AX12_BAUDRATE, SERIAL_AX12_TIMEOUT);
-    if (directionController.init() != EXIT_SUCCESS)
-    {
-        dashboard.setErrorLevel(Dashboard::WEAK_ERROR);
+    if (actuatorMgr.init() != EXIT_SUCCESS) {
+        // todo
     }
-    if (actuatorMgr.init() != EXIT_SUCCESS)
-    {
-        dashboard.setErrorLevel(Dashboard::STRONG_WARNING);
-    } else {
-        actuatorMgr.goToHome();
-    }
-    if (sensorMgr.init() != EXIT_SUCCESS)
-    {
-        dashboard.setErrorLevel(Dashboard::STRONG_WARNING);
+    if (sensorMgr.init() != EXIT_SUCCESS) {
+        // todo
     }
 
     motionControlTimer.priority(253);
     motionControlTimer.begin(motionControlInterrupt, PERIOD_ASSERV);
-    actuatorMgrTimer.priority(252);
-    actuatorMgrTimer.begin(actuatorMgrInterrupt, ACT_MGR_INTERRUPT_PERIOD);
 
-    contextualLightning.setNightLight(ContextualLightning::NIGHT_LIGHT_LOW);
-
-    while (true)
-    {
+    while (true) {
         //uint32_t t1, t2, t3, t4, t5, t6, t7, t8;
         //t1 = micros();
         orderManager.execute();
         //t2 = micros();
         directionController.control();
         //t3 = micros();
-        actuatorMgr.mainLoopControl();
-        //t4 = micros();
-        dashboard.update();
-        //t5 = micros();
-        contextualLightning.update();
-        smokeMgr.update();
+        actuatorMgr.control();
         //t6 = micros();
         sensorMgr.update(motionControlSystem.getMovingDirection());
         //t7 = micros();
 
-        if (millis() - odometryReportTimer > ODOMETRY_REPORT_PERIOD)
-        {
+        if (millis() - odometryReportTimer > ODOMETRY_REPORT_PERIOD) {
             odometryReportTimer = millis();
             //Serial.println(sensorMgr);
 
@@ -105,7 +72,6 @@ void loop()
             Serializer::writeUInt(motionControlSystem.getTrajectoryIndex(), odometryReport);
             Serializer::writeBool(motionControlSystem.isMovingForward(), odometryReport);
             sensorMgr.appendValuesToVect(odometryReport);
-            actuatorMgr.appendSensorsValuesToVect(odometryReport);
             Server.sendData(ODOMETRY_AND_SENSORS, odometryReport);
 
             motionControlSystem.sendLogs();
@@ -124,7 +90,7 @@ void loop()
         //t8 = micros();
 
         //if (t8 - t1 > 3000) {
-        //    Serial.print(t8 - t1); 
+        //    Serial.print(t8 - t1);
         //    Serial.print(" [");
         //    Serial.print(t2 - t1);
         //    Serial.print(" ; ");
@@ -153,13 +119,6 @@ void motionControlInterrupt()
 {
     static MotionControlSystem &motionControlSystem = MotionControlSystem::Instance();
     motionControlSystem.control();
-}
-
-
-void actuatorMgrInterrupt()
-{
-    static ActuatorMgr &actuatorMgr = ActuatorMgr::Instance();
-    actuatorMgr.interruptControl();
 }
 
 

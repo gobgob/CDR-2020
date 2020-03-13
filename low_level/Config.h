@@ -12,12 +12,23 @@
 #define AVERAGE_SPEED_SIZE      50          // Nombre de valeurs à utiliser dans le calcul de la moyenne glissante permettant de lisser la mesure de vitesse
 
 /* Liaison série HL */
-#define SERIAL_HL               Serial
+#define SERIAL_HL               Serial      // USB
+#define SERIAL_HL_BAUDRATE      115200      // (non pris en compte par l'USB_Serial)
 
 /* Liaison série AX12 */
 #define SERIAL_AX12			    Serial1		// Pins 0 1
 #define SERIAL_AX12_BAUDRATE    1000000
-#define SERIAL_AX12_TIMEOUT     10          // ms  (standard is 50ms, minimum is 2ms)
+#define SERIAL_AX12_TIMEOUT     10          // ms  (standard: 50ms, minimum: 2ms)
+
+/* Liaison série ToF_Module */
+#define SERIAL_TOF              Serial2
+#define SERIAL_TOF_BAUDRATE     200000
+#define SERIAL_TOF_TIMEOUT      50
+
+/* Liaison série extérieure */
+#define SERIAL_EXT              Serial3
+#define SERIAL_EXT_BAUDRATE     200000
+#define SERIAL_EXT_TIMEOUT      50
 
 /* IDs des AX12 */
 #define ID_AX12_DIRECTION   2

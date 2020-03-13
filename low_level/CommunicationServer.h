@@ -129,11 +129,8 @@ private:
     std::vector<ExecTrace> asyncTraceVectBis;
     volatile bool bisTraceVectUsed;
 
-    Stream& stream;
+    Stream &stream;
 };
-
-
-extern CommunicationServer Server;
 
 
 #endif
