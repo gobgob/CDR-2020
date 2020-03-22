@@ -1,6 +1,7 @@
 #ifndef _COMMAND_h
 #define _COMMAND_h
 
+#include <Arduino.h>
 #include <vector>
 #include <Printable.h>
 

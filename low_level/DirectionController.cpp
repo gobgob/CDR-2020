@@ -1,306 +1,236 @@
 #include "DirectionController.h"
+#include <Arduino.h>
+#include "Config.h"
+#include "Serial.h"
 
-float DirectionController::angle_curvature_table[DIR_TABLE_SIZE] = {
-11.29,
-11.21,
-11.13,
-11.06,
-10.98,
-10.90,
-10.82,
-10.75,
-10.67,
-10.59,
-10.51,
-10.43,
-10.36,
-10.28,
-10.20,
-10.12,
-10.05,
-9.97,
-9.89,
-9.81,
-9.74,
-9.66,
-9.58,
-9.50,
-9.42,
-9.35,
-9.27,
-9.19,
-9.11,
-9.04,
-8.96,
-8.88,
-8.80,
-8.72,
-8.65,
-8.57,
-8.49,
-8.41,
-8.34,
-8.26,
-8.18,
-8.10,
-8.03,
-7.95,
-7.87,
-7.79,
-7.71,
-7.64,
-7.56,
-7.48,
-7.40,
-7.33,
-7.25,
-7.17,
-7.09,
-7.02,
-6.94,
-6.86,
-6.78,
-6.70,
-6.63,
-6.55,
-6.47,
-6.39,
-6.32,
-6.24,
-6.16,
-6.08,
-6.01,
-5.93,
-5.85,
-5.77,
-5.69,
-5.62,
-5.54,
-5.46,
-5.38,
-5.31,
-5.23,
-5.15,
-5.07,
-5.00,
-4.92,
-4.84,
-4.76,
-4.68,
-4.61,
-4.53,
-4.45,
-4.37,
-4.30,
-4.22,
-4.14,
-4.06,
-3.99,
-3.91,
-3.83,
-3.75,
-3.67,
-3.60,
-3.52,
-3.44,
-3.36,
-3.29,
-3.21,
-3.13,
-3.05,
-2.98,
-2.90,
-2.82,
-2.74,
-2.66,
-2.59,
-2.51,
-2.43,
-2.35,
-2.28,
-2.20,
-2.12,
-2.04,
-1.97,
-1.89,
-1.81,
-1.73,
-1.65,
-1.58,
-1.50,
-1.42,
-1.34,
-1.27,
-1.19,
-1.15,
-1.07,
-1.00,
-0.93,
-0.86,
-0.79,
-0.72,
-0.65,
-0.57,
-0.50,
-0.43,
-0.36,
-0.29,
-0.22,
-0.14,
-0.07,
-0.00,
--0.07,
--0.14,
--0.21,
--0.29,
--0.36,
--0.43,
--0.50,
--0.57,
--0.64,
--0.72,
--0.79,
--0.86,
--0.93,
--1.00,
--1.07,
--1.14,
--1.22,
--1.29,
--1.38,
--1.46,
--1.55,
--1.63,
--1.71,
--1.79,
--1.87,
--1.95,
--2.03,
--2.12,
--2.20,
--2.28,
--2.36,
--2.44,
--2.52,
--2.60,
--2.68,
--2.77,
--2.85,
--2.93,
--3.01,
--3.09,
--3.17,
--3.25,
--3.34,
--3.42,
--3.50,
--3.58,
--3.66,
--3.74,
--3.82,
--3.91,
--3.99,
--4.07,
--4.15,
--4.23,
--4.31,
--4.39,
--4.48,
--4.56,
--4.64,
--4.72,
--4.80,
--4.88,
--4.96,
--5.05,
--5.13,
--5.21,
--5.29,
--5.37,
--5.45,
--5.53,
--5.62,
--5.70,
--5.78,
--5.86,
--5.94,
--6.02,
--6.10,
--6.19,
--6.27,
--6.35,
--6.43,
--6.51,
--6.59,
--6.67,
--6.75,
--6.84,
--6.92,
--7.00,
--7.08,
--7.16,
--7.24,
--7.32,
--7.41,
--7.49,
--7.57,
--7.65,
--7.73,
--7.81,
--7.89,
--7.98,
--8.06,
--8.14,
--8.22,
--8.30,
--8.38,
--8.46,
--8.55,
--8.63,
--8.71,
--8.79,
--8.87,
--8.95,
--9.03,
--9.12,
--9.20,
--9.28,
--9.36,
--9.44,
--9.52,
--9.60,
--9.69,
--9.77,
--9.85,
--9.93,
--10.01,
--10.09,
--10.17,
--10.26,
--10.34,
--10.42,
--10.50,
--10.58,
--10.66,
--10.74,
--10.82,
--10.91,
--10.99,
--11.07,
--11.15,
--11.23,
--11.31,
--11.39,
--11.48,
--11.56,
--11.64,
--11.72,
--11.80,
--11.88,
--11.96,
--12.05,
--12.13,
--12.21,
--12.29,
+/* Periode d'actualisation d'une requête AX12 */
+#define DIR_CONTROL_PERIOD  10000 // µs
 
-};
+/* Angles limites, en degrés (uint16_t) */
+#define DIR_ANGLE_MIN       105 // doit être positif
+#define DIR_ANGLE_ORIGIN    150
+#define DIR_ANGLE_MAX       240
+
+/* Délai entre le blocage de l'AX12 et la tentative de récupération */
+#define RECOVER_DELAY   5000    // ms
+
+DirectionController::DirectionController() :
+    directionMotor(SerialAX12, ID_AX12_DIRECTION)
+{
+    aimCurvature = 0;
+    updateAimAngle();
+    realMotorAngle = DIR_ANGLE_ORIGIN;
+    updateRealCurvature();
+    blocked = true;
+    blockedTimer = 0;
+}
+
+DirectionControllerStatus DirectionController::init()
+{
+    OneWireStatus ret;
+
+    ret = directionMotor.init();
+    if (ret != OW_STATUS_OK) {
+        Server.printf_err("DirectionController: com error at 'init'\n");
+        return DIR_STATUS_FAILURE;
+    }
+
+    ret = directionMotor.enableTorque();
+    if (ret != OW_STATUS_OK) {
+        Server.printf_err("DirectionController: com error at 'enableTorque'\n");
+        return DIR_STATUS_FAILURE;
+    }
+
+    ret = directionMotor.jointMode();
+    if (ret != OW_STATUS_OK) {
+        Server.printf_err("DirectionController: com error at 'jointMode'\n");
+        return DIR_STATUS_FAILURE;
+    }
+
+    setBlocked(directionMotor.environmentError());
+    
+    if (directionMotor.error()) {
+        Server.printf_err("DirectionController: AX12 status %u\n",
+            (uint8_t)directionMotor.status());
+    }
+
+    return DIR_STATUS_OK;
+}
+
+DirectionControllerStatus DirectionController::control()
+{
+    static uint32_t lastUpdateTime = 0;
+    static bool read = true;
+    uint32_t now = micros();
+
+    if (now - lastUpdateTime < DIR_CONTROL_PERIOD) {
+        return DIR_STATUS_NOT_UPDATED;
+    }
+
+    lastUpdateTime = now;
+    DirectionControllerStatus ret = DIR_STATUS_OK;
+
+    if (blocked) {
+        if (directionMotor.ping() != OW_STATUS_OK) {
+            ret = DIR_STATUS_FAILURE;
+        }
+
+        if (!directionMotor.environmentError()) {
+            setBlocked(false);
+        }
+        else if (directionMotor.recoverableError() && millis() - blockedTimer > RECOVER_DELAY) {
+            if (directionMotor.recoverTorque() == OW_STATUS_OK) {
+                setBlocked(false);
+            }
+        }
+    }
+    else {
+        if (read) {
+            uint16_t angle;
+            if (directionMotor.currentPositionDegree(angle) != OW_STATUS_OK) {
+                ret = DIR_STATUS_FAILURE;
+            }
+            else if (angle <= 300) {
+                realMotorAngle = constrain(angle, DIR_ANGLE_MIN, DIR_ANGLE_MAX);
+                updateRealCurvature();
+            }
+            else {
+                ret = DIR_STATUS_FAILURE;
+            }
+        }
+        else {
+            updateAimAngle();
+            if (directionMotor.goalPositionDegree(aimMotorAngle) != OW_STATUS_OK) {
+                ret = DIR_STATUS_FAILURE;
+            }
+        }
+        read = !read;
+    }
+
+    if (ret != DIR_STATUS_OK) {
+        Server.printf_err("DirectionController: communication error\n");
+        return ret;
+    }
+
+    if (directionMotor.error()) {
+        Server.printf_err("DirectionController: AX12 status %u\n",
+            (uint8_t)directionMotor.status());
+    }
+
+    if (!blocked && directionMotor.environmentError()) {
+        setBlocked(true);
+    }
+
+    return ret;
+}
+
+uint16_t DirectionController::getMotorAngle() const
+{
+    return realMotorAngle;
+}
+
+void DirectionController::setMotorAngle(uint16_t angle)
+{
+    aimMotorAngle = constrain(angle, DIR_ANGLE_MIN, DIR_ANGLE_MAX);
+    float new_aimCurvature = angleToCurvature(aimMotorAngle);
+    noInterrupts();
+    aimCurvature = new_aimCurvature;
+    interrupts();
+}
+
+size_t DirectionController::printTo(Print& p) const
+{
+    return p.printf("%u_%g_%g", millis(), aimCurvature, realCurvature);
+}
+
+void DirectionController::setAimCurvature(float curvature)
+{
+    aimCurvature = curvature;
+}
+
+float DirectionController::getRealCurvature() const
+{
+    return realCurvature;
+}
+
+bool DirectionController::isBlocked() const
+{
+    return blocked;
+}
+
+void DirectionController::updateRealCurvature()
+{
+    float new_realCurvature = angleToCurvature(realMotorAngle);
+    noInterrupts();
+    realCurvature = new_realCurvature;
+    interrupts();
+}
+
+void DirectionController::updateAimAngle()
+{
+    noInterrupts();
+    float aimCurvature_cpy = aimCurvature;
+    interrupts();
+    aimMotorAngle = curvatureToAngle(aimCurvature_cpy);
+}
+
+void DirectionController::setBlocked(bool b)
+{
+    noInterrupts();
+    blocked = b;
+    interrupts();
+    blockedTimer = millis();
+}
+
+float DirectionController::angleToCurvature(uint16_t angle)
+{
+    int a_deg = (int)angle - DIR_ANGLE_ORIGIN;
+    float a_rad = (float)a_deg * M_PI / 180.0f;
+
+    if (a_deg > 0) {
+        if (a_deg < 90) {
+            return 1.0f / (tanf(a_rad - M_PI_2) * WHEELBASE_LENGTH / 1000.0f);
+        }
+        else {
+            return -DIR_INFINITE_CURVATURE;
+        }
+    }
+    else if (a_deg < 0) {
+        if (a_deg > -90) {
+            return 1.0f / (tanf(a_rad + M_PI_2) * WHEELBASE_LENGTH / 1000.0f);
+        }
+        else {
+            return DIR_INFINITE_CURVATURE;
+        }
+    }
+    else {
+        return 0.0;
+    }
+}
+
+uint16_t DirectionController::curvatureToAngle(float curvature)
+{
+    if (curvature > 0) {
+        if (curvature < DIR_INFINITE_CURVATURE) {
+            float angle = (atanf(1.0f / (curvature * WHEELBASE_LENGTH / 
+                1000.0f)) - M_PI_2) * 180.0f / M_PI;
+            return round(angle) + DIR_ANGLE_ORIGIN;
+        }
+        else {
+            return DIR_ANGLE_ORIGIN - 90;
+        }
+    }
+    else if (curvature < 0) {
+        if (curvature > -DIR_INFINITE_CURVATURE) {
+            float angle = (atanf(1.0f / (curvature * WHEELBASE_LENGTH /
+                1000.0f)) + M_PI_2) * 180.0f / M_PI;
+            return round(angle) + DIR_ANGLE_ORIGIN;
+        }
+        else {
+            return DIR_ANGLE_ORIGIN + 90;
+        }
+    }
+    else  {
+        return DIR_ANGLE_ORIGIN;
+    }
+}

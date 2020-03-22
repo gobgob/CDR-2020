@@ -7,7 +7,7 @@
 #include "TrajectoryPoint.h"
 #include "MotionControlTunings.h"
 #include "Singleton.h"
-#include "CommunicationServer.h"
+#include "Serial.h"
 #include <vector>
 
 
@@ -22,40 +22,40 @@
 class MotionControlSystem : public Singleton<MotionControlSystem>
 {
 public:
-	MotionControlSystem() :
-		trajectoryFollower(FREQ_ASSERV, position, moveStatus)
-	{
-		travellingToDestination = false;
-		trajectoryIndex = 0;
-		trajectoryComplete = false;
-		moveStatus = MOVE_OK;
-	}
+    MotionControlSystem() :
+        trajectoryFollower(FREQ_ASSERV, position, moveStatus)
+    {
+        travellingToDestination = false;
+        trajectoryIndex = 0;
+        trajectoryComplete = false;
+        moveStatus = MOVE_OK;
+    }
 
 
-	/*
-		#################################################
-		#  Méthodes à appeller durant une interruption  #
-		#################################################
-	*/
+    /*
+        #################################################
+        #  Méthodes à appeller durant une interruption  #
+        #################################################
+    */
 
-	void control()
-	{
-		static bool wasTravellingToDestination = false;
+    void control()
+    {
+        static bool wasTravellingToDestination = false;
 
         trajectoryFollower.control();
-		if (travellingToDestination)
-		{
+        if (travellingToDestination)
+        {
             MovePhase movePhase = trajectoryFollower.getMovePhase();
 
             if (currentTrajectory.size() > trajectoryIndex)
             {
-			    if (!wasTravellingToDestination)
-			    {// Démarrage du suivi de trajectoire
-				    trajectoryFollower.setTrajectoryPoint(currentTrajectory.at(trajectoryIndex));
+                if (!wasTravellingToDestination)
+                {// Démarrage du suivi de trajectoire
+                    trajectoryFollower.setTrajectoryPoint(currentTrajectory.at(trajectoryIndex));
                     updateDistanceToTravel();
-				    trajectoryFollower.startMove();
-				    wasTravellingToDestination = true;
-			    }
+                    trajectoryFollower.startMove();
+                    wasTravellingToDestination = true;
+                }
                 else if (movePhase == MOVING && !currentTrajectory.at(trajectoryIndex).isStopPoint())
                 {
                     Position trajPoint = currentTrajectory.at(trajectoryIndex).getPosition();
@@ -121,8 +121,8 @@ public:
                 travellingToDestination = false;
                 wasTravellingToDestination = false;
             }
-		}
-	}
+        }
+    }
 
 private:
     void stop_and_clear_trajectory_from_interrupt()
@@ -150,15 +150,15 @@ private:
     }
 
 
-	/*
-		###################################################
-		#  Méthodes à appeller dans la boucle principale  #
-		###################################################
-	*/
+    /*
+        ###################################################
+        #  Méthodes à appeller dans la boucle principale  #
+        ###################################################
+    */
 
  public:
-	void followTrajectory()
-	{
+    void followTrajectory()
+    {
         if (trajectoryFollower.isTrajectoryControlled())
         {
             noInterrupts();
@@ -170,7 +170,7 @@ private:
         {
             Server.printf_err("MotionControlSystem::followTrajectory : trajectory is not controlled\n");
         }
-	}
+    }
 
     void startManualMove()
     {
@@ -188,8 +188,8 @@ private:
         }
     }
 
-	void stop_and_clear_trajectory()
-	{
+    void stop_and_clear_trajectory()
+    {
         uint32_t t = millis();
         Position p = getPosition();
         noInterrupts();
@@ -198,53 +198,53 @@ private:
         Server.printf("Emergency stop started at: %u\n", t);
         Server.printf("pos= ");
         Server.println(p);
-	}
+    }
 
-	bool isMovingToDestination() const
-	{
-		noInterrupts();
-		bool moving = travellingToDestination;
-		interrupts();
-		return moving;
-	}
+    bool isMovingToDestination() const
+    {
+        noInterrupts();
+        bool moving = travellingToDestination;
+        interrupts();
+        return moving;
+    }
 
-	uint8_t appendToTrajectory(TrajectoryPoint trajectoryPoint)
-	{
-		if (!trajectoryComplete)
-		{
-			noInterrupts();
-			currentTrajectory.push_back(trajectoryPoint);
-			interrupts();
-			if (trajectoryPoint.isEndOfTrajectory())
-			{
-				trajectoryComplete = true;
-			}
+    uint8_t appendToTrajectory(TrajectoryPoint trajectoryPoint)
+    {
+        if (!trajectoryComplete)
+        {
+            noInterrupts();
+            currentTrajectory.push_back(trajectoryPoint);
+            interrupts();
+            if (trajectoryPoint.isEndOfTrajectory())
+            {
+                trajectoryComplete = true;
+            }
             Position p = trajectoryPoint.getPosition();
             Server.printf(AIM_TRAJECTORY, "%u_%g_%g", millis(), p.x, p.y);
             return TRAJECTORY_EDITION_SUCCESS;
-		}
-		else
-		{
+        }
+        else
+        {
             return TRAJECTORY_EDITION_FAILURE;
-		}
-	}
+        }
+    }
 
-	uint8_t updateTrajectory(size_t index, TrajectoryPoint trajectoryPoint)
-	{
-		if (index < currentTrajectory.size() && index >= trajectoryIndex)
-		{
-			if (index == trajectoryIndex && travellingToDestination)
-			{
+    uint8_t updateTrajectory(size_t index, TrajectoryPoint trajectoryPoint)
+    {
+        if (index < currentTrajectory.size() && index >= trajectoryIndex)
+        {
+            if (index == trajectoryIndex && travellingToDestination)
+            {
                 return TRAJECTORY_EDITION_FAILURE;
-			}
-			else
-			{
-				noInterrupts();
+            }
+            else
+            {
+                noInterrupts();
                 if (currentTrajectory.at(index).isEndOfTrajectory())
                 {
                     trajectoryComplete = false;
                 }
-				currentTrajectory.at(index) = trajectoryPoint;
+                currentTrajectory.at(index) = trajectoryPoint;
                 if (trajectoryPoint.isEndOfTrajectory())
                 {
                     trajectoryComplete = true;
@@ -253,16 +253,16 @@ private:
                         currentTrajectory.erase(currentTrajectory.begin() + index + 1, currentTrajectory.end());
                     }
                 }
-				interrupts();
+                interrupts();
 
                 return TRAJECTORY_EDITION_SUCCESS;
-			}
-		}
-		else
-		{
+            }
+        }
+        else
+        {
             return TRAJECTORY_EDITION_FAILURE;
-		}
-	}
+        }
+    }
 
     uint8_t deleteTrajectoryPoints(size_t index)
     {
@@ -287,30 +287,30 @@ private:
         }
     }
 
-	Position getPosition() const
-	{
-		static Position p;
-		noInterrupts();
-		p = position;
-		interrupts();
-		return p;
-	}
+    Position getPosition() const
+    {
+        static Position p;
+        noInterrupts();
+        p = position;
+        interrupts();
+        return p;
+    }
 
-	void setPosition(Position p)
-	{
-		noInterrupts();
-		position = p;
-		interrupts();
-	}
+    void setPosition(Position p)
+    {
+        noInterrupts();
+        position = p;
+        interrupts();
+    }
 
-	MoveStatus getMoveStatus() const
-	{
-		static MoveStatus ms;
-		noInterrupts();
-		ms = moveStatus;
-		interrupts();
-		return ms;
-	}
+    MoveStatus getMoveStatus() const
+    {
+        static MoveStatus ms;
+        noInterrupts();
+        ms = moveStatus;
+        interrupts();
+        return ms;
+    }
 
     size_t getTrajectoryIndex() const
     {
@@ -320,20 +320,20 @@ private:
         return ret;
     }
 
-	void setMotionControlLevel(uint8_t level)
-	{
-		trajectoryFollower.setMotionControlLevel(level);
-	}
+    void setMotionControlLevel(uint8_t level)
+    {
+        trajectoryFollower.setMotionControlLevel(level);
+    }
 
-	uint8_t getMotionControlLevel() const
-	{
-		return trajectoryFollower.getMotionControlLevel();
-	}
+    uint8_t getMotionControlLevel() const
+    {
+        return trajectoryFollower.getMotionControlLevel();
+    }
 
-	void setTunings(MotionControlTunings const & tunings)
-	{
-		trajectoryFollower.setTunings(tunings);
-	}
+    void setTunings(MotionControlTunings const & tunings)
+    {
+        trajectoryFollower.setTunings(tunings);
+    }
 
     void enableHighSpeed(bool enable)
     {
@@ -345,10 +345,10 @@ private:
         }
     }
 
-	MotionControlTunings getTunings() const
-	{
-		return trajectoryFollower.getTunings();
-	}
+    MotionControlTunings getTunings() const
+    {
+        return trajectoryFollower.getTunings();
+    }
 
     void setMaxSpeed(float speed)
     {
@@ -440,14 +440,14 @@ private:
     }
 
 private:
-	TrajectoryFollower trajectoryFollower;
-	volatile Position position;
-	volatile MoveStatus moveStatus;
-	volatile bool travellingToDestination;  // Indique si le robot est en train de parcourir la trajectoire courante
-	volatile size_t trajectoryIndex;  // Point courant de la trajectoire courante
+    TrajectoryFollower trajectoryFollower;
+    volatile Position position;
+    volatile MoveStatus moveStatus;
+    volatile bool travellingToDestination;  // Indique si le robot est en train de parcourir la trajectoire courante
+    volatile size_t trajectoryIndex;  // Point courant de la trajectoire courante
 
-	std::vector<TrajectoryPoint> currentTrajectory;
-	bool trajectoryComplete;
+    std::vector<TrajectoryPoint> currentTrajectory;
+    bool trajectoryComplete;
 };
 
 

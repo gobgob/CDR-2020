@@ -8,7 +8,13 @@
 #include "Singleton.h"
 #include "Serializer.h"
 #include "Config.h"
-#include "CommunicationServer.h"
+#include "Serial.h"
+
+
+enum ActuatorMgrStatus
+{
+    ACT_STATUS_OK = 0,
+};
 
 
 class ActuatorMgr : public Singleton<ActuatorMgr>
@@ -20,7 +26,7 @@ public:
 
     int init()
     {
-        return 0;
+        return ACT_STATUS_OK;
     }
 
     void control()

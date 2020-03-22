@@ -23,27 +23,27 @@ class Motor
 public:
 	Motor()
 	{
-        // Passage de la pin en OUTPUT
-		pinMode(PIN_VESC, OUTPUT);
+  //      // Passage de la pin en OUTPUT
+		//pinMode(PIN_VESC, OUTPUT);
 
-		// La résolution du PWM est 16bits (0 - 65535)
-		analogWriteResolution(16);
+		//// La résolution du PWM est 16bits (0 - 65535)
+		//analogWriteResolution(16);
 
-		// Réglage de la fréquence des PWM (Hz)
-		analogWriteFrequency(PIN_VESC, 50);
+		//// Réglage de la fréquence des PWM (Hz)
+		//analogWriteFrequency(PIN_VESC, 50);
 
-		// Initialisation : Moteurs arrêtés
-        run(0);
+		//// Initialisation : Moteurs arrêtés
+  //      run(0);
 	}
 
     /* Speed in mm/s */
     void run(float speed)
     {
-        static const float a = (float)(MOTOR_MAX_PWM - MOTOR_MIN_PWM) / (float)(2 * MOTOR_MAX_SPEED);
-        static const float b = (float)(MOTOR_MAX_PWM + MOTOR_MIN_PWM) / 2;
-        speed = constrain(speed, -MOTOR_MAX_SPEED, MOTOR_MAX_SPEED);
-        float pwm = a * speed + b;
-        analogWrite(PIN_VESC, (int)pwm);
+        //static const float a = (float)(MOTOR_MAX_PWM - MOTOR_MIN_PWM) / (float)(2 * MOTOR_MAX_SPEED);
+        //static const float b = (float)(MOTOR_MAX_PWM + MOTOR_MIN_PWM) / 2;
+        //speed = constrain(speed, -MOTOR_MAX_SPEED, MOTOR_MAX_SPEED);
+        //float pwm = a * speed + b;
+        //analogWrite(PIN_VESC, (int)pwm);
     }
 };
 

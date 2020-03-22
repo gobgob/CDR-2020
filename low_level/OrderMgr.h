@@ -1,7 +1,7 @@
 #ifndef _ORDERMGR_h
 #define _ORDERMGR_h
 
-#include "CommunicationServer.h"
+#include "Serial.h"
 #include "OrderImmediate.h"
 #include "OrderLong.h"
 #include "Command.h"

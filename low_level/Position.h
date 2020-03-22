@@ -3,6 +3,7 @@
 
 #include <Printable.h>
 #include <vector>
+#include "Utils.h"
 
 
 class Position : public Printable

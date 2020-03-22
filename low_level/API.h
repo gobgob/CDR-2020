@@ -34,7 +34,7 @@ ORDER_IMMEDIATE(SetMaxDeceleration, 4);
 ORDER_IMMEDIATE(SetMaxCurvature, 4);
 
 ORDER_LONG(FollowTrajectory, 0, MoveStatus status;);
-ORDER_LONG(Stop, 0);
+ORDER_LONG(Stop, 0, );
 ORDER_LONG(WaitForJumper, 0, JumperState state; uint32_t debounceTimer;);
 ORDER_LONG(StartChrono, 0, uint32_t chrono;);
 

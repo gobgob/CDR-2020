@@ -1,7 +1,7 @@
 #include "API.h"
 #include "OrderMgr.h"
 
-#include "CommunicationServer.h"
+#include "Serial.h"
 #include "Serializer.h"
 #include "TrajectoryFollower.h"
 #include "MoveState.h"
@@ -441,6 +441,6 @@ ORDER_LONG_EXECUTE(StartChrono)
 ORDER_LONG_TERMINATE(StartChrono)
 {
     motionControlSystem.stop_and_clear_trajectory();
-    actuatorMgr.stop();
-    actuatorMgr.disableAll();
+    //actuatorMgr.stop();
+    //actuatorMgr.disableAll();
 }

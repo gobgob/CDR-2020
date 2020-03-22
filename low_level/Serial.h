@@ -1,7 +1,8 @@
 #ifndef _SERIAL_h
 #define _SERIAL_h
 
-#include <DynamixelAX12.h>
+#include <OneWireMInterface.h>
+#include "CommunicationServer.h"
 
 extern CommunicationServer Server;
 extern OneWireMInterface SerialAX12;

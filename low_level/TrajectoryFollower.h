@@ -10,7 +10,7 @@
 #include "Position.h"
 #include "MoveState.h"
 #include "MotionControlTunings.h"
-#include "CommunicationServer.h"
+#include "Serial.h"
 
 
 #define CURVATURE_TOLERANCE		0.3			// Ecart maximal entre la consigne en courbure et la courbure réelle admissible au démarrage. Unité : m^-1

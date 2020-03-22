@@ -3,7 +3,7 @@
 
 #include <vector>
 #include "OrderMacros.h"
-#include "CommunicationServer.h"
+#include "Serial.h"
 #include "MotionControlSystem.h"
 #include "ActuatorMgr.h"
 

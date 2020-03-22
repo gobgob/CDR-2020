@@ -2,17 +2,12 @@
 #define _SENSORS_MGR_h
 
 #include <Printable.h>
-#include <ToF_sensor.h>
+#include <ToF_module.h>
 #include "Config.h"
 #include "Serializer.h"
 
 #define SENSOR_UPDATE_PERIOD    5000 // µs
-#define NB_SENSORS              6
-#define TOF_SR_MIN_RANGE        18
-#define TOF_SR_MAX_RANGE        200
-#define TOF_LR_MIN_RANGE        30
-#define TOF_LR_MAX_RANGE        700
-#define TOF_LR_MEDIAN_SIZE      3
+#define NB_SENSORS              10
 
 
 class SensorsMgr : public Printable, public Singleton<SensorsMgr>
@@ -20,26 +15,22 @@ class SensorsMgr : public Printable, public Singleton<SensorsMgr>
 public:
     SensorsMgr()
     {
-        sensors[AVG] = new ToF_longRange(I2C_ADDR_TOF_AVG, PIN_EN_TOF_AVG,
-            TOF_LR_MIN_RANGE, TOF_LR_MAX_RANGE, "AVG", &Serial);
-        sensors[AVD] = new ToF_longRange(I2C_ADDR_TOF_AVD, PIN_EN_TOF_AVD,
-            TOF_LR_MIN_RANGE, TOF_LR_MAX_RANGE, "AVD", &Serial);
-        sensors[FARG] = new ToF_longRange(I2C_ADDR_TOF_FLAN_ARG, PIN_EN_TOF_FLAN_ARG,
-            TOF_LR_MIN_RANGE, TOF_LR_MAX_RANGE, "FlanARG", &Serial);
-        sensors[FARD] = new ToF_longRange(I2C_ADDR_TOF_FLAN_ARD, PIN_EN_TOF_FLAN_ARD,
-            TOF_LR_MIN_RANGE, TOF_LR_MAX_RANGE, "FlanARD", &Serial);
-        sensors[ARG] = new ToF_longRange(I2C_ADDR_TOF_ARG, PIN_EN_TOF_ARG,
-            TOF_LR_MIN_RANGE, TOF_LR_MAX_RANGE, "ARG", &Serial);
-        sensors[ARD] = new ToF_longRange(I2C_ADDR_TOF_ARD, PIN_EN_TOF_ARD,
-            TOF_LR_MIN_RANGE, TOF_LR_MAX_RANGE, "ARD", &Serial);
+        sensors[AVD ] = new ToF_module(SerialToF, AVD);
+        sensors[FAVD] = new ToF_module(SerialToF, FAVD);
+        sensors[FARD] = new ToF_module(SerialToF, FARD);
+        sensors[ARD] = new ToF_module(SerialToF, ARD);
+        sensors[ARG] = new ToF_module(SerialToF, ARG);
+        sensors[FARG] = new ToF_module(SerialToF, FARG);
+        sensors[FAVG] = new ToF_module(SerialToF, FAVG);
+        sensors[AVG] = new ToF_module(SerialToF, AVG);
+        sensors[EXTG] = new ToF_module(SerialExt, EXTG);
+        sensors[EXTD] = new ToF_module(SerialExt, EXTD);
 
         members_allocated = true;
-        for (size_t i = 0; i < NB_SENSORS; i++)
-        {
-            sensorsValues[i] = (SensorValue)SENSOR_DEAD;
+        for (size_t i = 0; i < NB_SENSORS; i++) {
+            sensorsValues[i] = (TofValue)SENSOR_DEAD;
             sensorsLastUpdateTime[i] = 0;
-            if (sensors[i] == nullptr)
-            {
+            if (sensors[i] == nullptr) {
                 members_allocated = false;
             }
         }
@@ -50,11 +41,15 @@ public:
         if (!members_allocated) {
             return EXIT_FAILURE;
         }
+
         int ret = EXIT_SUCCESS;
-        for (size_t i = 0; i < NB_SENSORS; i++)
-        {
-            if (sensors[i]->powerON() != EXIT_SUCCESS)
-            {
+        OneWireStatus com_status;
+        for (size_t i = 0; i < NB_SENSORS; i++) {
+            com_status = sensors[i]->init();
+            if (com_status != OW_STATUS_OK) {
+                ret = EXIT_FAILURE;
+            }
+            else if (sensors[i]->statusReturnLevel() == 0) {
                 ret = EXIT_FAILURE;
             }
         }
@@ -66,25 +61,10 @@ public:
         static uint32_t lastUpdateTime = 0;
         static size_t step = 0;
         uint32_t now = micros();
-        if (now - lastUpdateTime > SENSOR_UPDATE_PERIOD)
-        {
+
+        if (now - lastUpdateTime > SENSOR_UPDATE_PERIOD) {
             lastUpdateTime = now;
-            if (moving_dir > 0) {
-                sensorsValues[2] = (SensorValue)NO_OBSTACLE;
-                sensorsValues[3] = (SensorValue)NO_OBSTACLE;
-                sensorsValues[4] = (SensorValue)NO_OBSTACLE;
-                sensorsValues[5] = (SensorValue)NO_OBSTACLE;
-                if (step > 1) {
-                    step = 0;
-                }
-            }
-            else if (moving_dir < 0) {
-                sensorsValues[0] = (SensorValue)NO_OBSTACLE;
-                sensorsValues[1] = (SensorValue)NO_OBSTACLE;
-                if (step < 2) {
-                    step = 2;
-                }
-            }
+
             updateNow(step);
             step++;
             if (step >= NB_SENSORS) {
@@ -98,34 +78,23 @@ public:
         if (!members_allocated || i >= NB_SENSORS) {
             return;
         }
-        uint32_t update_start = millis();
-        SensorValue val = sensors[i]->getMeasure();
-        uint32_t update_end = millis();
-        uint32_t update_duration = update_end - update_start;
+
+        uint32_t now = millis();
+        TofValue val = sensors[i]->readRange();
+
         bool needSensorReset = false;
         if (val != SENSOR_NOT_UPDATED) {
             sensorsValues[i] = val;
-            sensorsLastUpdateTime[i] = update_end;
+            sensorsLastUpdateTime[i] = now;
         }
-        else if (update_duration > SENSOR_UPDATE_PERIOD) {
-            Server.printf_err("SensorsMgr::updateNow(%u) took %ums and failed\n", i, update_duration);
-            needSensorReset = true;
-        }
-        else if (update_start - sensorsLastUpdateTime[i] > 100) {
+        else if (now - sensorsLastUpdateTime[i] > 100) {
             Server.printf_err("SensorsMgr::updateNow(%u) sensor didn't perform measurements for more than 100ms\n", i);
             needSensorReset = true;
         }
 
         if (needSensorReset) {
             Server.printf("Attempting to restart sensor #%u\n", i);
-            sensors[i]->standby();
-            int ret = sensors[i]->powerON();
-            if (ret == EXIT_SUCCESS) {
-                Server.printf("Restarted successfully\n");
-            }
-            else {
-                Server.printf("Restart failed\n");
-            }
+            sensors[i]->softReset();
         }
     }
 
@@ -137,10 +106,9 @@ public:
         return millis() - sensorsLastUpdateTime[i];
     }
 
-    void appendValuesToVect(std::vector<uint8_t> & output) const
+    void appendValuesToVect(std::vector<uint8_t> &output) const
     {
-        for (size_t i = 0; i < NB_SENSORS; i++)
-        {
+        for (size_t i = 0; i < NB_SENSORS; i++) {
             Serializer::writeInt(sensorsValues[i], output);
         }
     }
@@ -148,53 +116,68 @@ public:
     size_t printTo(Print& p) const
     {
         size_t ret = 0;
+
         if (!members_allocated) {
             ret += p.println("SensorsMgr::allocation_error");
             return ret;
         }
-        for (size_t i = 0; i < NB_SENSORS; i++)
-        {
-            ret += p.print(sensors[i]->name);
+
+        for (size_t i = 0; i < NB_SENSORS; i++) {
+            ret += p.print(names[i]);
             ret += p.print("=");
-            SensorValue val = sensorsValues[i];
-            if (val == (SensorValue)SENSOR_DEAD)
-            {
-                ret += p.print("HS ");
-            }
-            else if (val == (SensorValue)SENSOR_NOT_UPDATED)
-            {
-                ret += p.print("Old ");
-            }
-            else if (val == (SensorValue)NO_OBSTACLE)
-            {
-                ret += p.print("inf ");
-            }
-            else if (val == (SensorValue)OBSTACLE_TOO_CLOSE)
-            {
-                ret += p.print("0 ");
-            }
-            else
-            {
-                ret += p.printf("%u ", val);
+
+            switch (sensorsValues[i]) {
+                case (TofValue)SENSOR_DEAD:
+                    ret += p.print("HS ");
+                    break;
+                case (TofValue)SENSOR_NOT_UPDATED:
+                    ret += p.print("Old ");
+                    break;
+                case (TofValue)NO_OBSTACLE:
+                    ret += p.print("inf ");
+                    break;
+                case (TofValue)OBSTACLE_TOO_CLOSE:
+                    ret += p.print("0 ");
+                    break;
+                default:
+                    ret += p.printf("%d ", sensorsValues[i]);
+                    break;
             }
         }
+        ret += p.println();
         return ret;
     }
 
 private:
-    ToF_sensor *sensors[NB_SENSORS];
-    SensorValue sensorsValues[NB_SENSORS];
+    ToF_module* sensors[NB_SENSORS];
+    TofValue sensorsValues[NB_SENSORS];
     uint32_t sensorsLastUpdateTime[NB_SENSORS];
     bool members_allocated;
 
-    enum Index
-    {
-        AVG = 0,
-        AVD = 1,
-        FARG = 2,
-        FARD = 3,
-        ARG = 4,
-        ARD = 5,
+    enum Index {
+        AVD = 0,    // Avant droit
+        FAVD = 1,   // Flan avant droit
+        FARD = 2,   // Flan arrière droit
+        ARD = 3,    // Arrière droit
+        ARG = 4,    // Arrière gauche
+        FARG = 5,   // Flan arrière gauche
+        FAVG = 6,   // Flan avant gauche
+        AVG = 7,    // Avant gauche
+        EXTG = 8,   // Extérieur gauche (robot secondaire)
+        EXTD = 9,   // Extérieur droit (robot secondaire)
+    };
+
+    const char* names[NB_SENSORS] = {
+        "AVD",
+        "FAVD",
+        "FARD",
+        "ARD",
+        "ARG",
+        "FARG",
+        "FAVG",
+        "AVG",
+        "EXTG",
+        "EXTD",
     };
 };
 
