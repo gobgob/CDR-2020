@@ -400,6 +400,9 @@ class Backend:
             self.communication.sendMessage(message)
         except (ValueError, struct.error) as e:
             print(e)
+        except OSError:
+            self.disconnect()
+            self.toolbar.connexionFailed()
 
     def sendSubscriptions(self):
         for i in range(len(self.subscriptions)):

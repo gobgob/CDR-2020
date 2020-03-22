@@ -181,7 +181,10 @@ class TCPIP_interface:
 
     def sendBytes(self, b):
         if len(b) > 0:
-            nbSent = self.socket.send(b)
+            try:
+                nbSent = self.socket.send(b)
+            except ConnectionAbortedError:
+                raise OSError
             if nbSent == 0:
                 raise OSError
             elif nbSent < len(b):
