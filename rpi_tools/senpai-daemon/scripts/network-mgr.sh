@@ -1,40 +1,63 @@
 #!/bin/sh
 
-conf="/home/pi/senpai-daemon/conf/"
-sudo systemctl daemon-reload
+# Set to true to start with the hotspot mode, false to start in standard mode
+# (connect to an existing network).
+# In any cases, if the standard mode fails it will fallback to hotspot mode.
+START_AS_HOTSPOT=false
 
-# Stop hotspot
-echo "Stop hotspot"
-sudo systemctl stop hostapd
-# Set standard DHCP conf
-echo "Set standard DHCP conf"
-sudo cp ${conf}dhcp-conf-std/dhcpcd.conf /etc/
-echo "Restart dhcpcd service"
-sudo service dhcpcd restart
-echo "Reconfigure wlan0"
-wpa_cli -i wlan0 reconfigure > /dev/null
+# Diode std-mode
+gpio mode 2 out
+gpio write 2 0
 
-# Check connection status for 10 seconds
-for i in `seq 1 10`; do
-    sleep 1
-    status=$(cat /sys/class/net/wlan0/operstate)
-    if [ "$status" = "up" ]; then
-        echo "wlan0: connection established"
-        exit 0
+# Button std-mode
+gpio mode 0 in
+gpio mode 0 up
+
+# Diode hotspot-mode
+gpio mode 4 out
+gpio write 4 0
+
+# Button hotspot-mode
+gpio mode 3 in
+gpio mode 3 up
+
+# sudo systemctl daemon-reload # useful ?
+
+scripts="/home/pi/senpai-daemon/scripts/"
+
+is_std=false
+if [ "$START_AS_HOTSPOT" = true ]; then
+    ${scripts}net-hotspot-mode.sh
+else
+    ${scripts}net-std-mode.sh
+    if [ $? -eq 0 ]; then
+        is_std=true
+    else
+        ${scripts}net-hotspot-mode.sh
     fi
-    echo "wlan0: waiting for connection"
+fi
+
+while true; do
+    if [ "$is_std" = true ]; then
+        if [ $(gpio read 3) -eq 0 ]; then
+            # button hotspot pressed
+            ${scripts}net-hotspot-mode.sh
+            if [ $? -eq 0 ]; then
+                is_std=false
+            fi
+        fi
+    else
+        if [ $(gpio read 0) -eq 0 ]; then
+            # button std pressed
+            ${scripts}net-std-mode.sh
+            if [ $? -eq 0 ]; then
+                is_std=true
+            else
+                ${scripts}net-hotspot-mode.sh
+            fi
+        fi
+    fi
+    sleep 0.1
 done
-echo "wlan0: failed to connect"
-
-# Set static-ip DHCP conf
-echo "Set static-IP DHCP conf"
-sudo cp ${conf}dhcp-conf-static/dhcpcd.conf /etc/
-echo "Restart dhcpcd service"
-sudo service dhcpcd restart
-
-# Start hotspot
-echo "Start hostapd service (hotspot)"
-sudo systemctl start hostapd
-echo "Done"
 
 exit 0
