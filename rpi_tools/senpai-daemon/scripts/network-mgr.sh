@@ -21,11 +21,15 @@ gpio write 4 0
 gpio mode 3 in
 gpio mode 3 up
 
-# sudo systemctl daemon-reload # useful ?
+sudo systemctl daemon-reload
 
-scripts="/home/pi/senpai-daemon/scripts/"
+home="/home/pi/senpai-daemon/"
+scripts="${home}scripts/"
+ll_conf="${home}conf/low-level-server.conf"
 
 is_std=false
+last_ip=""
+
 if [ "$START_AS_HOTSPOT" = true ]; then
     ${scripts}net-hotspot-mode.sh
 else
@@ -57,7 +61,18 @@ while true; do
             fi
         fi
     fi
-    sleep 0.1
+
+    ip=`ip -4 address show dev wlan0 up | grep -o "inet [0-9]*\.[0-9]*\.[0-9]*\.[0-9]*" | grep -o "[.0-9]*" | head -n 1`
+    if [ "$ip" != "$last_ip" ]; then
+        last_ip=${ip}
+        echo "New IP address:" "$ip"
+
+        # Update LowLevelServer configuration
+        ${scripts}make-config-file.py ${ll_conf} --ip ${ip}
+        ${scripts}low-level-server-restart.py
+    fi
+
+    sleep 0.2
 done
 
 exit 0

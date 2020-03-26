@@ -15,6 +15,9 @@ sudo cp ${dhcpconf} /etc/
 echo "Restart dhcpcd service"
 sudo service dhcpcd restart
 
+# Remove all existing addresses from interface
+ip addr flush dev wlan0
+
 # Start hotspot
 echo "Start hostapd service (hotspot)"
 sudo systemctl start hostapd
