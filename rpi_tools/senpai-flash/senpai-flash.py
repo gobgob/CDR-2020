@@ -46,7 +46,7 @@ def get_last_backup(directory):
 
 parser = argparse.ArgumentParser()
 parser.add_argument("filename", nargs='?',
-                    default='low_level.ino.TEENSY35.hex',
+                    default='low_level.ino.hex',
                     help="Name of the .hex file to program")
 parser.add_argument("-b", "--backup", nargs='?', const='latest', default=None,
                     help="Program a backup instead of the current build. The "
