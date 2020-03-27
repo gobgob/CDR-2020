@@ -21,23 +21,3 @@ affiche/
 *.ppt
 *.pptx
 *.psd
-
-
-# à déplacer dans le sous dossier approprié...
-*.user
-*.project
-build/
-high_level/logs/
-high_level/junit/
-high_level/videos/
-.classpath
-.cproject
-.settings
-project.properties
-*.class
-/bin/
-*.aux
-*.log
-*.out
-*.toc
-.vscode
