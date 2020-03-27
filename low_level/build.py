@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 REMOTE_ADDR = "pi@192.168.0.25"  # User@address where the code should be uploaded
+# REMOTE_ADDR = "pi@172.24.1.1"
 REMOTE_FOLDER = "senpai-flash"  # On the remote folder to copy the .hex in (under ~)
 REMOTE_PROGRAMMER = "senpai-flash.py"  # Name of the program to use to flash (should be located under REMOTE_FOLDER)
 REMOTE_USER_DIR = "/home/pi/"
@@ -8,7 +9,7 @@ ARDUINO_EXE = "arduino_debug"  # Executable to use for building the code
 ARDUINO_PROJECT = "low_level.ino"  # Project to compile
 ARDUINO_BOARD = "teensy:avr:teensy35"  # Board Teensy3.5
 ARDUINO_BOARD_OPTIONS = ":usb=serial,speed=120,opt=o2std,keys=en-us"
-BUILD_DIR = "build"
+BUILD_DIR = "_build"
 
 import argparse
 import subprocess

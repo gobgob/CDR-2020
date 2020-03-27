@@ -9,5 +9,5 @@ __vm/
 *.vcxproj.filters
 *.vcxproj.user
 .vscode/
-build/
+_build/
 tests/
