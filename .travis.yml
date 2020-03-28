@@ -3,6 +3,6 @@ script :
     - cd high_level
     - mvn clean compile assembly:single
 jdk :
-    - oraclejdk11
+    - oraclejdk13
 cache :
     directories : "$HOME/.m2"
