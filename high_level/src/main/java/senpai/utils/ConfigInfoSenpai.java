@@ -77,8 +77,8 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	/**
 	 * Paramètres de la comm
 	 */
-	ETH_LL_PORT_NUMBER(80), // port socket LL
-	ETH_LL_HOSTNAME_SERVER("172.16.0.2"), // adresse ip du LL. Un hostname fonctionne aussi
+	ETH_LL_PORT_NUMBER(2020), // port socket LL
+	ETH_LL_HOSTNAME_SERVER("127.0.0.1"), // adresse ip du LL. Un hostname fonctionne aussi
 	
 	ETH_LIDAR_PORT_NUMBER(8765), // port socket HL
 	ETH_ELECTRON_PORT_NUMBER(8766), // port socket HL
