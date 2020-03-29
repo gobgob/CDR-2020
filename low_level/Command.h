@@ -1,5 +1,4 @@
-#ifndef _COMMAND_h
-#define _COMMAND_h
+#pragma once
 
 #include <Arduino.h>
 #include <vector>
@@ -46,6 +45,3 @@ private:
     uint8_t expectedLength;
     std::vector<uint8_t> data;
 };
-
-
-#endif

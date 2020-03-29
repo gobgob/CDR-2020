@@ -1,8 +1,6 @@
-#ifndef _SERIALIZER_h
-#define _SERIALIZER_h
+#pragma once
 
 #include <vector>
-
 
 class Serializer
 {
@@ -90,6 +88,3 @@ public:
         output.push_back(value);
     }
 };
-
-
-#endif

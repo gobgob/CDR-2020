@@ -1,102 +1,39 @@
-#ifndef _CURVATURE_PID_h
-#define _CURVATURE_PID_h
-
+#pragma once
 
 #include <Printable.h>
 #include "TrajectoryPoint.h"
 #include "Position.h"
-#include "Utils.h"
 
 
 class CurvaturePID : public Printable
 {
 public:
-	CurvaturePID(
-		volatile Position const & position, 
-		volatile float & curvatureOrder, 
-		TrajectoryPoint const & trajectoryPoint
-	) :
-		currentPosition(position),
-		trajectoryPoint(trajectoryPoint),
-		curvatureOrder(curvatureOrder)
-	{
-		setCurvatureLimits(-20, 20);
-		setTunings(0, 0);
-		posError = 0;
-		orientationError = 0;
-        curvatureCorrection = 0;
-	}
+    CurvaturePID(volatile Position const& position,
+        volatile float& curvatureOrder, TrajectoryPoint const& trajectoryPoint);
 
-	inline void compute(bool movingForward)
-	{
-		/* Asservissement sur trajectoire */
+    void compute(bool movingForward);
+    void setCurvatureLimits(float min, float max);
+    void setTunings(float k1, float k2);
 
-		Position posConsigne = trajectoryPoint.getPosition();
-		float trajectoryCurvature = trajectoryPoint.getCurvature();
-		posError = -(currentPosition.x - posConsigne.x) * sinf(posConsigne.orientation) + (currentPosition.y - posConsigne.y) * cosf(posConsigne.orientation);
-		orientationError = fmodulo(currentPosition.orientation - posConsigne.orientation, TWO_PI);
+    float getPositionError() const { return posError; }
+    float getOrientationError() const { return orientationError; }
 
-		if (orientationError > PI)
-		{
-			orientationError -= TWO_PI;
-		}
-
-		if (movingForward)
-		{
-            curvatureCorrection = -k1 * posError - k2 * orientationError;
-		}
-		else
-		{
-            curvatureCorrection = -k1 * posError + k2 * orientationError;
-		}
-        curvatureOrder = constrain(trajectoryCurvature + curvatureCorrection, outMin, outMax);
-	}
-
-	void setCurvatureLimits(float min, float max)
-	{
-		if (min >= max) { return; }
-
-		outMin = min;
-		outMax = max;
-        curvatureOrder = constrain(curvatureOrder, outMin, outMax);
-	}
-
-	void setTunings(float k1, float k2)
-	{
-		if (k1 < 0 || k2 < 0)
-		{
-			this->k1 = 0;
-			this->k2 = 0;
-		}
-		this->k1 = k1;
-		this->k2 = k2;
-	}
-
-	float getPositionError()
-	{
-		return posError;
-	}
-
-	float getOrientationError()
-	{
-		return orientationError;
-	}
-
-	size_t printTo(Print& p) const
-	{
-		return p.printf("%u_%g_%g_%g", millis(), posError * k1, orientationError * k2, curvatureCorrection);
-	}
+    size_t printTo(Print& p) const;
 
 private:
-	volatile Position const & currentPosition;	// Position courante du robot
-	TrajectoryPoint const & trajectoryPoint;	// Point de trajectoire courant (consigne à suivre)
-	volatile float & curvatureOrder;			// Courbure consigne. Unitée : m^-1
-    volatile float curvatureCorrection;         // m^-1
+    /* Position courante du robot */
+    volatile Position const & currentPosition;
 
-	float k1, k2;
-	float posError, orientationError;
-	float outMax, outMin;
+    /* Point de trajectoire courant (consigne à suivre) */
+    TrajectoryPoint const & trajectoryPoint;
+
+    /* Courbure consigne. Unitée : m^-1 */
+    volatile float & curvatureOrder;
+
+    /* Correctif de courbure. Unité : m^-1 */
+    volatile float curvatureCorrection;
+
+    float k1, k2;
+    float posError, orientationError;
+    float outMax, outMin;
 };
-
-
-#endif

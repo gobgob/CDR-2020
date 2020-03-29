@@ -121,7 +121,7 @@ ORDER_IMMEDIATE_EXECUTE(AppendToTraj)
 
             ret = motionControlSystem.appendToTrajectory(trajPoint);
             if (ret != TRAJECTORY_EDITION_SUCCESS) {
-                motionControlSystem.stop_and_clear_trajectory();
+                motionControlSystem.stopAndClearTrajectory();
                 Server.printf_err("AppendToTraj: TRAJECTORY_EDITION_FAILURE");
                 break;
             }
@@ -159,7 +159,7 @@ ORDER_IMMEDIATE_EXECUTE(EditTraj)
 
             ret = motionControlSystem.updateTrajectory(trajIndex, trajPoint);
             if (ret != TRAJECTORY_EDITION_SUCCESS) {
-                motionControlSystem.stop_and_clear_trajectory();
+                motionControlSystem.stopAndClearTrajectory();
                 Server.printf_err("EditTraj: TRAJECTORY_EDITION_FAILURE");
                 break;
             }
@@ -192,7 +192,7 @@ ORDER_IMMEDIATE_EXECUTE(SetScore)
 /* Debug API */
 ORDER_IMMEDIATE_EXECUTE(Display)
 {
-    Server.print(motionControlSystem.getTunings());
+    Server.print(motionControlSystem.trajFollower().tunings());
 }
 
 ORDER_IMMEDIATE_EXECUTE(Save)
@@ -217,9 +217,8 @@ ORDER_IMMEDIATE_EXECUTE(SetControlLevel)
 {
     size_t index = 0;
     uint8_t controlLevel = Serializer::readEnum(input, index);
-    motionControlSystem.setMotionControlLevel(controlLevel);
-    Server.printf(SPY_ORDER, "MotionControlLevel=%u\n",
-        motionControlSystem.getMotionControlLevel());
+    motionControlSystem.trajFollower().setMotionControlLevel(controlLevel);
+    Server.printf(SPY_ORDER, "MotionControlLevel=%u\n", controlLevel);
 }
 
 ORDER_IMMEDIATE_EXECUTE(StartManualMove)
@@ -232,7 +231,7 @@ ORDER_IMMEDIATE_EXECUTE(SetMaxSpeed)
 {
     size_t index = 0;
     float speed = Serializer::readFloat(input, index);
-    motionControlSystem.setMaxSpeed(speed);
+    motionControlSystem.trajFollower().setMaxSpeed(speed);
     Server.printf(SPY_ORDER, "SetMaxSpeed: %gmm/s\n", speed);
 }
 
@@ -240,7 +239,7 @@ ORDER_IMMEDIATE_EXECUTE(SetAimDistance)
 {
     size_t index = 0;
     float aimDistance = Serializer::readFloat(input, index);
-    motionControlSystem.setDistanceToDrive(aimDistance);
+    motionControlSystem.trajFollower().setDistanceToDrive(aimDistance);
     Server.printf(SPY_ORDER, "SetAimDistance: %gmm\n", aimDistance);
 }
 
@@ -248,7 +247,7 @@ ORDER_IMMEDIATE_EXECUTE(SetCurvature)
 {
     size_t index = 0;
     float curvature = Serializer::readFloat(input, index);
-    motionControlSystem.setCurvature(curvature);
+    motionControlSystem.trajFollower().setCurvature(curvature);
     noInterrupts();
     directionController.setAimCurvature(curvature);
     interrupts();
@@ -269,11 +268,11 @@ ORDER_IMMEDIATE_EXECUTE(SetTranslationTunings)
     float kp = Serializer::readFloat(input, index);
     float kd = Serializer::readFloat(input, index);
     float minAimSpeed = Serializer::readFloat(input, index);
-    MotionControlTunings tunings = motionControlSystem.getTunings();
+    MotionControlTunings& tunings = motionControlSystem.trajFollower().tunings();
     tunings.translationKp = kp;
     tunings.translationKd = kd;
     tunings.minAimSpeed = minAimSpeed;
-    motionControlSystem.setTunings(tunings);
+    motionControlSystem.trajFollower().updateTunings();
     Server.printf(SPY_ORDER, "Translation Kp=%g Kd=%g MinSpeed=%g\n", kp, kd,
         minAimSpeed);
 }
@@ -284,11 +283,11 @@ ORDER_IMMEDIATE_EXECUTE(SetTrajectoryTunings)
     float k1 = Serializer::readFloat(input, index);
     float k2 = Serializer::readFloat(input, index);
     float dtt = Serializer::readFloat(input, index);
-    MotionControlTunings tunings = motionControlSystem.getTunings();
+    MotionControlTunings& tunings = motionControlSystem.trajFollower().tunings();
     tunings.curvatureK1 = k1;
     tunings.curvatureK2 = k2;
     tunings.distanceMaxToTraj = dtt;
-    motionControlSystem.setTunings(tunings);
+    motionControlSystem.trajFollower().updateTunings();
     Server.printf(SPY_ORDER, "Trajectory K1=%g K2=%g Dist=%g\n", k1, k2, dtt);
 }
 
@@ -297,10 +296,10 @@ ORDER_IMMEDIATE_EXECUTE(SetStoppingTunings)
     size_t index = 0;
     float epsilon = Serializer::readFloat(input, index);
     uint32_t responseTime = Serializer::readUInt(input, index);
-    MotionControlTunings tunings = motionControlSystem.getTunings();
+    MotionControlTunings& tunings = motionControlSystem.trajFollower().tunings();
     tunings.stoppedSpeed = epsilon;
     tunings.stoppingResponseTime = responseTime;
-    motionControlSystem.setTunings(tunings);
+    motionControlSystem.trajFollower().updateTunings();
     Server.printf(SPY_ORDER, "Stopping epsilon=%gmm/s delay=%ums\n", epsilon,
         responseTime);
 }
@@ -309,9 +308,8 @@ ORDER_IMMEDIATE_EXECUTE(SetMaxAcceleration)
 {
     size_t index = 0;
     float acceleration = Serializer::readFloat(input, index);
-    MotionControlTunings tunings = motionControlSystem.getTunings();
-    tunings.maxAcceleration = acceleration;
-    motionControlSystem.setTunings(tunings);
+    motionControlSystem.trajFollower().tunings().maxAcceleration = acceleration;
+    motionControlSystem.trajFollower().updateTunings();
     Server.printf(SPY_ORDER, "MaxAcceleration=%gmm*s^-2\n", acceleration);
 }
 
@@ -319,9 +317,8 @@ ORDER_IMMEDIATE_EXECUTE(SetMaxDeceleration)
 {
     size_t index = 0;
     float deceleration = Serializer::readFloat(input, index);
-    MotionControlTunings tunings = motionControlSystem.getTunings();
-    tunings.maxDeceleration = deceleration;
-    motionControlSystem.setTunings(tunings);
+    motionControlSystem.trajFollower().tunings().maxDeceleration = deceleration;
+    motionControlSystem.trajFollower().updateTunings();
     Server.printf(SPY_ORDER, "MaxDeceleration=%gmm*s^-2\n", deceleration);
 }
 
@@ -329,9 +326,8 @@ ORDER_IMMEDIATE_EXECUTE(SetMaxCurvature)
 {
     size_t index = 0;
     float curvature = Serializer::readFloat(input, index);
-    MotionControlTunings tunings = motionControlSystem.getTunings();
-    tunings.maxCurvature = curvature;
-    motionControlSystem.setTunings(tunings);
+    motionControlSystem.trajFollower().tunings().maxCurvature = curvature;
+    motionControlSystem.trajFollower().updateTunings();
     Server.printf(SPY_ORDER, "MaxCurvature=%gm^-1\n", curvature);
 }
 
@@ -365,7 +361,7 @@ ORDER_LONG_TERMINATE(FollowTrajectory)
 ORDER_LONG_LAUNCH(Stop)
 {
     Server.printf(SPY_ORDER, "Stop");
-    motionControlSystem.stop_and_clear_trajectory();
+    motionControlSystem.stopAndClearTrajectory();
 }
 
 ORDER_LONG_EXECUTE(Stop)
@@ -440,7 +436,7 @@ ORDER_LONG_EXECUTE(StartChrono)
 
 ORDER_LONG_TERMINATE(StartChrono)
 {
-    motionControlSystem.stop_and_clear_trajectory();
+    motionControlSystem.stopAndClearTrajectory();
     //actuatorMgr.stop();
     //actuatorMgr.disableAll();
 }

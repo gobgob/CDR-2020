@@ -1,8 +1,8 @@
-#ifndef _DIRECTIONCONTROLLER_h
-#define _DIRECTIONCONTROLLER_h
+#pragma once
 
 #include <Printable.h>
 #include <DynamixelAX12.h>
+#include <stdint.h>
 #include "Singleton.h"
 
 #define DIR_INFINITE_CURVATURE	(1e6f)
@@ -57,6 +57,3 @@ private:
     volatile bool blocked;
     uint32_t blockedTimer; // ms
 };
-
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef _COMMUNICATIONSERVER_h
-#define _COMMUNICATIONSERVER_h
+#pragma once
 
 #include <Arduino.h>
 #include <Printable.h>
@@ -131,6 +130,3 @@ private:
 
     Stream &stream;
 };
-
-
-#endif

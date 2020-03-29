@@ -1,5 +1,4 @@
-#ifndef _ORDERMGR_h
-#define _ORDERMGR_h
+#pragma once
 
 #include "Serial.h"
 #include "OrderImmediate.h"
@@ -65,6 +64,3 @@ private:
     OrderLong* longOrderList[NB_LONG_ORDER];
     OrderImmediate* immediateOrderList[NB_IMMEDIATE_ORDER];
 };
-
-
-#endif

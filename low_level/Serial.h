@@ -1,5 +1,4 @@
-#ifndef _SERIAL_h
-#define _SERIAL_h
+#pragma once
 
 #include <OneWireMInterface.h>
 #include "CommunicationServer.h"
@@ -22,6 +21,4 @@ void init_serial_ports();
 #ifndef __INTELLISENSE__
 }
 #endif
-#endif
-
 #endif

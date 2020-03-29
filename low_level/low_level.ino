@@ -22,13 +22,13 @@ void setup() {}
 void loop()
 {
     OrderMgr orderManager;
-    MotionControlSystem &motionControlSystem = MotionControlSystem::Instance();
+    //MotionControlSystem &motionControlSystem = MotionControlSystem::Instance();
     DirectionController &directionController = DirectionController::Instance();
     SensorsMgr &sensorMgr = SensorsMgr::Instance();
     ActuatorMgr &actuatorMgr = ActuatorMgr::Instance();
 
     IntervalTimer motionControlTimer;
-    uint32_t odometryReportTimer = 0;
+    //uint32_t odometryReportTimer = 0;
     std::vector<uint8_t> odometryReport;
 
     Wire.begin();

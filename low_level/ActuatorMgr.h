@@ -1,5 +1,4 @@
-#ifndef ACTUATOR_MGR_h
-#define ACTUATOR_MGR_h
+#pragma once
 
 #include <DynamixelAX12.h>
 #include <Printable.h>
@@ -33,5 +32,3 @@ public:
     {
     }
 };
-
-#endif

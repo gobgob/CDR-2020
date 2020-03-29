@@ -1,19 +1,19 @@
-#ifndef _MOTION_CONTROL_TUNINGS_h
-#define _MOTION_CONTROL_TUNINGS_h
+#pragma once
 
-#include "Printable.h"
+#include <Printable.h>
+#include <stdint.h>
 
 
 class MotionControlTunings : public Printable
 {
 public:
-	MotionControlTunings()
-	{
-		setDefault();
-	}
+    MotionControlTunings()
+    {
+        setDefault();
+    }
 
-	void setDefault()
-	{
+    void setDefault()
+    {
         maxAcceleration = 2000;
         maxDeceleration = 12000;
         maxCurvature = 4.5;
@@ -28,7 +28,7 @@ public:
 
         translationKp = 8.0;
         translationKd = 0.5;
-	}
+    }
 
     void setHighSpeed()
     {
@@ -81,6 +81,3 @@ public:
     float translationKp;
     float translationKd;
 };
-
-
-#endif

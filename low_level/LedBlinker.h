@@ -1,6 +1,6 @@
-#ifndef LED_BLINKER_h
-#define LED_BLINKER_h
+#pragma once
 
+#include <stdint.h>
 
 class LedBlinker
 {
@@ -42,6 +42,3 @@ private:
     uint32_t on_duration;   // ms
     uint32_t origin_time;   // ms
 };
-
-
-#endif

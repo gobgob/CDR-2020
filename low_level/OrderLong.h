@@ -1,5 +1,4 @@
-#ifndef _ORDERLONG_h
-#define _ORDERLONG_h
+#pragma once
 
 #include <vector>
 #include "OrderMacros.h"
@@ -56,6 +55,3 @@ protected:
     ActuatorMgr &actuatorMgr;
     bool finished;
 };
-
-
-#endif

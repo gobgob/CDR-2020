@@ -1,5 +1,4 @@
-#ifndef _ORDERMACROS_h
-#define _ORDERMACROS_h
+#pragma once
 
 #define VARIABLE_INPUT_SIZE ((std::size_t)(-1))
 
@@ -34,5 +33,3 @@ void name::onExecute()
 
 #define ORDER_LONG_TERMINATE(name) \
 void name::terminate(std::vector<uint8_t> &output)
-
-#endif

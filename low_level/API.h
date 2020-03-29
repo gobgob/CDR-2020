@@ -1,5 +1,4 @@
-#ifndef _API_h
-#define _API_h
+#pragma once
 
 #include "OrderMacros.h"
 #include "OrderImmediate.h"
@@ -37,5 +36,3 @@ ORDER_LONG(FollowTrajectory, 0, MoveStatus status;);
 ORDER_LONG(Stop, 0, );
 ORDER_LONG(WaitForJumper, 0, JumperState state; uint32_t debounceTimer;);
 ORDER_LONG(StartChrono, 0, uint32_t chrono;);
-
-#endif

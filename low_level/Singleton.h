@@ -1,5 +1,4 @@
-#ifndef _SINGLETON_h
-#define _SINGLETON_h
+#pragma once
 
 template<class T>
 class Singleton
@@ -13,6 +12,3 @@ public:
 protected:
     Singleton() {}
 };
-
-
-#endif

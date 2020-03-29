@@ -1,5 +1,4 @@
-#ifndef CONFIG_H
-#define CONFIG_H
+#pragma once
 
 /* Conversion ticks-mm. Unité : mm/tick */
 #define TICK_TO_MM              0.06506f
@@ -14,6 +13,10 @@
 /* Nombre de valeurs à utiliser dans le calcul de la moyenne glissante
  * permettant de lisser la mesure de vitesse */
 #define AVERAGE_SPEED_SIZE      50
+
+// todo: set appropriate values and call the Arduino function to actually set them
+#define ANALOG_WRITE_RES        10
+#define ANALOG_READ_RES         10
 
 /* Liaison série HL */
 #define SERIAL_HL               Serial  // USB
@@ -81,6 +84,3 @@
 #define PIN_GET_COLOR_A     25  // Blue side
 #define PIN_GET_COLOR_B     26  // Yellow side
 #define PIN_GET_JUMPER      6
-
-
-#endif

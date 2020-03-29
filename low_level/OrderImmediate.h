@@ -1,5 +1,4 @@
-#ifndef _ORDERIMMEDIATE_h
-#define _ORDERIMMEDIATE_h
+#pragma once
 
 #include <vector>
 #include "OrderMacros.h"
@@ -44,6 +43,3 @@ protected:
     ActuatorMgr &actuatorMgr;
     const SensorsMgr &sensorMgr;
 };
-
-
-#endif

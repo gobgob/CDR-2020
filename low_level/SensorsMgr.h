@@ -1,8 +1,8 @@
-#ifndef _SENSORS_MGR_h
-#define _SENSORS_MGR_h
+#pragma once
 
 #include <Printable.h>
 #include <ToF_module.h>
+#include <stdint.h>
 #include "Config.h"
 #include "Serializer.h"
 
@@ -180,6 +180,3 @@ private:
         "EXTD",
     };
 };
-
-
-#endif
