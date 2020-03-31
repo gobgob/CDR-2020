@@ -1,5 +1,7 @@
 #include "Command.h"
 
+#define RECEPTION_TIMEOUT 100  // ms
+
 using std::vector;
 
 Command::Command()
@@ -8,6 +10,7 @@ Command::Command()
     source = 0;
     id = 0;
     expectedLength = 0;
+    lastByteTimestamp = 0;
 }
 
 Command::Command(uint8_t aSource, uint8_t aId, vector<uint8_t> const& aData)
@@ -29,6 +32,12 @@ Command::Command(uint8_t aSource, uint8_t aId)
 
 bool Command::addByte(uint8_t newByte)
 {
+    uint32_t now = millis();
+    if (state != EMPTY && now - lastByteTimestamp > RECEPTION_TIMEOUT) {
+        clear();
+    }
+    lastByteTimestamp = now;
+
     switch (state)
     {
     case EMPTY:

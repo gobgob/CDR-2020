@@ -4,6 +4,7 @@
 
 #define MOTOR_ENCODER_TICK_TO_MM 0.1201 // mm/tick
 #define MOTOR_ENCODER_OC_RECOVER_DELAY 1000 // ms
+#define MOTOR_ENCODRE_MIN_SPEED 5  // mm/s
 
 MotorEncoder::MotorEncoder(const float freqAsserv, uint8_t enc_a,
     uint8_t enc_b, uint8_t ina, uint8_t inb, uint8_t pwm, uint8_t sel,
@@ -99,6 +100,10 @@ void MotorEncoder::setMaximumCurrent(float limit)
 void MotorEncoder::sendLogs()
 {
     Server.print(PID_SPEED, speedPID);
+    noInterrupts();
+    float c = motor.getCurrent();
+    interrupts();
+    Server.printf(BLOCKING_MGR, "%u_0_0_%g\n", millis(), c);
 }
 
 void MotorEncoder::compute()
@@ -110,6 +115,9 @@ void MotorEncoder::compute()
     averageMotorSpeed.add((float)motorDeltaTicks * MOTOR_ENCODER_TICK_TO_MM *
         freqAsserv);
     motorCurrentSpeed = averageMotorSpeed.value();
+    if (abs(motorCurrentSpeed) < MOTOR_ENCODRE_MIN_SPEED) {
+        motorCurrentSpeed = 0;
+    }
 
     motor.checkCurrent();
     if (motor.overcurrent()) {
@@ -138,4 +146,8 @@ void MotorEncoder::compute()
 void MotorEncoder::setAimSpeedFromInterrupt(float aimSpeed)
 {
     motorSpeedSetpoint = aimSpeed;
+    if (aimSpeed == 0) {
+        speedPID.resetIntegralError();
+        speedPID.resetDerivativeError();
+    }
 }

@@ -1,7 +1,9 @@
 #include "VNH7100AS.h"
 #include <Arduino.h>
 
-#define DEFAULT_MAX_CURRENT 100.0f // todo
+#define DEFAULT_MAX_CURRENT 5.0f // Amp
+#define PERCENT_TO_AMPS 0.15f // Very routh estimate
+#define OVERCURRENT_DELAY 500  // ms
 
 VNH7100AS::VNH7100AS(uint8_t ina, uint8_t inb, uint8_t pwm, uint8_t sel,
     uint8_t cs, uint8_t write_res, uint8_t read_res) :
@@ -18,6 +20,7 @@ VNH7100AS::VNH7100AS(uint8_t ina, uint8_t inb, uint8_t pwm, uint8_t sel,
     moving = false;
     lastCrrentMeasure = 0;
     maxCurrent = DEFAULT_MAX_CURRENT;
+    lastCurrentOkTime = 0;
     pinMode(pin_ina, OUTPUT);
     pinMode(pin_inb, OUTPUT);
     pinMode(pin_pwm, OUTPUT);
@@ -47,9 +50,9 @@ void VNH7100AS::run(float power)
     moving = pwm != 0;
 
     if (moving) {
-        digitalWrite(pin_ina, forward);
-        digitalWrite(pin_inb, !forward);
-        digitalWrite(pin_sel, forward);
+        digitalWrite(pin_ina, !forward);
+        digitalWrite(pin_inb, forward);
+        digitalWrite(pin_sel, !forward);
     }
     else {
         digitalWrite(pin_sel, HIGH);
@@ -61,19 +64,26 @@ void VNH7100AS::run(float power)
 
 void VNH7100AS::checkCurrent()
 {
-    float current;
     if (moving) {
-        current = currentConversion((float)analogRead(pin_cs) *
+        float current = currentConversion((float)analogRead(pin_cs) *
             100.0f / (float)max_analog_read);
+        avgCurrent.add(current);
     }
     else {
-        current = 0;
+        avgCurrent.reset();
     }
 
-    lastCrrentMeasure = current;
-    if (current > maxCurrent) {
-        overcurrentFlag = true;
-        standby();
+    lastCrrentMeasure = avgCurrent.value();
+
+    uint32_t now = millis();
+    if (lastCrrentMeasure > maxCurrent) {
+        if (now - lastCurrentOkTime > OVERCURRENT_DELAY) {
+            overcurrentFlag = true;
+            standby();
+        }
+    }
+    else {
+        lastCurrentOkTime = now;
     }
 }
 
@@ -116,5 +126,5 @@ void VNH7100AS::clearOvercurrentFlag()
 
 float VNH7100AS::currentConversion(float measurement)
 {
-    return measurement; // todo
+    return measurement * PERCENT_TO_AMPS;
 }

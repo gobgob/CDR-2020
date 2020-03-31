@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include "Average.h"
 
 /* H-bridge driver */
 class VNH7100AS
@@ -54,4 +55,7 @@ private:
     bool moving;
     float lastCrrentMeasure;
     float maxCurrent;
+    uint32_t lastCurrentOkTime;
+
+    Average<float, 50> avgCurrent;
 };

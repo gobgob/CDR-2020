@@ -18,7 +18,7 @@
 #define ODOMETRY_REPORT_PERIOD  20  // ms
 
 
-void setup() {}
+void setup() { pinMode(LED_BUILTIN, OUTPUT); }
 void loop()
 {
     OrderMgr orderManager;

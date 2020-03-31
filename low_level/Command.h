@@ -44,4 +44,5 @@ private:
     uint8_t id; // l'ID de l'ordre de la commande
     uint8_t expectedLength;
     std::vector<uint8_t> data;
+    uint32_t lastByteTimestamp;
 };
