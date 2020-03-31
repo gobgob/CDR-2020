@@ -25,10 +25,8 @@ sudo systemctl daemon-reload
 
 home="/home/pi/senpai-daemon/"
 scripts="${home}scripts/"
-ll_conf="${home}conf/low-level-server.conf"
 
 is_std=false
-last_ip=""
 
 if [ "$START_AS_HOTSPOT" = true ]; then
     ${scripts}net-hotspot-mode.sh
@@ -43,36 +41,22 @@ fi
 
 while true; do
     if [ "$is_std" = true ]; then
-        if [ $(gpio read 3) -eq 0 ]; then
-            # button hotspot pressed
-            ${scripts}net-hotspot-mode.sh
-            if [ $? -eq 0 ]; then
-                is_std=false
-            fi
+        gpio wfi 3 falling
+        # button hotspot pressed
+        ${scripts}net-hotspot-mode.sh
+        if [ $? -eq 0 ]; then
+            is_std=false
         fi
     else
-        if [ $(gpio read 0) -eq 0 ]; then
-            # button std pressed
-            ${scripts}net-std-mode.sh
-            if [ $? -eq 0 ]; then
-                is_std=true
-            else
-                ${scripts}net-hotspot-mode.sh
-            fi
+        gpio wfi 0 falling
+        # button std pressed
+        ${scripts}net-std-mode.sh
+        if [ $? -eq 0 ]; then
+            is_std=true
+        else
+            ${scripts}net-hotspot-mode.sh
         fi
     fi
-
-    ip=`ip -4 address show dev wlan0 up | grep -o "inet [0-9]*\.[0-9]*\.[0-9]*\.[0-9]*" | grep -o "[.0-9]*" | head -n 1`
-    if [ "$ip" != "$last_ip" ]; then
-        last_ip=${ip}
-        echo "New IP address:" "$ip"
-
-        # Update LowLevelServer configuration
-        ${scripts}make-config-file.py ${ll_conf} --ip ${ip}
-        ${scripts}low-level-server-restart.py
-    fi
-
-    sleep 0.2
 done
 
 exit 0
