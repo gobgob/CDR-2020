@@ -4,6 +4,7 @@
 #include "OrderMacros.h"
 #include "Serial.h"
 #include "MotionControlSystem.h"
+#include "MotionControlTunings.h"
 #include "DirectionController.h"
 #include "ActuatorMgr.h"
 #include "SensorsMgr.h"
@@ -15,6 +16,7 @@ public:
     OrderImmediate() :
         inputSize(0),
         motionControlSystem(MotionControlSystem::Instance()),
+        motionControlTunings(motionControlSystem.trajFollower().tunings()),
         directionController(DirectionController::Instance()),
         actuatorMgr(ActuatorMgr::Instance()),
         sensorMgr(SensorsMgr::Instance())
@@ -39,6 +41,7 @@ protected:
 
     std::size_t inputSize;
     MotionControlSystem &motionControlSystem;
+    MotionControlTunings& motionControlTunings;
     DirectionController &directionController;
     ActuatorMgr &actuatorMgr;
     const SensorsMgr &sensorMgr;

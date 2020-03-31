@@ -14,6 +14,7 @@ ORDER_IMMEDIATE(AppendToTraj, VARIABLE_INPUT_SIZE);
 ORDER_IMMEDIATE(EditTraj, VARIABLE_INPUT_SIZE);
 ORDER_IMMEDIATE(DeleteTrajPts, 4);
 ORDER_IMMEDIATE(SetScore, 4);
+ORDER_IMMEDIATE(SetParkingBreak, 1);
 
 ORDER_IMMEDIATE(Display, 0);
 ORDER_IMMEDIATE(Save, 0);
@@ -31,6 +32,9 @@ ORDER_IMMEDIATE(SetStoppingTunings, 8);
 ORDER_IMMEDIATE(SetMaxAcceleration, 4);
 ORDER_IMMEDIATE(SetMaxDeceleration, 4);
 ORDER_IMMEDIATE(SetMaxCurvature, 4);
+ORDER_IMMEDIATE(SetSpeedTunings, 12);
+ORDER_IMMEDIATE(SetAimSpeed, 4);
+ORDER_IMMEDIATE(SetMotorPWM, 4);
 
 ORDER_LONG(FollowTrajectory, 0, MoveStatus status;);
 ORDER_LONG(Stop, 0, );

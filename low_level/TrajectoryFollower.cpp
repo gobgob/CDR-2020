@@ -122,11 +122,13 @@ void TrajectoryFollower::setMotionControlLevel(uint8_t level)
     translationControlled = level > 2;
     trajectoryControlled = level > 3;
     interrupts();
+    motor.enableSpeedControl(level > 1);
 }
 
 uint8_t TrajectoryFollower::getMotionControlLevel() const
 {
-    uint8_t level = 2;
+    uint8_t level = 1;
+    level += (uint8_t)motor.isSpeedControlled();
     noInterrupts();
     level += (uint8_t)translationControlled;
     level += (uint8_t)trajectoryControlled;
@@ -170,6 +172,8 @@ void TrajectoryFollower::updateTunings()
         motionControlTunings.curvatureK2);
     distanceMaxToTraj = motionControlTunings.distanceMaxToTraj;
     interrupts();
+    motor.setTunings(motionControlTunings.speedKp,
+        motionControlTunings.speedKi, motionControlTunings.speedKd);
 }
 
 void TrajectoryFollower::enableParkingBreak(bool enable)
@@ -275,7 +279,7 @@ void TrajectoryFollower::control()
     }
     else if (movePhase == MOVE_ENDED) {
         /* Frein de parking actif */
-        if (trajectoryControlled) {
+        if (translationControlled) {
             /* MAJ movingSpeedSetPoint */
             translationPID.compute();
         }
@@ -287,12 +291,14 @@ void TrajectoryFollower::control()
         movingSpeedSetPoint = 0;
     }
 
-    enforceSpeedLimits();
-    if (isMovingForward()) {
-        motor.setAimSpeedFromInterrupt(movingSpeedSetPoint);
-    }
-    else {
-        motor.setAimSpeedFromInterrupt(-movingSpeedSetPoint);
+    if (translationControlled) {
+        enforceSpeedLimits();
+        if (isMovingForward()) {
+            motor.setAimSpeedFromInterrupt(movingSpeedSetPoint);
+        }
+        else {
+            motor.setAimSpeedFromInterrupt(-movingSpeedSetPoint);
+        }
     }
     motor.compute();
 }
@@ -379,22 +385,24 @@ void TrajectoryFollower::emergencyStop()
 void TrajectoryFollower::sendLogs()
 {
     static MoveStatus lastMoveStatus = MOVE_OK;
-    noInterrupts(); // todo fixme reduce no-interrupt duration
+    noInterrupts();
+    MoveStatus ms = moveStatus;
+    interrupts();
+
     Server.print(PID_TRANS, translationPID);
     Server.print(PID_TRAJECTORY, curvaturePID);
     Server.print(STOPPING_MGR, endOfMoveMgr);
-    Server.printf(PID_SPEED, "%u_%g_%g_%g", millis(), currentMovingSpeed, 0, 0);
+    motor.sendLogs();
 
-    if (moveStatus != lastMoveStatus) {
-        if (moveStatus != MOVE_OK) {
-            Server.printf_err("Move error: %u\n", (uint8_t)moveStatus);
+    if (ms != lastMoveStatus) {
+        if (ms != MOVE_OK) {
+            Server.printf_err("Move error: %u\n", (uint8_t)ms);
         }
         else {
             Server.printf("Move status is OK\n");
         }
-        lastMoveStatus = moveStatus;
+        lastMoveStatus = ms;
     }
-    interrupts();
 }
 
 void TrajectoryFollower::finalise_stop()

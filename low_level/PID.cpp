@@ -74,5 +74,12 @@ void PID::resetIntegralError()
 
 size_t PID::printTo(Print& p) const
 {
-	return p.printf("%u_%g_%g_%g", millis(), input, output, setPoint);
+	float in, out, sp;
+	noInterrupts();
+	in = input;
+	out = output;
+	sp = setPoint;
+	interrupts();
+
+	return p.printf("%u_%g_%g_%g", millis(), in, out, sp);
 }

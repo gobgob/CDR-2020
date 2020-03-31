@@ -22,14 +22,19 @@ void setup() {}
 void loop()
 {
     OrderMgr orderManager;
-    //MotionControlSystem &motionControlSystem = MotionControlSystem::Instance();
+    MotionControlSystem &motionControlSystem = MotionControlSystem::Instance();
     DirectionController &directionController = DirectionController::Instance();
     SensorsMgr &sensorMgr = SensorsMgr::Instance();
     ActuatorMgr &actuatorMgr = ActuatorMgr::Instance();
 
     IntervalTimer motionControlTimer;
-    //uint32_t odometryReportTimer = 0;
+    uint32_t odometryReportTimer = 0;
     std::vector<uint8_t> odometryReport;
+
+    analogWriteFrequency(PIN_MOT_PWM, ANALOG_WRITE_FREQ);
+    analogWriteFrequency(PIN_FLAG_PWM, ANALOG_WRITE_FREQ);
+    analogWriteResolution(ANALOG_WRITE_RES);
+    analogReadResolution(ANALOG_READ_RES);
 
     Wire.begin();
     init_serial_ports();
@@ -52,32 +57,37 @@ void loop()
         //t1 = micros();
         orderManager.execute();
         //t2 = micros();
-        //if (directionController.control() != DIR_STATUS_NOT_UPDATED) {
-        //    Server.print(DIRECTION, directionController);
-        //}
+        if (directionController.control() != DIR_STATUS_NOT_UPDATED) {
+            Server.print(DIRECTION, directionController);
+        }
         //t3 = micros();
         //actuatorMgr.control();
         //t6 = micros();
         //sensorMgr.update(motionControlSystem.getMovingDirection());
         //t7 = micros();
 
-        //if (millis() - odometryReportTimer > ODOMETRY_REPORT_PERIOD) {
-        //    odometryReportTimer = millis();
-        //    //Serial.print(sensorMgr);
+        if (millis() - odometryReportTimer > ODOMETRY_REPORT_PERIOD) {
+            odometryReportTimer = millis();
+            //Serial.print(sensorMgr);
 
-        //    odometryReport.clear();
-        //    Position p = motionControlSystem.getPosition();
-        //    Serializer::writeInt(p.x, odometryReport);
-        //    Serializer::writeInt(p.y, odometryReport);
-        //    Serializer::writeFloat(p.orientation, odometryReport);
-        //    Serializer::writeFloat(motionControlSystem.getCurvature(), odometryReport);
-        //    Serializer::writeUInt(motionControlSystem.getTrajectoryIndex(), odometryReport);
-        //    Serializer::writeBool(motionControlSystem.isMovingForward(), odometryReport);
-        //    sensorMgr.appendValuesToVect(odometryReport);
-        //    Server.sendData(ODOMETRY_AND_SENSORS, odometryReport);
+            odometryReport.clear();
+            Position p = motionControlSystem.getPosition();
+            Serializer::writeInt(p.x, odometryReport);
+            Serializer::writeInt(p.y, odometryReport);
+            Serializer::writeFloat(p.orientation, odometryReport);
+            Serializer::writeFloat(
+                motionControlSystem.trajFollower().getCurvature(),
+                odometryReport);
+            Serializer::writeUInt(motionControlSystem.getTrajectoryIndex(),
+                odometryReport);
+            //Serializer::writeBool(
+            //    motionControlSystem.trajFollower().isMovingForward(),
+            //    odometryReport);
+            //sensorMgr.appendValuesToVect(odometryReport);
+            Server.sendData(ODOMETRY_AND_SENSORS, odometryReport);
 
-        //    motionControlSystem.sendLogs();
-        //}
+            motionControlSystem.sendLogs();
+        }
 
         //static uint32_t dbg = 0;
         //if (millis() - dbg > 200) {
@@ -119,7 +129,8 @@ void loop()
 
 void motionControlInterrupt()
 {
-    static MotionControlSystem &motionControlSystem = MotionControlSystem::Instance();
+    static MotionControlSystem &motionControlSystem =
+        MotionControlSystem::Instance();
     motionControlSystem.control();
 }
 

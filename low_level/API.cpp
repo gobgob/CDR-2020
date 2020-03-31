@@ -7,7 +7,6 @@
 #include "MoveState.h"
 #include "Position.h"
 #include "TrajectoryPoint.h"
-#include "MotionControlTunings.h"
 #include "SensorsMgr.h"
 
 
@@ -28,6 +27,7 @@ void OrderMgr::initImmediateOrderList()
     immediateOrderList[0x05] = &EditTraj::Instance();
     immediateOrderList[0x06] = &DeleteTrajPts::Instance();
     immediateOrderList[0x07] = &SetScore::Instance();
+    immediateOrderList[0x08] = &SetParkingBreak::Instance();
 
     immediateOrderList[0x10] = &Display::Instance();
     immediateOrderList[0x11] = &Save::Instance();
@@ -45,6 +45,9 @@ void OrderMgr::initImmediateOrderList()
     immediateOrderList[0x1D] = &SetMaxAcceleration::Instance();
     immediateOrderList[0x1E] = &SetMaxDeceleration::Instance();
     immediateOrderList[0x1F] = &SetMaxCurvature::Instance();
+    immediateOrderList[0X20] = &SetSpeedTunings::Instance();
+    immediateOrderList[0x21] = &SetAimSpeed::Instance();
+    immediateOrderList[0x22] = &SetMotorPWM::Instance();
 }
 
 /* Ordres longs */
@@ -189,6 +192,13 @@ ORDER_IMMEDIATE_EXECUTE(SetScore)
     Server.printf(SPY_ORDER, "Score=%d\n", score);
 }
 
+ORDER_IMMEDIATE_EXECUTE(SetParkingBreak)
+{
+    size_t index = 0;
+    bool enable = Serializer::readBool(input, index);
+    motionControlSystem.trajFollower().enableParkingBreak(enable);
+}
+
 /* Debug API */
 ORDER_IMMEDIATE_EXECUTE(Display)
 {
@@ -268,10 +278,9 @@ ORDER_IMMEDIATE_EXECUTE(SetTranslationTunings)
     float kp = Serializer::readFloat(input, index);
     float kd = Serializer::readFloat(input, index);
     float minAimSpeed = Serializer::readFloat(input, index);
-    MotionControlTunings& tunings = motionControlSystem.trajFollower().tunings();
-    tunings.translationKp = kp;
-    tunings.translationKd = kd;
-    tunings.minAimSpeed = minAimSpeed;
+    motionControlTunings.translationKp = kp;
+    motionControlTunings.translationKd = kd;
+    motionControlTunings.minAimSpeed = minAimSpeed;
     motionControlSystem.trajFollower().updateTunings();
     Server.printf(SPY_ORDER, "Translation Kp=%g Kd=%g MinSpeed=%g\n", kp, kd,
         minAimSpeed);
@@ -283,10 +292,9 @@ ORDER_IMMEDIATE_EXECUTE(SetTrajectoryTunings)
     float k1 = Serializer::readFloat(input, index);
     float k2 = Serializer::readFloat(input, index);
     float dtt = Serializer::readFloat(input, index);
-    MotionControlTunings& tunings = motionControlSystem.trajFollower().tunings();
-    tunings.curvatureK1 = k1;
-    tunings.curvatureK2 = k2;
-    tunings.distanceMaxToTraj = dtt;
+    motionControlTunings.curvatureK1 = k1;
+    motionControlTunings.curvatureK2 = k2;
+    motionControlTunings.distanceMaxToTraj = dtt;
     motionControlSystem.trajFollower().updateTunings();
     Server.printf(SPY_ORDER, "Trajectory K1=%g K2=%g Dist=%g\n", k1, k2, dtt);
 }
@@ -296,9 +304,8 @@ ORDER_IMMEDIATE_EXECUTE(SetStoppingTunings)
     size_t index = 0;
     float epsilon = Serializer::readFloat(input, index);
     uint32_t responseTime = Serializer::readUInt(input, index);
-    MotionControlTunings& tunings = motionControlSystem.trajFollower().tunings();
-    tunings.stoppedSpeed = epsilon;
-    tunings.stoppingResponseTime = responseTime;
+    motionControlTunings.stoppedSpeed = epsilon;
+    motionControlTunings.stoppingResponseTime = responseTime;
     motionControlSystem.trajFollower().updateTunings();
     Server.printf(SPY_ORDER, "Stopping epsilon=%gmm/s delay=%ums\n", epsilon,
         responseTime);
@@ -308,7 +315,7 @@ ORDER_IMMEDIATE_EXECUTE(SetMaxAcceleration)
 {
     size_t index = 0;
     float acceleration = Serializer::readFloat(input, index);
-    motionControlSystem.trajFollower().tunings().maxAcceleration = acceleration;
+    motionControlTunings.maxAcceleration = acceleration;
     motionControlSystem.trajFollower().updateTunings();
     Server.printf(SPY_ORDER, "MaxAcceleration=%gmm*s^-2\n", acceleration);
 }
@@ -317,7 +324,7 @@ ORDER_IMMEDIATE_EXECUTE(SetMaxDeceleration)
 {
     size_t index = 0;
     float deceleration = Serializer::readFloat(input, index);
-    motionControlSystem.trajFollower().tunings().maxDeceleration = deceleration;
+    motionControlTunings.maxDeceleration = deceleration;
     motionControlSystem.trajFollower().updateTunings();
     Server.printf(SPY_ORDER, "MaxDeceleration=%gmm*s^-2\n", deceleration);
 }
@@ -326,9 +333,38 @@ ORDER_IMMEDIATE_EXECUTE(SetMaxCurvature)
 {
     size_t index = 0;
     float curvature = Serializer::readFloat(input, index);
-    motionControlSystem.trajFollower().tunings().maxCurvature = curvature;
+    motionControlTunings.maxCurvature = curvature;
     motionControlSystem.trajFollower().updateTunings();
     Server.printf(SPY_ORDER, "MaxCurvature=%gm^-1\n", curvature);
+}
+
+ORDER_IMMEDIATE_EXECUTE(SetSpeedTunings)
+{
+    size_t index = 0;
+    float kp = Serializer::readFloat(input, index);
+    float ki = Serializer::readFloat(input, index);
+    float kd = Serializer::readFloat(input, index);
+    motionControlTunings.speedKp = kp;
+    motionControlTunings.speedKi = ki;
+    motionControlTunings.speedKd = kd;
+    motionControlSystem.trajFollower().updateTunings();
+    Server.printf(SPY_ORDER, "Speed Kp=%g Ki=%g Kd=%g\n", kp, ki, kd);
+}
+
+ORDER_IMMEDIATE_EXECUTE(SetAimSpeed)
+{
+    size_t index = 0;
+    float aimSpeed = Serializer::readFloat(input, index);
+    motionControlSystem.trajFollower().motorEncoder().setAimSpeed(aimSpeed);
+    Server.printf(SPY_ORDER, "SetAimSpeed: %gmm/s", aimSpeed);
+}
+
+ORDER_IMMEDIATE_EXECUTE(SetMotorPWM)
+{
+    size_t index = 0;
+    float pwm = Serializer::readFloat(input, index);
+    motionControlSystem.trajFollower().motorEncoder().setRawPWM(pwm);
+    Server.printf(SPY_ORDER, "SetRawPWM: %g%%\n", pwm);
 }
 
 

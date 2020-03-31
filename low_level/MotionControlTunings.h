@@ -28,24 +28,10 @@ public:
 
         translationKp = 8.0;
         translationKd = 0.5;
-    }
 
-    void setHighSpeed()
-    {
-        maxAcceleration = 2000;
-        maxDeceleration = 12000;
-        maxCurvature = 4.5;
-        minAimSpeed = 400;
-
-        stoppedSpeed = 50;
-        stoppingResponseTime = 200;
-
-        curvatureK1 = 0.0025;
-        curvatureK2 = 0.7;
-        distanceMaxToTraj = 300;
-
-        translationKp = 6.0;
-        translationKd = 0.9;
+        speedKp = 3;
+        speedKi = 50;
+        speedKd = 0.1;
     }
 
     size_t printTo(Print& p) const
@@ -62,6 +48,9 @@ public:
         ret += p.printf("distanceMaxToTraj=%g\n", distanceMaxToTraj);
         ret += p.printf("translationKp=%g\n", translationKp);
         ret += p.printf("translationKd=%g\n", translationKd);
+        ret += p.printf("speedKp=%g\n", speedKp);
+        ret += p.printf("speedKi=%g\n", speedKi);
+        ret += p.printf("speedKd=%g\n", speedKd);
 
         return ret;
     }
@@ -80,4 +69,8 @@ public:
 
     float translationKp;
     float translationKd;
+
+    float speedKp;
+    float speedKi;
+    float speedKd;
 };

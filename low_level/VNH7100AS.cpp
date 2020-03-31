@@ -1,7 +1,7 @@
 #include "VNH7100AS.h"
 #include <Arduino.h>
 
-#define DEFAULT_MAX_CURRENT 1.0f // todo
+#define DEFAULT_MAX_CURRENT 100.0f // todo
 
 VNH7100AS::VNH7100AS(uint8_t ina, uint8_t inb, uint8_t pwm, uint8_t sel,
     uint8_t cs, uint8_t write_res, uint8_t read_res) :

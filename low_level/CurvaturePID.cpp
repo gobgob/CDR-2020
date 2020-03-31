@@ -62,6 +62,12 @@ void CurvaturePID::setTunings(float k1, float k2)
 
 size_t CurvaturePID::printTo(Print& p) const
 {
-    return p.printf("%u_%g_%g_%g", millis(), posError * k1,
-        orientationError * k2, curvatureCorrection);
+    float e1, e2, correction;
+    noInterrupts();
+    e1 = posError * k1;
+    e2 = orientationError * k2;
+    correction = curvatureCorrection;
+    interrupts();
+
+    return p.printf("%u_%g_%g_%g", millis(), e1, e2, correction);
 }

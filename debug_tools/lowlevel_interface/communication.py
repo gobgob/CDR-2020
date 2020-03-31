@@ -1,6 +1,6 @@
 import socket, threading, serial, time
 
-DEFAULT_ROBOT_IP = "172.16.0.2"
+DEFAULT_ROBOT_IP = "192.168.0.25"
 DEFAULT_ROBOT_SERIAL_PORT = "COM6"
 ROBOT_TCP_PORT = 80
 CONNEXION_TIMEOUT = 5  # seconds

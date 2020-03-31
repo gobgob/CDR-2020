@@ -14,8 +14,9 @@
  * permettant de lisser la mesure de vitesse */
 #define AVERAGE_SPEED_SIZE      50
 
-// todo: set appropriate values and call the Arduino function to actually set them
-#define ANALOG_WRITE_RES        10
+/* Réglage des PWM et des ADC */
+#define ANALOG_WRITE_FREQ       20000
+#define ANALOG_WRITE_RES        11
 #define ANALOG_READ_RES         10
 
 /* Liaison série HL */

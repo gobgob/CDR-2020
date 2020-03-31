@@ -23,6 +23,7 @@ DirectionController::DirectionController() :
     updateRealCurvature();
     blocked = true;
     blockedTimer = 0;
+    is_init = false;
 }
 
 DirectionControllerStatus DirectionController::init()
@@ -54,6 +55,7 @@ DirectionControllerStatus DirectionController::init()
             (uint8_t)directionMotor.status());
     }
 
+    is_init = true;
     return DIR_STATUS_OK;
 }
 
@@ -63,7 +65,7 @@ DirectionControllerStatus DirectionController::control()
     static bool read = true;
     uint32_t now = micros();
 
-    if (now - lastUpdateTime < DIR_CONTROL_PERIOD) {
+    if (!is_init || now - lastUpdateTime < DIR_CONTROL_PERIOD) {
         return DIR_STATUS_NOT_UPDATED;
     }
 
@@ -140,7 +142,13 @@ void DirectionController::setMotorAngle(uint16_t angle)
 
 size_t DirectionController::printTo(Print& p) const
 {
-    return p.printf("%u_%g_%g", millis(), aimCurvature, realCurvature);
+    float aim, real;
+    noInterrupts();
+    aim = aimCurvature;
+    real = realCurvature;
+    interrupts();
+
+    return p.printf("%u_%g_%g", millis(), aim, real);
 }
 
 void DirectionController::setAimCurvature(float curvature)

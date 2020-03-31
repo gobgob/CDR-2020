@@ -56,4 +56,7 @@ private:
     /* Indique si l'AX12 est en mesure de bouger ou non */
     volatile bool blocked;
     uint32_t blockedTimer; // ms
+
+    /* Indique si la méthode init a été exécutée avec succès */
+    bool is_init;
 };

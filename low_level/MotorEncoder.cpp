@@ -2,7 +2,7 @@
 #include <Arduino.h>
 #include "Serial.h"
 
-#define MOTOR_ENCODER_TICK_TO_MM 1.0 // todo
+#define MOTOR_ENCODER_TICK_TO_MM 0.1201 // mm/tick
 #define MOTOR_ENCODER_OC_RECOVER_DELAY 1000 // ms
 
 MotorEncoder::MotorEncoder(const float freqAsserv, uint8_t enc_a,
@@ -98,7 +98,7 @@ void MotorEncoder::setMaximumCurrent(float limit)
 
 void MotorEncoder::sendLogs()
 {
-    // todo
+    Server.print(PID_SPEED, speedPID);
 }
 
 void MotorEncoder::compute()

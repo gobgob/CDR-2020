@@ -61,5 +61,10 @@ bool StoppingMgr::isMoveBegin() const
 
 size_t StoppingMgr::printTo(Print& p) const
 {
-    return p.printf("%u_%g_%d", millis(), speed, isStopped());
+    noInterrupts();
+    float s = speed;
+    bool is = isStopped();
+    interrupts();
+
+    return p.printf("%u_%g_%d", millis(), s, is);
 }
