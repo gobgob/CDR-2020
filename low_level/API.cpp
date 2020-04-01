@@ -48,6 +48,7 @@ void OrderMgr::initImmediateOrderList()
     immediateOrderList[0X20] = &SetSpeedTunings::Instance();
     immediateOrderList[0x21] = &SetAimSpeed::Instance();
     immediateOrderList[0x22] = &SetMotorPWM::Instance();
+    immediateOrderList[0x23] = &GetRawTicks::Instance();
 }
 
 /* Ordres longs */
@@ -365,6 +366,14 @@ ORDER_IMMEDIATE_EXECUTE(SetMotorPWM)
     float pwm = Serializer::readFloat(input, index);
     motionControlSystem.trajFollower().motorEncoder().setRawPWM(pwm);
     Server.printf(SPY_ORDER, "SetRawPWM: %g%%\n", pwm);
+}
+
+ORDER_IMMEDIATE_EXECUTE(GetRawTicks)
+{
+    int32_t left, right;
+    motionControlSystem.trajFollower().getRawTicks(left, right);
+    Serializer::writeInt(left, output);
+    Serializer::writeInt(right, output);
 }
 
 

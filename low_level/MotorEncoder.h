@@ -41,6 +41,8 @@ private:
     volatile float motorPWM;            // %
     volatile float motorSpeedSetpoint;  // mm/s
     bool speedControlled;
+    bool zeroAimSpeed;
+    uint32_t zeroAimSpeedStartTime; // ms
 
     Encoder encoder;
     volatile int32_t motorDeltaTicks;

@@ -4,7 +4,8 @@
 
 #define MOTOR_ENCODER_TICK_TO_MM 0.1201 // mm/tick
 #define MOTOR_ENCODER_OC_RECOVER_DELAY 1000 // ms
-#define MOTOR_ENCODRE_MIN_SPEED 5  // mm/s
+#define MOTOR_ENCODER_MIN_SPEED 5  // mm/s
+#define MOTOR_ENCODER_KI_RESET_TIME 500  // ms
 
 MotorEncoder::MotorEncoder(const float freqAsserv, uint8_t enc_a,
     uint8_t enc_b, uint8_t ina, uint8_t inb, uint8_t pwm, uint8_t sel,
@@ -19,6 +20,8 @@ MotorEncoder::MotorEncoder(const float freqAsserv, uint8_t enc_a,
     motorPWM = 0;
     motorSpeedSetpoint = 0;
     speedControlled = true;
+    zeroAimSpeed = false;
+    zeroAimSpeedStartTime = 0;
     motorDeltaTicks = 0;
 }
 
@@ -110,13 +113,28 @@ void MotorEncoder::compute()
 {
     static bool overcurent = false;
     static uint32_t oc_start_time = 0;
+    uint32_t now = millis();
 
     motorDeltaTicks = encoder.readAndReset();
     averageMotorSpeed.add((float)motorDeltaTicks * MOTOR_ENCODER_TICK_TO_MM *
         freqAsserv);
     motorCurrentSpeed = averageMotorSpeed.value();
-    if (abs(motorCurrentSpeed) < MOTOR_ENCODRE_MIN_SPEED) {
+    if (abs(motorCurrentSpeed) < MOTOR_ENCODER_MIN_SPEED) {
         motorCurrentSpeed = 0;
+    }
+
+    if (abs(motorSpeedSetpoint) < MOTOR_ENCODER_MIN_SPEED) {
+        if (!zeroAimSpeed) {
+            zeroAimSpeed = true;
+            zeroAimSpeedStartTime = now;
+        }
+        else if (now - zeroAimSpeedStartTime > MOTOR_ENCODER_KI_RESET_TIME) {
+            speedPID.resetIntegralError();
+            zeroAimSpeed = false;
+        }
+    }
+    else {
+        zeroAimSpeed = false;
     }
 
     motor.checkCurrent();
@@ -146,8 +164,4 @@ void MotorEncoder::compute()
 void MotorEncoder::setAimSpeedFromInterrupt(float aimSpeed)
 {
     motorSpeedSetpoint = aimSpeed;
-    if (aimSpeed == 0) {
-        speedPID.resetIntegralError();
-        speedPID.resetDerivativeError();
-    }
 }

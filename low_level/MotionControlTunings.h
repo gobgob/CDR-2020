@@ -29,9 +29,9 @@ public:
         translationKp = 8.0;
         translationKd = 0.5;
 
-        speedKp = 3;
-        speedKi = 50;
-        speedKd = 0.1;
+        speedKp = 0.1;
+        speedKi = 1.5;
+        speedKd = 0.004;
     }
 
     size_t printTo(Print& p) const

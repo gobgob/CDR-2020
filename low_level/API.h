@@ -35,6 +35,7 @@ ORDER_IMMEDIATE(SetMaxCurvature, 4);
 ORDER_IMMEDIATE(SetSpeedTunings, 12);
 ORDER_IMMEDIATE(SetAimSpeed, 4);
 ORDER_IMMEDIATE(SetMotorPWM, 4);
+ORDER_IMMEDIATE(GetRawTicks, 0);
 
 ORDER_LONG(FollowTrajectory, 0, MoveStatus status;);
 ORDER_LONG(Stop, 0, );

@@ -7,9 +7,9 @@
 #define DIR_CONTROL_PERIOD  10000 // µs
 
 /* Angles limites, en degrés (uint16_t) */
-#define DIR_ANGLE_MIN       105 // doit être positif
+#define DIR_ANGLE_MIN       60  // doit être positif
 #define DIR_ANGLE_ORIGIN    150
-#define DIR_ANGLE_MAX       240
+#define DIR_ANGLE_MAX       195
 
 /* Délai entre le blocage de l'AX12 et la tentative de récupération */
 #define RECOVER_DELAY   5000    // ms
@@ -179,7 +179,8 @@ void DirectionController::updateAimAngle()
     noInterrupts();
     float aimCurvature_cpy = aimCurvature;
     interrupts();
-    aimMotorAngle = curvatureToAngle(aimCurvature_cpy);
+    aimMotorAngle = constrain(curvatureToAngle(aimCurvature_cpy),
+        DIR_ANGLE_MIN, DIR_ANGLE_MAX);
 }
 
 void DirectionController::setBlocked(bool b)
@@ -192,7 +193,7 @@ void DirectionController::setBlocked(bool b)
 
 float DirectionController::angleToCurvature(uint16_t angle)
 {
-    int a_deg = (int)angle - DIR_ANGLE_ORIGIN;
+    int a_deg = DIR_ANGLE_ORIGIN - (int)angle;
     float a_rad = (float)a_deg * M_PI / 180.0f;
 
     if (a_deg > 0) {
@@ -222,20 +223,20 @@ uint16_t DirectionController::curvatureToAngle(float curvature)
         if (curvature < DIR_INFINITE_CURVATURE) {
             float angle = (atanf(1.0f / (curvature * WHEELBASE_LENGTH / 
                 1000.0f)) - M_PI_2) * 180.0f / M_PI;
-            return round(angle) + DIR_ANGLE_ORIGIN;
+            return -round(angle) + DIR_ANGLE_ORIGIN;
         }
         else {
-            return DIR_ANGLE_ORIGIN - 90;
+            return DIR_ANGLE_ORIGIN + 90;
         }
     }
     else if (curvature < 0) {
         if (curvature > -DIR_INFINITE_CURVATURE) {
             float angle = (atanf(1.0f / (curvature * WHEELBASE_LENGTH /
                 1000.0f)) + M_PI_2) * 180.0f / M_PI;
-            return round(angle) + DIR_ANGLE_ORIGIN;
+            return -round(angle) + DIR_ANGLE_ORIGIN;
         }
         else {
-            return DIR_ANGLE_ORIGIN + 90;
+            return DIR_ANGLE_ORIGIN - 90;
         }
     }
     else  {

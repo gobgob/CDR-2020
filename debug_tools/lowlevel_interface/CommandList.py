@@ -196,5 +196,6 @@ Command(0x9F, "Set max curvature",      CommandType.SHORT_ORDER, [Field("Curvatu
 Command(0xA0, "Speed tunings",          CommandType.SHORT_ORDER, [Field("Kp", float), Field("Ki", float), Field("Kd", float)], []),
 Command(0XA1, "Set aim speed",          CommandType.SHORT_ORDER, [Field("Speed", float, description="mm/s")], []),
 Command(0xA2, "Set raw PWM",            CommandType.SHORT_ORDER, [Field("Power", float, description="%")], []),
+Command(0xA3, "Get raw ticks",          CommandType.SHORT_ORDER, [], [Field("left", int), Field("right", int)]),
 
 ]
