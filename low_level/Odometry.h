@@ -47,6 +47,8 @@ private:
      */
     volatile int32_t deltaLeftOdometryTicks;
     volatile int32_t deltaRightOdometryTicks;
+    volatile int32_t leftTotalTicks;
+    volatile int32_t rightTotalTicks;
     volatile float half_deltaRotation_rad;
     volatile float currentAngle;
     volatile float corrector;

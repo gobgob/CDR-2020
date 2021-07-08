@@ -5,14 +5,16 @@
 Odometry::Odometry(const float freqAsserv, volatile Position& p,
     volatile float& currentTranslation, volatile float& translationSpeed) :
     freqAsserv(freqAsserv),
-    leftOdometryEncoder(PIN_B_LEFT_ENCODER, PIN_A_LEFT_ENCODER),
-    rightOdometryEncoder(PIN_A_RIGHT_ENCODER, PIN_B_RIGHT_ENCODER),
+    leftOdometryEncoder(PIN_A_LEFT_ENCODER, PIN_B_LEFT_ENCODER),
+    rightOdometryEncoder(PIN_B_RIGHT_ENCODER, PIN_A_RIGHT_ENCODER),
     position(p),
     currentTranslation(currentTranslation),
     translationSpeed(translationSpeed)
 {
     deltaLeftOdometryTicks = 0;
     deltaRightOdometryTicks = 0;
+    leftTotalTicks = 0;
+    rightTotalTicks = 0;
     half_deltaRotation_rad = 0;
     currentAngle = 0;
     corrector = 0;
@@ -24,6 +26,9 @@ void Odometry::compute(bool movingForward)
     // Calcul du mouvement de chaque roue depuis le dernier asservissement
     deltaLeftOdometryTicks = leftOdometryEncoder.readAndReset();
     deltaRightOdometryTicks = rightOdometryEncoder.readAndReset();
+
+    leftTotalTicks += deltaLeftOdometryTicks;
+    rightTotalTicks += deltaRightOdometryTicks;
 
     // Mise à jour de la position et de l'orientattion
     deltaTranslation = (((float)deltaLeftOdometryTicks +
@@ -52,7 +57,7 @@ void Odometry::compute(bool movingForward)
 void Odometry::getRawTicks(int32_t& leftTicks, int32_t& rightTicks) const
 {
     noInterrupts();
-    leftTicks = deltaLeftOdometryTicks;
-    rightTicks = deltaRightOdometryTicks;
+    leftTicks = leftTotalTicks;
+    rightTicks = rightTotalTicks;
     interrupts();
 }

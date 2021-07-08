@@ -1,11 +1,11 @@
 #pragma once
 
 /* Conversion ticks-mm. Unité : mm/tick */
-#define TICK_TO_MM              0.06506f
+#define TICK_TO_MM              0.06471f
 
 /* Conversion ticks-radians. Unité : radian/tick
  * (2 * TICK_TO_MM) / ECARTEMENT_CODEUSES */
-#define TICK_TO_RADIANS         0.0006848f
+#define TICK_TO_RADIANS         0.001066f
 
 /* Distance entre l'essieu avant et arrière */
 #define WHEELBASE_LENGTH        135.0f  // mm

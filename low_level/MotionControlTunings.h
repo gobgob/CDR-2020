@@ -14,12 +14,12 @@ public:
 
     void setDefault()
     {
-        maxAcceleration = 2000;
+        maxAcceleration = 500;
         maxDeceleration = 12000;
-        maxCurvature = 4.5;
-        minAimSpeed = 400;
+        maxCurvature = 7;
+        minAimSpeed = 100;
 
-        stoppedSpeed = 50;
+        stoppedSpeed = 30;
         stoppingResponseTime = 200;
 
         curvatureK1 = 0.025;
@@ -27,7 +27,7 @@ public:
         distanceMaxToTraj = 50;
 
         translationKp = 8.0;
-        translationKd = 0.5;
+        translationKd = 0.3;
 
         speedKp = 0.1;
         speedKi = 1.5;

@@ -279,7 +279,7 @@ void TrajectoryFollower::control()
     }
     else if (movePhase == MOVE_ENDED) {
         /* Frein de parking actif */
-        if (translationControlled) {
+        if (trajectoryControlled) {
             /* MAJ movingSpeedSetPoint */
             translationPID.compute();
         }
